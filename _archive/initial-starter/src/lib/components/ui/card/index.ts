@@ -1,0 +1,50 @@
+/*
+MIT License
+
+Copyright (c) 2023 Hunter Johnston <https://github.com/huntabyte>
+Copyright (c) 2023 CokaKoala <https://github.com/adriangonz97>
+Copyright (c) 2023 shadcn
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+import Action from "./card-action.svelte";
+import Content from "./card-content.svelte";
+import Description from "./card-description.svelte";
+import Footer from "./card-footer.svelte";
+import Header from "./card-header.svelte";
+import Title from "./card-title.svelte";
+import Root from "./card.svelte";
+
+export {
+	Root,
+	Content,
+	Description,
+	Footer,
+	Header,
+	Title,
+	Action,
+	//
+	Root as Card,
+	Content as CardContent,
+	Description as CardDescription,
+	Footer as CardFooter,
+	Header as CardHeader,
+	Title as CardTitle,
+	Action as CardAction,
+};

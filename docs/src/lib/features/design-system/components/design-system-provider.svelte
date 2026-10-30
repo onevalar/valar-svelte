@@ -1,0 +1,193 @@
+<script lang="ts">
+	import { browser } from "$app/environment";
+	import { watch } from "runed";
+	import { onDestroy, type Snippet } from "svelte";
+	import {
+		buildRegistryTheme,
+		DEFAULT_CONFIG,
+		fonts,
+		RADII,
+		type DesignSystemConfig,
+	} from "$lib/registry/config.js";
+	import { cn } from "$lib/registry/lib/utils.js";
+	import { setupDesignSystem } from "./design-system-provider-state.svelte.js";
+	import { syncMenuColor } from "../menu-color.js";
+
+	const uid = $props.id();
+
+	type Props = {
+		children: Snippet;
+	};
+
+	let { children }: Props = $props();
+
+	const designSystem = setupDesignSystem();
+
+	const MANAGED_BODY_CLASS_PREFIXES = ["style-", "base-color-"] as const;
+
+	// `classList.forEach` skips entries when removing during iteration, so snapshot first.
+	function removeManagedBodyClasses(body: HTMLElement) {
+		for (const className of Array.from(body.classList)) {
+			if (MANAGED_BODY_CLASS_PREFIXES.some((prefix) => className.startsWith(prefix))) {
+				body.classList.remove(className);
+			}
+		}
+	}
+
+	const effectiveRadius = $derived(designSystem.style === "lyra" ? "none" : designSystem.radius);
+
+	const radius = $derived(
+		RADII.find((radius) => radius.name === effectiveRadius)?.value ?? RADII[0].value
+	);
+
+	const registryTheme = $derived.by(() => {
+		if (!designSystem.baseColor || !designSystem.theme || !designSystem.menuAccent || !radius) {
+			return null;
+		}
+
+		const config: DesignSystemConfig = {
+			...DEFAULT_CONFIG,
+			baseColor: designSystem.baseColor,
+			theme: designSystem.theme,
+			chartColor: designSystem.chartColor ?? DEFAULT_CONFIG.chartColor,
+			menuAccent: designSystem.menuAccent,
+			radius: effectiveRadius,
+		};
+
+		return buildRegistryTheme(config);
+	});
+
+	watch([() => registryTheme, () => browser], ([registryTheme, browser]) => {
+		if (!browser) return;
+		if (!registryTheme) return;
+
+		const body = document.body;
+
+		// Update style / base color classes in place (remove old, add new).
+		removeManagedBodyClasses(body);
+		body.classList.add(`style-${designSystem.style}`);
+		body.classList.add(`base-color-${designSystem.baseColor}`);
+
+		const selectedFont =
+			fonts.find((font) => font.name.replace("font-", "") === designSystem.font)?.font.family ??
+			fonts[0].font.family;
+		document.documentElement.style.setProperty("--font-sans", selectedFont);
+
+		// `inherit` has no heading font item, so it falls through to the body font.
+		const selectedHeadingFont =
+			fonts.find((font) => font.name.replace("font-heading-", "") === designSystem.fontHeading)
+				?.font.family ?? "var(--font-sans)";
+		document.documentElement.style.setProperty("--font-heading", selectedHeadingFont);
+
+		const styleId = uid;
+		let styleElement = document.getElementById(styleId) as HTMLStyleElement | null;
+
+		if (!styleElement) {
+			styleElement = document.createElement("style");
+			styleElement.id = styleId;
+			document.head.appendChild(styleElement);
+		}
+
+		const { light: lightVars, dark: darkVars, theme: themeVars } = registryTheme.cssVars;
+
+		let cssText = ":root {\n";
+		// Add theme vars (shared across light/dark).
+		if (themeVars) {
+			Object.entries(themeVars).forEach(([key, value]) => {
+				if (value) {
+					cssText += `  --${key}: ${value};\n`;
+				}
+			});
+		}
+		// Add light mode vars.
+		if (lightVars) {
+			Object.entries(lightVars).forEach(([key, value]) => {
+				if (value) {
+					cssText += `  --${key}: ${value};\n`;
+				}
+			});
+		}
+		cssText += "}\n\n";
+
+		cssText += ".dark {\n";
+		if (darkVars) {
+			Object.entries(darkVars).forEach(([key, value]) => {
+				if (value) {
+					cssText += `  --${key}: ${value};\n`;
+				}
+			});
+		}
+		cssText += "}\n";
+
+		styleElement.textContent = cssText;
+	});
+
+	let stopMenuSync: (() => void) | null = null;
+
+	// The provider only lives on the design-system routes. When it unmounts (e.g. navigating
+	// from /create to the docs) restore the document to the default style so the rest of the
+	// site is not left wearing the last preset.
+	onDestroy(() => {
+		if (!browser) return;
+		removeManagedBodyClasses(document.body);
+		document.body.classList.add(`style-${DEFAULT_CONFIG.style}`);
+		document.getElementById(uid)?.remove();
+		document.documentElement.style.removeProperty("--font-sans");
+		document.documentElement.style.removeProperty("--font-heading");
+		stopMenuSync?.();
+		stopMenuSync = null;
+	});
+
+	watch([() => designSystem.menuColor, () => browser], ([menuColor, browser]) => {
+		stopMenuSync?.();
+		stopMenuSync = null;
+
+		if (!browser) return;
+		if (!menuColor) return;
+
+		stopMenuSync = syncMenuColor(menuColor);
+	});
+
+	function handleKeyDown(e: KeyboardEvent) {
+		// randomize / reset on r/R and shift+R
+		if ((e.key === "r" || e.key === "R") && !e.metaKey && !e.ctrlKey) {
+			if (
+				(e.target instanceof HTMLElement && e.target.isContentEditable) ||
+				e.target instanceof HTMLInputElement ||
+				e.target instanceof HTMLTextAreaElement ||
+				e.target instanceof HTMLSelectElement
+			) {
+				return;
+			}
+
+			e.preventDefault();
+
+			if (e.shiftKey) {
+				designSystem.reset();
+				return;
+			}
+
+			designSystem.randomize();
+		}
+
+		// undo/redo on z/Z
+		if ((e.key === "z" || e.key === "Z") && (e.metaKey || e.ctrlKey)) {
+			e.preventDefault();
+			if (e.shiftKey) {
+				designSystem.redo();
+			} else {
+				designSystem.undo();
+			}
+		}
+	}
+</script>
+
+<svelte:window onkeydown={handleKeyDown} />
+
+<div
+	data-slot="design-system-provider"
+	style="display: contents;"
+	class={cn(`style-${designSystem.style} base-color-${designSystem.baseColor}`)}
+>
+	{@render children?.()}
+</div>

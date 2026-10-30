@@ -1,0 +1,50 @@
+[
+	{
+		"name": "button",
+		"title": "Button",
+		"type": "registry:ui",
+		"description": "Valar button，基于 shadcn-svelte Vega，源码可定制。",
+		"dependencies": [
+			"cn",
+			"tailwind-variants"
+		],
+		"registryDependencies": [],
+		"relativeUrl": "button.json"
+	},
+	{
+		"name": "badge",
+		"title": "Badge",
+		"type": "registry:ui",
+		"description": "Valar badge，基于 shadcn-svelte Vega，源码可定制。",
+		"dependencies": [
+			"cn",
+			"tailwind-variants"
+		],
+		"registryDependencies": [],
+		"relativeUrl": "badge.json"
+	},
+	{
+		"name": "input",
+		"title": "Input",
+		"type": "registry:ui",
+		"description": "Valar input，基于 shadcn-svelte Vega，源码可定制。",
+		"dependencies": [
+			"cn",
+			"tailwind-variants"
+		],
+		"registryDependencies": [],
+		"relativeUrl": "input.json"
+	},
+	{
+		"name": "card",
+		"title": "Card",
+		"type": "registry:ui",
+		"description": "Valar card，基于 shadcn-svelte Vega，源码可定制。",
+		"dependencies": [
+			"cn",
+			"tailwind-variants"
+		],
+		"registryDependencies": [],
+		"relativeUrl": "card.json"
+	}
+]

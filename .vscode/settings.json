@@ -1,0 +1,45 @@
+{
+	// Enable the ESlint flat config support
+	"eslint.useFlatConfig": true,
+
+	// Auto fix
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": "explicit",
+		"source.organizeImports": "never",
+		"source.removeUnusedImports": "never",
+		"source.removeUnused.ts": "never"
+	},
+
+	// Enable eslint for all supported languages
+	"eslint.validate": [
+		"javascript",
+		"javascriptreact",
+		"typescript",
+		"typescriptreact",
+		"vue",
+		"svelte",
+		"html",
+		"markdown",
+		"json",
+		"jsonc",
+		"yaml",
+		"toml",
+		"astro"
+	],
+
+	// Force using the local typescript binary
+	"js/ts.tsdk.path": "node_modules/typescript/lib",
+
+	// Oxfmt
+	"prettier.enable": false, // prettier is persistent and annoying
+	"oxc.fmt.configPath": "oxfmt.config.ts",
+	"editor.defaultFormatter": "oxc.oxc-vscode",
+	"[typescript][javascript][json][jsonc][css][yaml][yml]": {
+		"editor.defaultFormatter": "oxc.oxc-vscode"
+	},
+	"[svelte]": { "editor.defaultFormatter": "oxc.oxc-vscode" },
+	"tailwindCSS.classFunctions": ["cn", "tv"],
+	// Enables LSP for object properties with name "class"
+	"tailwindCSS.experimental.classRegex": [["\\bclass\\s*:\\s*[\"'`]([^\"'`]*)[\"'`]"]],
+	"tailwindCSS.experimental.configFile": "docs/src/app.css"
+}

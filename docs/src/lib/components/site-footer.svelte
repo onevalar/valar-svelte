@@ -1,0 +1,1 @@
+<footer class="border-t"><div class="container-wrapper flex flex-wrap items-center justify-between gap-4 px-6 py-8 text-sm text-muted-foreground"><span>Valar <span class="ml-1">/ Svelte</span></span><nav class="flex gap-5"><a href="/docs">文档</a><a href="/docs/about">许可与来源</a><a href="https://github.com/onevalar/valar-svelte">GitHub</a></nav></div></footer>

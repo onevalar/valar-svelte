@@ -1,0 +1,131 @@
+{
+  "$schema": "https://shadcn-svelte.com/schema/registry.json",
+  "name": "valar-svelte",
+  "homepage": "https://github.com/onevalar/valar-svelte",
+  "items": [
+    {
+      "name": "button",
+      "type": "registry:ui",
+      "title": "Button",
+      "description": "Valar button，基于 shadcn-svelte Vega，源码可定制。",
+      "dependencies": [
+        "cn",
+        "tailwind-variants"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/ui/button/button.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/button/index.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": []
+    },
+    {
+      "name": "badge",
+      "type": "registry:ui",
+      "title": "Badge",
+      "description": "Valar badge，基于 shadcn-svelte Vega，源码可定制。",
+      "dependencies": [
+        "cn",
+        "tailwind-variants"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/ui/badge/badge.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/badge/index.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": []
+    },
+    {
+      "name": "input",
+      "type": "registry:ui",
+      "title": "Input",
+      "description": "Valar input，基于 shadcn-svelte Vega，源码可定制。",
+      "dependencies": [
+        "cn",
+        "tailwind-variants"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/ui/input/index.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/input/input.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": []
+    },
+    {
+      "name": "card",
+      "type": "registry:ui",
+      "title": "Card",
+      "description": "Valar card，基于 shadcn-svelte Vega，源码可定制。",
+      "dependencies": [
+        "cn",
+        "tailwind-variants"
+      ],
+      "files": [
+        {
+          "path": "src/lib/components/ui/card/card-action.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/card/card-content.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/card/card-description.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/card/card-footer.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/card/card-header.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/card/card-title.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/card/card.svelte",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/components/ui/card/index.ts",
+          "type": "registry:ui"
+        },
+        {
+          "path": "src/lib/utils.ts",
+          "type": "registry:lib"
+        }
+      ],
+      "registryDependencies": []
+    }
+  ]
+}

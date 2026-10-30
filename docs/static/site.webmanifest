@@ -1,0 +1,13 @@
+{
+  "name": "Valar Svelte",
+  "short_name": "Valar",
+  "start_url": "/",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
