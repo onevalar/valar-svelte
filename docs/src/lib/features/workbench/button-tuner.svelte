@@ -1,10 +1,14 @@
 <script lang="ts">
+	import ArrowUpIcon from "@lucide/svelte/icons/arrow-up";
 	import { onMount, tick, type Component, type Snippet } from "svelte";
-	import { UserConfigContext } from "$lib/user-config.svelte.js";
+	import { Button } from "$lib/registry/ui/button/index.js";
 	import {
-		BUTTON_PARAMETERS,
+		BUTTON_NUMBER_PARAMETERS,
+		BUTTON_SIZES,
 		BUTTON_STORAGE_KEY,
+		RADIUS_LABEL,
 		buttonChanges,
+		buttonOverrideClasses,
 		buttonOverrideCss,
 		buttonVersionSchema,
 		buttonVersionsSchema,
@@ -13,23 +17,40 @@
 		type ButtonValues,
 		type ButtonVersion,
 	} from "./button-tuning.js";
+	import { styleOverridePath } from "./style-overrides.js";
 
 	let { children }: { children: Snippet } = $props();
 	const id = $props.id();
-	const userConfig = UserConfigContext.get();
+	const canWrite = import.meta.env.DEV;
+	const FLASH_KEY = "valar.button-writeback.flash";
+	const LABELS: Record<string, string> = {
+		radius: RADIUS_LABEL,
+		...Object.fromEntries(BUTTON_NUMBER_PARAMETERS.map(({ key, label }) => [key, label])),
+	};
+	const TOKENS = [
+		["--radius", "圆角基数"],
+		["--text-sm", "小号字"],
+		["--primary", "主色"],
+		["--background", "背景色"],
+		["--foreground", "文字色"],
+		["--border", "边框色"],
+	] as const;
 	let probe = $state<HTMLDivElement>();
 	let openButton = $state<HTMLButtonElement>();
 	let editing = $state(false);
 	let loading = $state(false);
-	let contextChanged = $state(false);
+	let mode = $state<"light" | "dark">("light");
 	let source = $state<ButtonVersion["source"]>();
 	let baseline = $state<ButtonValues>();
+	let tokens = $state<{ name: string; label: string; value: string }[]>([]);
 	let draft = $state<ButtonOverrides>({});
 	let versions = $state<ButtonVersion[]>([]);
 	let selected = $state("");
 	let comparison = $state("");
 	let name = $state("");
 	let message = $state("");
+	let confirming = $state(false);
+	let writing = $state(false);
 	let panelKey = $state(0);
 	let Panel = $state<
 		Component<{
@@ -38,53 +59,33 @@
 			onchange: (values: ButtonValues) => void;
 		}>
 	>();
-	const compatible = $derived(
-		versions.filter((version) => JSON.stringify(version.source) === JSON.stringify(source))
-	);
+	const compatible = $derived(versions.filter((version) => version.source.style === source?.style));
 	const active = $derived(compatible.find((version) => version.id === selected));
 	const previous = $derived(compatible.find((version) => version.id === comparison));
 	const currentOverrides = $derived(editing ? draft : (active?.overrides ?? {}));
 	const initial = $derived(baseline ? { ...baseline, ...draft } : undefined);
-	const changed = $derived(
-		BUTTON_PARAMETERS.filter(({ property }) => draft[property] !== undefined)
-	);
-	const selector = $derived(
-		source
-			? `[data-slot="button"][data-variant="${source.variant}"][data-size="${source.size}"]`
-			: "[data-slot=button]"
-	);
+	const changed = $derived(Object.keys(draft) as (keyof ButtonValues)[]);
+	const styleName = $derived(source?.style.replace("style-", "") ?? "nova");
 	const css = $derived(
-		buttonOverrideCss(
-			`[data-button-tuner="${id}"] [data-tuning-current] ${selector}`,
-			currentOverrides
-		) +
+		buttonOverrideCss(`[data-button-tuner="${id}"] [data-tuning-current]`, currentOverrides) +
+			"\n" +
 			buttonOverrideCss(
-				`[data-button-tuner="${id}"] [data-tuning-before] ${selector}`,
+				`[data-button-tuner="${id}"] [data-tuning-before]`,
 				previous?.overrides ?? {}
 			)
 	);
 
 	function readSource(): ButtonVersion["source"] {
-		const button = probe!.querySelector<HTMLElement>('[data-slot="button"]')!;
-		const owner = button.closest('[class*="style-"]');
+		const owner = probe!.closest('[class*="style-"]');
 		return {
 			style:
 				[...(owner?.classList ?? [])].find((value) => value.startsWith("style-")) ?? "style-nova",
-			variant: button.dataset.variant!,
-			size: button.dataset.size!,
-			theme: userConfig.current.activeTheme,
-			mode: document.documentElement.classList.contains("dark") ? "dark" : "light",
 		};
 	}
 
-	function refreshContext() {
-		if (!probe) return;
-		const next = readSource();
-		if (editing) contextChanged = JSON.stringify(source) !== JSON.stringify(next);
-		else source = next;
-	}
-
 	onMount(() => {
+		message = sessionStorage.getItem(FLASH_KEY) ?? "";
+		sessionStorage.removeItem(FLASH_KEY);
 		try {
 			versions = buttonVersionsSchema.parse(
 				JSON.parse(localStorage.getItem(BUTTON_STORAGE_KEY) ?? "[]")
@@ -92,14 +93,7 @@
 		} catch {
 			message = "无法读取本地版本；原有数据未覆盖。可以导入备份，或检查浏览器存储。";
 		}
-		refreshContext();
-		const observer = new MutationObserver(refreshContext);
-		observer.observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
-		return () => observer.disconnect();
-	});
-	$effect(() => {
-		userConfig.current.activeTheme;
-		refreshContext();
+		source = readSource();
 	});
 	$effect(() => {
 		const style = document.createElement("style");
@@ -113,12 +107,19 @@
 		message = "";
 		try {
 			Panel = (await import("./button-parameter-panel.svelte")).default;
-			refreshContext();
-			baseline = readButtonValues(probe!.querySelector<HTMLElement>('[data-slot="button"]')!);
+			source = readSource();
+			mode = document.documentElement.classList.contains("dark") ? "dark" : "light";
+			baseline = readButtonValues(probe!);
+			const computed = getComputedStyle(probe!.querySelector<HTMLElement>("[data-probe-size]")!);
+			tokens = TOKENS.map(([name, label]) => ({
+				name,
+				label,
+				value: computed.getPropertyValue(name).trim(),
+			}));
 			draft = { ...active?.overrides };
 			comparison = selected;
 			name = "";
-			contextChanged = false;
+			confirming = false;
 			editing = true;
 			panelKey++;
 			await tick();
@@ -133,14 +134,14 @@
 	async function close() {
 		editing = false;
 		draft = {};
-		refreshContext();
+		confirming = false;
 		await tick();
 		openButton?.focus({ preventScroll: true });
 	}
 
 	function makeVersion(): ButtonVersion {
 		return buttonVersionSchema.parse({
-			format: 1,
+			format: 2,
 			component: "button",
 			id: crypto.randomUUID(),
 			name: name.trim(),
@@ -166,10 +167,6 @@
 	}
 
 	function save() {
-		if (contextChanged) {
-			message = "主题已改变，请取消并重新打开微调后再保存。";
-			return;
-		}
 		try {
 			persist(makeVersion());
 			message = `已保存「${name.trim()}」。旧版本保持不变。`;
@@ -178,6 +175,28 @@
 				error instanceof Error && !error.message.startsWith("[")
 					? `保存失败：${error.message}`
 					: "保存失败：请填写有效名称并检查参数。草稿仍保留。";
+		}
+	}
+
+	async function writeBack() {
+		writing = true;
+		message = "正在写回并重建 registry，约需 10 秒…";
+		try {
+			const response = await fetch("/__valar/style-overrides", {
+				method: "POST",
+				headers: { "content-type": "application/json" },
+				body: JSON.stringify({ style: styleName, classes: buttonOverrideClasses(draft) }),
+			});
+			const body = await response.json().catch(() => ({}));
+			if (!response.ok) throw new Error(body.error ?? `HTTP ${response.status}`);
+			sessionStorage.setItem(
+				FLASH_KEY,
+				`已写回 ${body.file}，Button 默认样式已更新，registry 已重建。改动尚未提交到 Git。`
+			);
+			location.reload();
+		} catch (error) {
+			message = `写回失败：${error instanceof Error ? error.message : "未知错误"}。草稿仍保留。`;
+			writing = false;
 		}
 	}
 
@@ -206,29 +225,43 @@
 			if (!file) return;
 			if (file.size > 50_000) throw new Error("文件超过 50 KB");
 			const version = buttonVersionSchema.parse(JSON.parse(await file.text()));
-			if (JSON.stringify(version.source) !== JSON.stringify(source))
-				throw new Error("样式、变体、尺寸或明暗主题与当前示例不匹配");
+			if (version.source.style !== source?.style) throw new Error("样式与当前示例不匹配");
 			persist({ ...version, id: crypto.randomUUID() });
 			message = `已导入「${version.name}」。`;
 		} catch {
-			message = "导入失败：文件无效、名称重复、环境不匹配或存储不可用；当前版本未改变。";
+			message = "导入失败：文件无效、名称重复、样式不匹配或存储不可用；当前版本未改变。";
 		} finally {
 			input.value = "";
 		}
 	}
 </script>
 
+{#snippet sizeRow(isProbe = false)}
+	<div class="size-row">
+		{#each BUTTON_SIZES as size (size.id)}
+			<div class="size-pair">
+				<Button variant="outline" size={size.id} data-probe-size={isProbe ? size.id : undefined}
+					>{size.label}</Button
+				>
+				<Button variant="outline" size={size.icon} aria-label={`${size.label}尺寸图标按钮`}
+					><ArrowUpIcon /></Button
+				>
+			</div>
+		{/each}
+	</div>
+{/snippet}
+
 <section class="button-tuner" data-button-tuner={id} aria-label="Button 样式微调">
 	<div class="toolbar">
 		<div>
-			<span class="eyebrow">BUTTON / 样式</span>
-			<p class="context">{source?.style.replace("style-", "") ?? "当前样式"} · outline / default</p>
+			<span class="eyebrow">BUTTON / 组件参数</span>
+			<p class="context">{styleName} · 全部变体共用尺寸与圆角档位</p>
 		</div>
 		{#if !editing}
 			<label class="version-select"
 				>使用版本
 				<select aria-label="Button 使用版本" bind:value={selected}>
-					<option value="">原始样式</option>
+					<option value="">当前组件库样式</option>
 					{#each compatible as version (version.id)}<option value={version.id}
 							>{version.name}</option
 						>{/each}
@@ -244,8 +277,11 @@
 	{#if message}<p role="status" class="notice">{message}</p>{/if}
 	{#if editing}
 		<div class="editor-heading">
-			<h2 id={`${id}-title`} tabindex="-1">微调现有 Button</h2>
-			<p>只修改 outline / default；旁边的图标按钮不受影响。悬停、按下与键盘聚焦保留原有交互。</p>
+			<h2 id={`${id}-title`} tabindex="-1">微调 Button 组件参数</h2>
+			<p>
+				尺寸参数作用于该尺寸的所有变体（实心、描边、幽灵等），图标按钮跟随同档高度。颜色、圆角基数和字号属于全局
+				token，这里只读。
+			</p>
 		</div>
 	{/if}
 	<div class:comparing={editing} class="samples">
@@ -254,40 +290,94 @@
 				<label class="sample-label"
 					>对比基线
 					<select aria-label="Button 对比版本" bind:value={comparison}>
-						<option value="">原始样式</option>
+						<option value="">当前组件库样式</option>
 						{#each compatible as version (version.id)}<option value={version.id}
 								>{version.name}</option
 							>{/each}
 					</select>
 				</label>
-				<div class="sample" data-tuning-before>{@render children()}</div>
+				<div class="sample" data-tuning-before>
+					{@render children()}
+					{@render sizeRow()}
+				</div>
 			</div>
 		{/if}
 		<div class="sample-column">
 			{#if editing}<p class="sample-label">
 					当前草稿 <span>{changed.length} 项修改 · 实时预览</span>
 				</p>{/if}
-			<div class="sample" data-tuning-current>{@render children()}</div>
+			<div class="sample" data-tuning-current>
+				{@render children()}
+				{#if editing}{@render sizeRow()}{/if}
+			</div>
 		</div>
 	</div>
-	<!-- This unmodified instance supplies computed values, including theme tokens and size variants. -->
-	<div class="probe" bind:this={probe} aria-hidden="true" inert>{@render children()}</div>
+	<!-- Unmodified instances supply the rendered values of every size and the radius levels. -->
+	<div class="probe" bind:this={probe} aria-hidden="true" inert>
+		{@render sizeRow(true)}
+		<span data-probe-radius></span>
+	</div>
 	{#if editing && Panel && initial && baseline}
-		{#if contextChanged}<p role="alert" class="notice">
-				页面主题已改变。请取消并重新微调，避免把不同主题的参数混存。
-			</p>{/if}
-		{#if !contextChanged}
-			{#key panelKey}
-				<Panel
-					{initial}
-					theme={source!.mode}
-					onchange={(values) => {
-						draft = buttonChanges(baseline!, values);
-					}}
-				/>
-			{/key}
-		{/if}
-		<div inert={contextChanged} role="region" aria-label="样式版本">
+		{#key panelKey}
+			<Panel
+				{initial}
+				theme={mode}
+				onchange={(values) => {
+					draft = buttonChanges(baseline!, values);
+					confirming = false;
+				}}
+			/>
+		{/key}
+		<div role="region" aria-label="样式版本">
+			<div class="versions">
+				<p class="section-label">写回组件库</p>
+				{#if !canWrite}
+					<p class="help">写回只在本地开发站（pnpm dev）提供；当前站点只能保存和导出版本。</p>
+				{:else if !confirming}
+					<button
+						class="action primary"
+						disabled={!changed.length || writing}
+						onclick={() => (confirming = true)}>写回组件库…</button
+					>
+					<p class="help">
+						把当前草稿设为 Valar Button 的默认样式（{styleName}）。写入后需要提交到 Git 才会保留。
+					</p>
+				{:else}
+					<div class="confirm" role="group" aria-label="确认写回">
+						<p>
+							将写入 <code>docs/{styleOverridePath(styleName)}</code>，并重建
+							registry。上游样式文件不变；以后从 Valar 安装的 Button 都会使用以下修改：
+						</p>
+						<ul>
+							{#each changed as key (key)}<li>
+									{LABELS[key]}：{baseline[key]} → {draft[key]}
+								</li>{/each}
+						</ul>
+						<div class="actions">
+							<button class="action primary" onclick={writeBack} disabled={writing}
+								>{writing ? "写回中…" : "确认写回"}</button
+							>
+							<button class="action" onclick={() => (confirming = false)} disabled={writing}
+								>返回修改</button
+							>
+						</div>
+					</div>
+				{/if}
+			</div>
+			<div class="versions">
+				<p class="section-label">全局 token（只读）</p>
+				<p class="help">
+					这些值影响所有组件，在组件页不能修改，请到<a href="/themes">全局主题页</a>统一配置。
+				</p>
+				<dl class="tokens">
+					{#each tokens as token (token.name)}
+						<div>
+							<dt>{token.label}</dt>
+							<dd><code>{token.name}</code> {token.value}</dd>
+						</div>
+					{/each}
+				</dl>
+			</div>
 			<div class="versions">
 				<p class="section-label">保存为新样式版本</p>
 				<label
@@ -295,7 +385,7 @@
 						aria-label="Button 版本名称"
 						bind:value={name}
 						maxlength="60"
-						placeholder="例如：更宽松的描边按钮"
+						placeholder="例如：更宽松的按钮"
 					/></label
 				>
 				<div class="actions">
@@ -305,40 +395,23 @@
 						class="action"
 						onclick={() => {
 							draft = { ...active?.overrides };
+							confirming = false;
 							panelKey++;
 						}}>撤回未保存修改</button
 					>
 				</div>
 				<p class="help">
-					只保存在当前浏览器，最多 50
-					个版本；同名不覆盖。导出文件可在其他浏览器导入，不会提交或改写组件源码。 DialKit
+					版本只保存在当前浏览器，最多 50 个；同名不覆盖。导出文件可在其他浏览器导入。DialKit
 					的原生缩略图用于本次微调；跨刷新保留请在此命名保存或导出。
 				</p>
 				<details open>
 					<summary>已修改参数（{changed.length}）</summary>
 					{#if !changed.length}<p class="help">尚未修改，当前效果与所选样式一致。</p>{/if}
 					<dl>
-						{#each changed as parameter (parameter.property)}
+						{#each changed as key (key)}
 							<div>
-								<dt>{parameter.label}</dt>
-								<dd>{baseline[parameter.property]} → {draft[parameter.property]}</dd>
-							</div>
-						{/each}
-					</dl>
-				</details>
-				<details>
-					<summary>参数来源与作用范围</summary>
-					<p class="help">
-						读取当前真实 Button
-						的计算样式。颜色只调整默认态；悬停、按下、聚焦颜色及焦点环保留。圆角和边框宽度调整四边；动效遵循系统减少动态效果设置。
-					</p>
-					<dl>
-						{#each BUTTON_PARAMETERS as parameter (parameter.property)}
-							<div>
-								<dt>{parameter.label}</dt>
-								<dd>
-									<code>{"output" in parameter ? parameter.output : parameter.property}</code>
-								</dd>
+								<dt>{LABELS[key]}</dt>
+								<dd>{baseline[key]} → {draft[key]}</dd>
 							</div>
 						{/each}
 					</dl>
@@ -356,7 +429,7 @@
 				/></label
 			>
 			{#if active}<button class="action" onclick={download}>导出当前版本</button>{/if}
-			<span>本地保存 · 不修改组件源码</span>
+			<span>版本保存在本地浏览器；写回组件库需在微调面板中确认</span>
 		</div>
 	{/if}
 </section>
@@ -499,6 +572,8 @@
 	}
 	.sample {
 		display: flex;
+		flex-direction: column;
+		gap: 20px;
 		align-items: center;
 		justify-content: center;
 		min-height: 140px;
@@ -511,6 +586,38 @@
 		pointer-events: none;
 		top: 0;
 		left: 0;
+	}
+	.size-row {
+		display: grid;
+		grid-template-columns: repeat(2, auto);
+		justify-content: center;
+		align-items: center;
+		gap: 12px 20px;
+	}
+	.size-pair {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+	}
+	.confirm {
+		border: 1px solid var(--border);
+		border-radius: 8px;
+		padding: 12px;
+		font-size: 12px;
+		line-height: 1.7;
+	}
+	.confirm ul {
+		margin: 8px 0;
+		padding-left: 18px;
+		list-style: disc;
+	}
+	.confirm code,
+	.tokens code {
+		overflow-wrap: anywhere;
+	}
+	.help a {
+		text-decoration: underline;
+		color: var(--foreground);
 	}
 	.section-label {
 		margin: 0 0 14px;

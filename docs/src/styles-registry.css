@@ -6,9 +6,13 @@
 @reference "./app.css";
 
 @import "./lib/registry/styles/style-lyra.css" layer(base);
+@import "./lib/registry/styles/valar/style-lyra.css" layer(base);
 @import "./lib/registry/styles/style-maia.css" layer(base);
+@import "./lib/registry/styles/valar/style-maia.css" layer(base);
 @import "./lib/registry/styles/style-mira.css" layer(base);
+@import "./lib/registry/styles/valar/style-mira.css" layer(base);
 @import "./lib/registry/styles/style-sera.css" layer(base);
+@import "./lib/registry/styles/valar/style-sera.css" layer(base);
 
 @import "@fontsource-variable/inter/index.css";
 @import "@fontsource-variable/noto-sans/index.css";

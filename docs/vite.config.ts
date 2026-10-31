@@ -1,13 +1,23 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFile } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
 import { enhancedImages } from "@sveltejs/enhanced-img";
 import { sveltekit } from "@sveltejs/kit/vite";
-import { injectStyleClasses, parseStyleCss } from "@valar/svelte-parity/inject-style-classes";
+import {
+	injectStyleClasses,
+	mergeStyleMaps,
+	parseStyleCss,
+} from "@valar/svelte-parity/inject-style-classes";
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig, type Plugin } from "vite";
 import packageJson from "./package.json" with { type: "json" };
+import {
+	applyStyleOverrides,
+	styleOverridePath,
+	styleOverridePayloadSchema,
+} from "./src/lib/features/workbench/style-overrides.js";
 
 // NOTE: the registry (`static/registry`, `src/__registry__`) is intentionally NOT built here.
 // Building it during config load costs ~15s on every server (re)start, and importing the
@@ -81,10 +91,14 @@ function flattenedRegistry(): Plugin {
 	};
 
 	const styleMaps = new Map<string, Record<string, string>>();
+	let writing = false;
 	const getStyleMap = (style: string) => {
 		let map = styleMaps.get(style);
 		if (!map) {
-			map = parseStyleCss(fs.readFileSync(path.join(stylesDir, `style-${style}.css`), "utf8"));
+			map = mergeStyleMaps(
+				parseStyleCss(fs.readFileSync(path.join(stylesDir, `style-${style}.css`), "utf8")),
+				parseStyleCss(fs.readFileSync(path.join(stylesDir, "valar", `style-${style}.css`), "utf8"))
+			);
 			styleMaps.set(style, map);
 		}
 		return map;
@@ -140,10 +154,88 @@ function flattenedRegistry(): Plugin {
 			if (!within(file, [rawUiDir]) || !TEXT_EXTENSIONS.has(path.extname(file))) return content;
 			return injectStyleClasses(content, getStyleMap(params.get(QUERY) ?? DEFAULT_STYLE));
 		},
+		/**
+		 * Dev-only: Button docs "写回组件库" writes Valar's style override file and rebuilds the
+		 * registry so docs, `static/registry` and CLI installs all use the new classes. Never
+		 * present in `vite build` / `vite preview`, so the deployed site cannot write files.
+		 */
+		configureServer(server) {
+			server.middlewares.use("/__valar/style-overrides", (req, res) => {
+				const reply = (status: number, body: object) => {
+					res.statusCode = status;
+					res.setHeader("content-type", "application/json");
+					res.end(JSON.stringify(body));
+				};
+				if (req.method !== "POST") return reply(405, { error: "仅支持 POST" });
+				// JSON content-type forces a CORS preflight, which other origins cannot pass.
+				if (!req.headers["content-type"]?.startsWith("application/json"))
+					return reply(415, { error: "需要 JSON" });
+				if (req.headers["sec-fetch-site"] && req.headers["sec-fetch-site"] !== "same-origin")
+					return reply(403, { error: "仅允许本站页面写回" });
+				if (writing) return reply(409, { error: "上一次写回尚未完成" });
+				let raw = "";
+				req.on("data", (chunk) => {
+					raw += chunk;
+					if (raw.length > 10_000) req.destroy();
+				});
+				req.on("end", async () => {
+					const parsed = styleOverridePayloadSchema.safeParse(
+						(() => {
+							try {
+								return JSON.parse(raw);
+							} catch {
+								return undefined;
+							}
+						})()
+					);
+					if (!parsed.success) return reply(400, { error: "参数无效，未写入任何文件" });
+					const { style } = parsed.data;
+					if (!fs.existsSync(path.join(stylesDir, `style-${style}.css`)))
+						return reply(400, { error: `不存在样式 ${style}` });
+					const target = path.join(__dirname, styleOverridePath(style));
+					writing = true;
+					try {
+						const previous = fs.readFileSync(target, "utf8");
+						const next = applyStyleOverrides(previous, parsed.data);
+						fs.writeFileSync(target, next);
+						try {
+							await new Promise<void>((resolve, reject) =>
+								execFile(
+									"pnpm",
+									["exec", "tsx", "scripts/build-registry.ts", "build-registry"],
+									{ cwd: __dirname, timeout: 120_000 },
+									(error) => (error ? reject(error) : resolve())
+								)
+							);
+						} catch (error) {
+							// Keep source and registry consistent: undo the write if the rebuild fails.
+							fs.writeFileSync(target, previous);
+							throw error;
+						}
+						styleMaps.clear();
+						for (const mod of server.environments.client.moduleGraph.idToModuleMap.values())
+							if (mod.id && isFlattened(mod.id))
+								server.environments.client.moduleGraph.invalidateModule(mod);
+						for (const mod of server.environments.ssr.moduleGraph.idToModuleMap.values())
+							if (mod.id && isFlattened(mod.id))
+								server.environments.ssr.moduleGraph.invalidateModule(mod);
+						reply(200, { file: `docs/${styleOverridePath(style)}`, content: next });
+					} catch (error) {
+						reply(500, {
+							error: `写回失败，文件已恢复：${error instanceof Error ? error.message : error}`,
+						});
+					} finally {
+						writing = false;
+					}
+				});
+			});
+		},
 		hotUpdate({ file }) {
 			const normalized = path.normalize(file);
 			if (!normalized.startsWith(stylesDir + path.sep) || !normalized.endsWith(".css")) return;
 			styleMaps.clear();
+			// During a write-back the page reloads itself once the registry rebuild is done.
+			if (writing) return [];
 			for (const mod of this.environment.moduleGraph.idToModuleMap.values()) {
 				if (mod.id && isFlattened(mod.id)) this.environment.moduleGraph.invalidateModule(mod);
 			}

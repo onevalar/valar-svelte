@@ -1,3 +1,4 @@
+import { twMerge } from "cn";
 import { stripParityIgnoreComments } from "./parity-ignore.ts";
 
 const SKIP_CN_CLASSES = new Set([
@@ -60,6 +61,22 @@ export function parseStyleCss(css: string): Record<string, string> {
 	const styles: Record<string, string> = {};
 	walkStyleRules(css.replace(/\/\*[\s\S]*?\*\//g, ""), styles);
 	return styles;
+}
+
+/**
+ * Layer Valar's own style customizations (`styles/valar/style-*.css`) over the verbatim
+ * upstream map. Conflicting utilities are resolved by tailwind-merge so the override wins
+ * (`h-8` + `h-11` → `h-11`) while unrelated utilities and variants stay in place.
+ */
+export function mergeStyleMaps(
+	base: Record<string, string>,
+	override: Record<string, string>
+): Record<string, string> {
+	const merged = { ...base };
+	for (const [className, classes] of Object.entries(override)) {
+		merged[className] = base[className] ? twMerge(base[className], classes) : classes;
+	}
+	return merged;
 }
 
 function walkStyleRules(css: string, styles: Record<string, string>) {

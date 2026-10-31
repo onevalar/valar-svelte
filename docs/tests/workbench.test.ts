@@ -3,8 +3,14 @@ import { resolve } from "node:path";
 import postcss from "postcss";
 import ts from "typescript";
 import { registryItemSchema, type CssSchema, type RegistryItem } from "@valar/svelte-cli/schema";
+import {
+	injectStyleClasses,
+	mergeStyleMaps,
+	parseStyleCss,
+} from "@valar/svelte-parity/inject-style-classes";
 import { compile } from "svelte/compiler";
 import { describe, expect, it } from "vitest";
+import { buttonOverrideClasses } from "../src/lib/features/workbench/button-tuning.js";
 import { COMPONENT_INVENTORY } from "../src/lib/features/workbench/coverage.js";
 import { buildWorkbenchRegistry } from "../src/lib/features/workbench/export.js";
 import {
@@ -15,6 +21,10 @@ import {
 	parseWorkbenchPreset,
 	presetSchema,
 } from "../src/lib/features/workbench/model.js";
+import {
+	applyStyleOverrides,
+	styleOverridePayloadSchema,
+} from "../src/lib/features/workbench/style-overrides.js";
 import { createWorkbenchCss } from "../src/lib/features/workbench/styles.js";
 
 function originals(): RegistryItem[] {
@@ -456,5 +466,62 @@ const wrongDefault: WorkbenchAccordionProps = { value: ${type === "single" ? '["
 		const conflict = originals();
 		conflict[0].files!.push({ ...conflict[0].files![0], content: "<button />" });
 		expect(() => buildWorkbenchRegistry(defaultPreset, conflict)).toThrow("冲突");
+	});
+});
+
+describe("Button write-back into Valar style overrides", () => {
+	const upstream = readFileSync(resolve("src/lib/registry/styles/style-nova.css"), "utf8");
+	const buttonSource = readFileSync(resolve("src/lib/registry/ui/button/button.svelte"), "utf8");
+	const sizeClasses = (css: string, size: string) =>
+		injectStyleClasses(buttonSource, mergeStyleMaps(parseStyleCss(upstream), parseStyleCss(css)))
+			.split("size: {")[1]!
+			.match(new RegExp(`\\n\\t+"?${size}"?: "([^"]*)"`))![1]!
+			.split(" ");
+
+	it("replaces conflicting utilities in the installed source and keeps earlier write-backs", () => {
+		const empty = readFileSync(resolve("src/lib/registry/styles/valar/style-nova.css"), "utf8");
+		const first = applyStyleOverrides(
+			empty,
+			styleOverridePayloadSchema.parse({
+				style: "nova",
+				classes: buttonOverrideClasses({ "default.height": 44, "default.paddingX": 16 }),
+			})
+		);
+		// A later write for another size must not drop the first one.
+		const second = applyStyleOverrides(
+			first,
+			styleOverridePayloadSchema.parse({
+				style: "nova",
+				classes: buttonOverrideClasses({ "lg.height": 50, radius: "xl" }),
+			})
+		);
+		const defaults = sizeClasses(second, "default");
+		expect(defaults).toEqual(expect.arrayContaining(["h-11", "px-4", "rounded-xl", "gap-1.5"]));
+		expect(defaults).not.toContain("h-8");
+		expect(defaults).not.toContain("px-2.5");
+		// Icon-side padding from upstream stays.
+		expect(defaults).toContain("has-data-[icon=inline-start]:pl-2");
+		expect(sizeClasses(second, "icon")).toEqual(expect.arrayContaining(["size-11"]));
+		expect(sizeClasses(second, "lg")).toContain("h-12.5");
+		expect(sizeClasses(second, "lg")).not.toContain("h-9");
+		// Untouched sizes keep upstream values.
+		expect(sizeClasses(second, "sm")).toContain("h-7");
+		// An empty override file leaves the installed source identical to upstream.
+		expect(injectStyleClasses(buttonSource, mergeStyleMaps(parseStyleCss(upstream), {}))).toBe(
+			injectStyleClasses(buttonSource, parseStyleCss(upstream))
+		);
+	});
+
+	it("rejects anything other than Button size and radius-level utilities", () => {
+		for (const classes of [
+			{ "cn-button-size-default": "h-11 bg-red-500" },
+			{ "cn-button-size-default": "h-[44px]" },
+			{ "cn-card": "h-11" },
+			{ "cn-button": "rounded-xl } .x { color: red" },
+		])
+			expect(styleOverridePayloadSchema.safeParse({ style: "nova", classes }).success).toBe(false);
+		expect(styleOverridePayloadSchema.safeParse({ style: "../x", classes: {} }).success).toBe(
+			false
+		);
 	});
 });

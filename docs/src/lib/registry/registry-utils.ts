@@ -1,6 +1,10 @@
-import { injectStyleClasses, parseStyleCss } from "@valar/svelte-parity/inject-style-classes";
 import { transformIcons } from "@valar/svelte-cli/transformers/icons";
 import { transformMenu } from "@valar/svelte-cli/transformers/menu";
+import {
+	injectStyleClasses,
+	mergeStyleMaps,
+	parseStyleCss,
+} from "@valar/svelte-parity/inject-style-classes";
 import { type IconLibraryName } from "./config.js";
 import type { MenuColorValue, StyleName } from "./config.js";
 import type { RegistryItemFile } from "@valar/svelte-cli/schema";
@@ -99,7 +103,8 @@ export async function transformDesignSystem(
 	let styles: Record<string, string> | undefined = styleCache.get(designSystem.style);
 	if (!styles) {
 		const styleCss = await import(`./styles/style-${designSystem.style}.css?raw`);
-		styles = parseStyleCss(styleCss.default);
+		const valarCss = await import(`./styles/valar/style-${designSystem.style}.css?raw`);
+		styles = mergeStyleMaps(parseStyleCss(styleCss.default), parseStyleCss(valarCss.default));
 		styleCache.set(designSystem.style, styles);
 	}
 

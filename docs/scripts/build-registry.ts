@@ -2,8 +2,6 @@ import fs from "node:fs";
 import path from "node:path";
 import { exec, spawn } from "node:child_process";
 import { promisify } from "node:util";
-import { injectStyleClasses, parseStyleCss } from "@valar/svelte-parity/inject-style-classes";
-import { rimraf } from "rimraf";
 import { PRESET_STYLES, type PresetConfig } from "@valar/svelte-cli/preset";
 import {
 	componentsJsonSchema,
@@ -12,6 +10,12 @@ import {
 	type Registry,
 	type RegistryItemType,
 } from "@valar/svelte-cli/schema";
+import {
+	injectStyleClasses,
+	mergeStyleMaps,
+	parseStyleCss,
+} from "@valar/svelte-parity/inject-style-classes";
+import { rimraf } from "rimraf";
 import { toJSONSchema } from "zod";
 import { buildRegistry } from "./registry.js";
 import { getColorsData } from "../src/lib/components/colors/colors.js";
@@ -222,7 +226,16 @@ async function rewriteRegistryForStyle(
 ): Promise<Awaited<ReturnType<typeof buildRegistry>>> {
 	const styleCssPath = path.resolve(INTERNAL_REGISTRY_PATH, "styles", `style-${style}.css`);
 	const styleCss = fs.readFileSync(styleCssPath, "utf8");
-	const styleMap = parseStyleCss(styleCss);
+	const valarCssPath = path.resolve(
+		INTERNAL_REGISTRY_PATH,
+		"styles",
+		"valar",
+		`style-${style}.css`
+	);
+	const styleMap = mergeStyleMaps(
+		parseStyleCss(styleCss),
+		parseStyleCss(fs.readFileSync(valarCssPath, "utf8"))
+	);
 
 	const styleItems = await Promise.all(
 		registry.map(async (item) => {
