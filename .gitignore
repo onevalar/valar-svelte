@@ -116,6 +116,10 @@ repro/src/lib/components/ui
 
 .claude
 __screenshots__/
+
+# Generated portal links and local artifacts from the current Amp orb and thread
+.amp/portals/
+.amp/in/
 # Archived starter build output
 _archive/initial-starter/.svelte-kit/
 # Preserve files already tracked by upstream despite its broad repro ignore rule

@@ -1,0 +1,96 @@
+#!/usr/bin/env bash
+# Prepare a fresh Amp orb for this repository: pinned Node.js and pnpm, workspace
+# dependencies, and the generated docs content that pnpm dev/check/build assume.
+# Safe to run repeatedly; Amp reruns it whenever a restored snapshot goes stale.
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$repo_root"
+
+started=$SECONDS
+step() { printf '\n[setup +%ss] %s\n' "$((SECONDS - started))" "$*"; }
+
+# 1. System packages the rest of the script needs.
+missing=()
+for package in ca-certificates curl git xz-utils; do
+	dpkg -s "$package" >/dev/null 2>&1 || missing+=("$package")
+done
+if [ "${#missing[@]}" -gt 0 ]; then
+	step "installing system packages: ${missing[*]}"
+	sudo apt-get update -qq
+	sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq --no-install-recommends "${missing[@]}"
+fi
+
+# 2. Node.js pinned by .nvmrc, through nvm so the README's `nvm use` works in the orb.
+node_version="$(tr -d '[:space:]' < .nvmrc)"
+export NVM_DIR="${NVM_DIR:-$HOME/.nvm}"
+if [ ! -s "$NVM_DIR/nvm.sh" ]; then
+	step "installing nvm"
+	git clone --quiet --depth 1 --branch v0.40.8 https://github.com/nvm-sh/nvm.git "$NVM_DIR"
+fi
+node_bin="$NVM_DIR/versions/node/v$node_version/bin"
+if [ ! -x "$node_bin/node" ]; then
+	step "installing Node.js $node_version"
+	# The installer cannot update the environment of this running script.
+	# shellcheck disable=SC1091
+	. "$NVM_DIR/nvm.sh"
+	nvm install "$node_version" --no-progress
+fi
+export PATH="$node_bin:$PATH"
+
+# 3. pnpm pinned by package.json#packageManager. .npmrc sets engine-strict, so the
+#    install below would refuse to run under the orb image's newer Node.js.
+pnpm_version="$(node -p "require('./package.json').packageManager.replace(/^pnpm@/, '')")"
+if ! command -v pnpm >/dev/null 2>&1 || [ "$(pnpm --version)" != "$pnpm_version" ]; then
+	step "installing pnpm $pnpm_version"
+	npm install --global "pnpm@$pnpm_version" --silent --no-fund --no-audit
+fi
+
+# 4. Give non-interactive login shells in this checkout the pinned Node.js. Amp and
+#    supervised services start from those shells, not from this script's environment.
+profile="$HOME/.bash_profile"
+toolchain_marker="# valar-svelte orb toolchain (Node $node_version)"
+touch "$profile"
+if ! grep -Fq "$toolchain_marker" "$profile"; then
+	step "adding Node $node_version to login shells under $repo_root"
+	cat >>"$profile" <<PROFILE
+
+$toolchain_marker
+case "\$PWD" in
+$repo_root | $repo_root/*)
+	case ":\$PATH:" in
+	*":$node_bin:"*) ;;
+	*) export PATH="$node_bin:\$PATH" ;;
+	esac
+	;;
+esac
+PROFILE
+fi
+
+# 5. Workspace dependencies. NPM_CONFIG_YES keeps the `preinstall` hook's npx call
+#    from stopping at an install prompt in a non-interactive shell.
+step "installing workspace dependencies with pnpm $pnpm_version"
+NPM_CONFIG_YES=true pnpm install --frozen-lockfile --reporter append-only
+
+# 6. Build what pnpm dev, pnpm check, and pnpm build expect to exist already: the
+#    workspace packages (docs depends on the CLI build) and the generated docs
+#    registry/content. Both are idempotent and take a few seconds when warm.
+step "building workspace packages"
+pnpm build:cli
+step "generating docs registry, content, and SvelteKit types"
+pnpm -r --if-present sync
+
+# 7. Orb-specific notes for agents working in this checkout.
+amp_agents="$HOME/.config/amp/AGENTS.md"
+notes_marker="# valar-svelte orb notes"
+if ! grep -Fq "$notes_marker" "$amp_agents" 2>/dev/null; then
+	mkdir -p "$(dirname "$amp_agents")"
+	cat >>"$amp_agents" <<NOTES
+
+$notes_marker
+- Node.js $node_version comes from nvm (\`~/.nvm\`) and login shells under $repo_root already use it. Run \`nvm use\` only in shells started elsewhere.
+- Dependencies are installed and generated docs content is built. Start the docs site with \`amp orb services ensure\`; it serves http://127.0.0.1:5186, the registry URL components.json expects.
+NOTES
+fi
+
+step "ready: node $(node --version), pnpm $(pnpm --version)"

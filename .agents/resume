@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+# Quick, idempotent check after orb activation and every wake. Amp waits at most
+# 10 seconds for this hook, so it only inspects state and never installs anything.
+set -euo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+node_version="$(tr -d '[:space:]' < "$repo_root/.nvmrc")"
+node_bin="$HOME/.nvm/versions/node/v$node_version/bin"
+
+problem=""
+if [ ! -x "$node_bin/node" ]; then
+	problem="Node.js $node_version is missing from $HOME/.nvm"
+elif [ ! -d "$repo_root/node_modules" ]; then
+	problem="node_modules is missing"
+elif [ ! -d "$repo_root/docs/.svelte-kit" ] || [ ! -f "$repo_root/docs/src/__registry__/index.js" ]; then
+	problem="generated docs content is missing"
+elif ! grep -Fq "# valar-svelte orb toolchain" "$HOME/.bash_profile" 2>/dev/null; then
+	problem="the login shell does not add Node.js $node_version"
+fi
+
+if [ -n "$problem" ]; then
+	printf '[resume] %s; run .agents/setup to repair it\n' "$problem" >&2
+fi

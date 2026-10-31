@@ -1,0 +1,12 @@
+# Long-lived development services for Amp orbs. Start them with `amp orb services ensure`.
+services:
+  docs:
+    command: 'exec pnpm --filter docs exec vite dev --host 0.0.0.0 --port "$PORT" --strictPort'
+    # The documented docs origin, and the default registry URL in components.json.
+    port: 5186
+    portal:
+      title: Valar Svelte docs
+      description: Component docs and examples. Component source edits hot-reload; restart this service after changing docs content or registry configuration.
+    portals:
+      - url: /docs/components
+        title: Components
