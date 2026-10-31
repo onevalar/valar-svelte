@@ -1,7 +1,7 @@
 <script lang="ts">
 	import CardsDemo from "$lib/components/cards/cards-demo.svelte";
 	import Metadata from "$lib/components/metadata.svelte";
-	import ThemeCustomizer from "$lib/components/theme-customizer.svelte";
+	import TokenEditor from "$lib/features/workbench/token-editor.svelte";
 </script>
 
 <Metadata title="设计 token" description="Valar 的全局颜色、圆角与字号 token。" />
@@ -11,18 +11,16 @@
 		<h1 class="text-2xl font-semibold tracking-tight">设计 token</h1>
 		<p class="mt-2 max-w-2xl text-sm text-muted-foreground">
 			颜色、圆角和字号是所有组件共用的全局
-			token。目前可以切换预设主题、预览效果并复制代码；统一编辑并写回组件库的配置功能正在规划中。
+			token，只在这个页面统一调整。下方（宽屏时在右侧）的组件会实时预览草稿；
+			写回后，用对应基础主题初始化的项目都会使用新值。组件页只能查看这些 token。
 		</p>
 	</div>
 </div>
 
-<div id="themes" class="container-wrapper scroll-mt-20">
-	<div class="container flex items-center justify-between gap-8 px-6 py-4 md:px-8">
-		<ThemeCustomizer />
-	</div>
-</div>
-<div class="container-wrapper flex flex-1 flex-col section-soft pb-6">
-	<div class="container flex flex-1 flex-col theme-container">
-		<CardsDemo />
+<div id="themes" class="container-wrapper flex flex-1 scroll-mt-20 flex-col pb-6">
+	<div class="container px-6 py-6 md:px-8">
+		<TokenEditor>
+			<CardsDemo />
+		</TokenEditor>
 	</div>
 </div>

@@ -1,6 +1,12 @@
 import { type RegistryItem } from "@valar/svelte-cli/schema";
+import valarTokens from "./styles/valar/tokens.json" with { type: "json" };
+import {
+	applyTokenOverride,
+	tokenOverrideFileSchema,
+} from "../features/workbench/token-overrides.js";
 
-export const BASE_THEMES = [
+/** Upstream base themes, before Valar's token overrides. `/themes` diffs against these. */
+export const UPSTREAM_BASE_THEMES = [
 	{
 		name: "neutral",
 		title: "Neutral",
@@ -520,6 +526,15 @@ export const BASE_THEMES = [
 		},
 	},
 ] as const satisfies RegistryItem[];
+
+/**
+ * Valar token overrides (`styles/valar/tokens.json`, written by the `/themes` page) on top of the
+ * upstream values. `registry/colors/<base>.json`, which `init` installs, is built from these.
+ */
+const VALAR_TOKENS = tokenOverrideFileSchema.parse(valarTokens);
+export const BASE_THEMES = UPSTREAM_BASE_THEMES.map((theme) =>
+	applyTokenOverride(theme, VALAR_TOKENS[theme.name])
+) as unknown as typeof UPSTREAM_BASE_THEMES;
 
 export const THEMES = [
 	...BASE_THEMES,

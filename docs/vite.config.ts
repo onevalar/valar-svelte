@@ -18,6 +18,12 @@ import {
 	styleOverridePath,
 	styleOverridePayloadSchema,
 } from "./src/lib/features/workbench/style-overrides.js";
+import {
+	serializeTokenOverrides,
+	TOKEN_OVERRIDE_PATH,
+	tokenOverrideFileSchema,
+	tokenOverridePayloadSchema,
+} from "./src/lib/features/workbench/token-overrides.js";
 
 // NOTE: the registry (`static/registry`, `src/__registry__`) is intentionally NOT built here.
 // Building it during config load costs ~15s on every server (re)start, and importing the
@@ -155,80 +161,107 @@ function flattenedRegistry(): Plugin {
 			return injectStyleClasses(content, getStyleMap(params.get(QUERY) ?? DEFAULT_STYLE));
 		},
 		/**
-		 * Dev-only: Button docs "写回组件库" writes Valar's style override file and rebuilds the
+		 * Dev-only: Button docs and `/themes` "写回组件库" write Valar's override files and rebuild the
 		 * registry so docs, `static/registry` and CLI installs all use the new classes. Never
 		 * present in `vite build` / `vite preview`, so the deployed site cannot write files.
 		 */
 		configureServer(server) {
-			server.middlewares.use("/__valar/style-overrides", (req, res) => {
-				const reply = (status: number, body: object) => {
-					res.statusCode = status;
-					res.setHeader("content-type", "application/json");
-					res.end(JSON.stringify(body));
-				};
-				if (req.method !== "POST") return reply(405, { error: "仅支持 POST" });
-				// JSON content-type forces a CORS preflight, which other origins cannot pass.
-				if (!req.headers["content-type"]?.startsWith("application/json"))
-					return reply(415, { error: "需要 JSON" });
-				if (req.headers["sec-fetch-site"] && req.headers["sec-fetch-site"] !== "same-origin")
-					return reply(403, { error: "仅允许本站页面写回" });
-				if (writing) return reply(409, { error: "上一次写回尚未完成" });
-				let raw = "";
-				req.on("data", (chunk) => {
-					raw += chunk;
-					if (raw.length > 10_000) req.destroy();
-				});
-				req.on("end", async () => {
-					const parsed = styleOverridePayloadSchema.safeParse(
-						(() => {
-							try {
-								return JSON.parse(raw);
-							} catch {
-								return undefined;
-							}
-						})()
-					);
-					if (!parsed.success) return reply(400, { error: "参数无效，未写入任何文件" });
-					const { style } = parsed.data;
-					if (!fs.existsSync(path.join(stylesDir, `style-${style}.css`)))
-						return reply(400, { error: `不存在样式 ${style}` });
-					const target = path.join(__dirname, styleOverridePath(style));
-					writing = true;
-					try {
-						const previous = fs.readFileSync(target, "utf8");
-						const next = applyStyleOverrides(previous, parsed.data);
-						fs.writeFileSync(target, next);
+			const rebuildRegistry = () =>
+				new Promise<void>((resolve, reject) =>
+					execFile(
+						"pnpm",
+						["exec", "tsx", "scripts/build-registry.ts", "build-registry"],
+						{ cwd: __dirname, timeout: 120_000 },
+						(error) => (error ? reject(error) : resolve())
+					)
+				);
+			/**
+			 * Shared guard for the dev-only write endpoints: same-origin JSON POST, one write at a
+			 * time, schema-validated body. `write` returns the file it changed and its old content;
+			 * if the registry rebuild fails the file is restored so source and registry stay consistent.
+			 */
+			const writeEndpoint = <T>(
+				route: string,
+				schema: { safeParse(value: unknown): { success: true; data: T } | { success: false } },
+				write: (data: T) => { target: string; previous: string; next: string } | string
+			) =>
+				server.middlewares.use(route, (req, res) => {
+					const reply = (status: number, body: object) => {
+						res.statusCode = status;
+						res.setHeader("content-type", "application/json");
+						res.end(JSON.stringify(body));
+					};
+					if (req.method !== "POST") return reply(405, { error: "仅支持 POST" });
+					// JSON content-type forces a CORS preflight, which other origins cannot pass.
+					if (!req.headers["content-type"]?.startsWith("application/json"))
+						return reply(415, { error: "需要 JSON" });
+					if (req.headers["sec-fetch-site"] && req.headers["sec-fetch-site"] !== "same-origin")
+						return reply(403, { error: "仅允许本站页面写回" });
+					if (writing) return reply(409, { error: "上一次写回尚未完成" });
+					let raw = "";
+					req.on("data", (chunk) => {
+						raw += chunk;
+						if (raw.length > 20_000) req.destroy();
+					});
+					req.on("end", async () => {
+						const parsed = schema.safeParse(
+							(() => {
+								try {
+									return JSON.parse(raw);
+								} catch {
+									return undefined;
+								}
+							})()
+						);
+						if (!parsed.success) return reply(400, { error: "参数无效，未写入任何文件" });
+						writing = true;
 						try {
-							await new Promise<void>((resolve, reject) =>
-								execFile(
-									"pnpm",
-									["exec", "tsx", "scripts/build-registry.ts", "build-registry"],
-									{ cwd: __dirname, timeout: 120_000 },
-									(error) => (error ? reject(error) : resolve())
-								)
-							);
+							const result = write(parsed.data);
+							if (typeof result === "string") return reply(400, { error: result });
+							fs.writeFileSync(result.target, result.next);
+							try {
+								await rebuildRegistry();
+							} catch (error) {
+								fs.writeFileSync(result.target, result.previous);
+								throw error;
+							}
+							styleMaps.clear();
+							for (const env of [server.environments.client, server.environments.ssr])
+								for (const mod of env.moduleGraph.idToModuleMap.values())
+									if (mod.id && isFlattened(mod.id)) env.moduleGraph.invalidateModule(mod);
+							reply(200, {
+								file: `docs/${path.relative(__dirname, result.target)}`,
+								content: result.next,
+							});
 						} catch (error) {
-							// Keep source and registry consistent: undo the write if the rebuild fails.
-							fs.writeFileSync(target, previous);
-							throw error;
+							reply(500, {
+								error: `写回失败，文件已恢复：${error instanceof Error ? error.message : error}`,
+							});
+						} finally {
+							writing = false;
 						}
-						styleMaps.clear();
-						for (const mod of server.environments.client.moduleGraph.idToModuleMap.values())
-							if (mod.id && isFlattened(mod.id))
-								server.environments.client.moduleGraph.invalidateModule(mod);
-						for (const mod of server.environments.ssr.moduleGraph.idToModuleMap.values())
-							if (mod.id && isFlattened(mod.id))
-								server.environments.ssr.moduleGraph.invalidateModule(mod);
-						reply(200, { file: `docs/${styleOverridePath(style)}`, content: next });
-					} catch (error) {
-						reply(500, {
-							error: `写回失败，文件已恢复：${error instanceof Error ? error.message : error}`,
-						});
-					} finally {
-						writing = false;
-					}
+					});
 				});
+
+			writeEndpoint("/__valar/style-overrides", styleOverridePayloadSchema, (data) => {
+				if (!fs.existsSync(path.join(stylesDir, `style-${data.style}.css`)))
+					return `不存在样式 ${data.style}`;
+				const target = path.join(__dirname, styleOverridePath(data.style));
+				const previous = fs.readFileSync(target, "utf8");
+				return { target, previous, next: applyStyleOverrides(previous, data) };
 			});
+
+			// `/themes` "写回组件库": replaces one base theme's entry in `styles/valar/tokens.json`.
+			writeEndpoint(
+				"/__valar/token-overrides",
+				tokenOverridePayloadSchema,
+				({ base, override }) => {
+					const target = path.join(__dirname, TOKEN_OVERRIDE_PATH);
+					const previous = fs.readFileSync(target, "utf8");
+					const file = tokenOverrideFileSchema.parse(JSON.parse(previous));
+					return { target, previous, next: serializeTokenOverrides({ ...file, [base]: override }) };
+				}
+			);
 		},
 		hotUpdate({ file }) {
 			const normalized = path.normalize(file);

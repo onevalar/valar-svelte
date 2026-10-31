@@ -211,7 +211,10 @@ export function buildRegistryTheme(config: DesignSystemConfig) {
 		...(baseColor.cssVars?.dark as Record<string, string>),
 		...(theme.cssVars?.dark as Record<string, string>),
 	};
-	const themeVars: Record<string, string> = {};
+	// Valar's type-scale overrides (`styles/valar/tokens.json`) ride on the base color.
+	const themeVars: Record<string, string> = {
+		...((baseColor.cssVars as { theme?: Record<string, string> })?.theme ?? {}),
+	};
 
 	// Apply chart color override.
 	const chartTheme = getTheme(config.chartColor);
