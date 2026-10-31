@@ -24,6 +24,14 @@
 | 5    | **全局 token 配置页**（扩展 `/themes`） | **下一步**                  | 见下                                              |
 | 6    | 动效、边框宽度 token（第二期）          | 待办                        | 先建立 token，再替换 8 套样式中的写死值，单独验收 |
 | 7    | 把全屏编辑器推广到第二个组件            | 待办                        | 先抽出 Button 编辑器中可复用的部分，不提前抽象    |
+| 8    | 组件自带设计规范（AI 友好）             | 完成（样板：Button、Field） | 见下                                              |
+
+第 8 步的做法（推广到其他组件时沿用）：
+
+- 规范写在组件目录的 `RULES.md`（`docs/src/lib/registry/ui/<组件>/RULES.md`），中文、每条可执行，能机器检查的注明规则编号；随 registry 一起安装。
+- CLI `add` 后把已装组件的规范与通用规则写进消费者项目 `AGENTS.md` 的托管区块（`packages/cli/src/utils/design-rules.ts`）；`valar-svelte lint` 检查可机械判断的规则，error 使命令失败。
+- 新增规则时同时更新：`RULES.md`、`design-rules.ts` 的检查、`packages/cli/test/utils/design-rules.test.ts`、安装文档“AI 与设计规范”。
+- 后续：为其余组件补 `RULES.md`（优先表单、弹层）；规范中的数值应与全局 token 和组件参数同源，做完第 5 步后改为从 token 生成，避免两套数字。
 
 第 5 步的约定：
 

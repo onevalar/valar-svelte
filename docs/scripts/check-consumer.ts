@@ -125,6 +125,20 @@ try {
 		path.join(app, "src/routes/+page.svelte"),
 		readFileSync(path.join(docs, "e2e/fixtures/consumer.svelte"))
 	);
+	// Design rules travel with the installed components and are enforced by `lint`.
+	const agents = readFileSync(path.join(app, "AGENTS.md"), "utf8");
+	assert.match(
+		agents,
+		/<!-- valar-svelte:rules:start -->[\s\S]*### Button 设计规范[\s\S]*<!-- valar-svelte:rules:end -->/
+	);
+	assert.ok(readFileSync(path.join(app, "src/lib/components/ui/button/RULES.md"), "utf8"));
+	run(cli, ["lint"]);
+	const violation = path.join(app, "src/routes/violation.svelte");
+	writeFileSync(violation, '<p class="text-blue-500">x</p>');
+	assert.throws(() =>
+		execFileSync(cli, ["lint"], { cwd: app, env, stdio: "pipe", timeout: 60_000 })
+	);
+	rmSync(violation);
 	copyFileSync(
 		path.join(docs, "e2e/fixtures/consumer-types.ts"),
 		path.join(app, "src/lib/consumer-types.ts")

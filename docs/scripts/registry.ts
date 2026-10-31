@@ -76,6 +76,8 @@ async function buildUIRegistry(
 			}
 
 			files.push({ path: relativePath, type: "registry:file" });
+			// Design rules (RULES.md) ship with the component but have no imports to analyze.
+			if (!/\.(svelte|ts|js)$/.test(dirent.name)) return;
 
 			const deps = await getFileDependencies(filepath, source);
 			if (!deps) return;

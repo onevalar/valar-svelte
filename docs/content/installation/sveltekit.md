@@ -41,6 +41,18 @@ pnpm exec valar-svelte add number-field tags-input stepper
 
 初始化时可以使用 `--no-deps-install` 先写入配置；该选项不是免除依赖安装。CLI 与内部运行时包尚未发布，不能从 npm 下载同名包，registry 初始化也不会覆盖已安装的本地 CLI。
 
+## AI 与设计规范
+
+组件自带设计规范：带规范的组件（目前是 Button 和 Field）会把 `RULES.md` 一起装进组件目录，每次 `add` 后 CLI 会把全部已装组件的规范，连同通用的颜色、圆角规则，写进项目根目录 `AGENTS.md` 中的托管区块。大多数 AI 编程工具开始工作时会自动读取 `AGENTS.md`，因此不需要另找设计文档。区块外的内容保持不变；区块内容会在下次安装时重写，请勿手改。
+
+写完界面后运行检查，发现 error 时命令失败，可直接加入 CI：
+
+```sh
+pnpm exec valar-svelte lint        # 默认检查 src，跳过已安装的组件源码
+```
+
+目前检查：非语义颜色（`valar/semantic-color`）、像素任意值（`valar/no-arbitrary-px`）、Button 用 class 改尺寸（`valar/button-size-via-prop`）、图标按钮缺少名称（`valar/icon-button-label`）、原生 `<button>`（`valar/use-button-component`）和缺少标签的输入框（`valar/input-label`）。规则基于文本匹配，可能有漏报或误报；警告不会使命令失败。
+
 ## Registry
 
 默认只连接本地 Valar registry。其他地址可通过 `REGISTRY_URL` 环境变量设置，或在目标项目 components.json 的 registry 字段配置。请勿填写上游 registry，否则会安装上游版本。

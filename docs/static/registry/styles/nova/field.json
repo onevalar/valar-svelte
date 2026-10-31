@@ -11,6 +11,11 @@
 	],
 	"files": [
 		{
+			"content": "# Field 设计规范\n\n- 每个输入控件都放在 `Field.Field` 中，并用 `Field.Label for={id}` 关联控件的 `id`；不要只靠 `placeholder` 说明用途（检查规则 `valar/input-label`）。\n- 补充说明用 `Field.Description`，校验错误用 `Field.Error`，不要用自定义颜色的文字代替。\n- 一组相关字段用 `Field.Set` + `Field.Legend` 包起来，多组之间用 `Field.Separator`。\n- 开关、复选框等横向排列时用 `<Field.Field orientation=\"horizontal\">`，不要手写 flex 布局。\n- 表单状态与校验交给 Form（Formsnap/Superforms）；Field 只负责布局和语义。\n",
+			"type": "registry:file",
+			"target": "field/RULES.md"
+		},
+		{
 			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"field-content\"\n\tclass={cn(\"gap-0.5 group/field-content flex flex-1 flex-col leading-snug\", className)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",
 			"type": "registry:file",
 			"target": "field/field-content.svelte"

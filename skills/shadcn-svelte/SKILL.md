@@ -41,6 +41,8 @@ Use the real aliases from `components.json` (often `$lib/components/ui/...`), no
 
 These rules are **always enforced**. Each links to a file with Incorrect/Correct code pairs.
 
+**Valar component rules come first.** Read the `<!-- valar-svelte:rules:start -->` block in the project's `AGENTS.md` (or each installed component's `RULES.md`) before writing UI, and run the CLI's `lint` command afterwards; fix every error it reports.
+
 ### Styling & Tailwind → [styling.md](./rules/styling.md)
 
 - **`class` for layout, not styling.** Never override component colors or typography.

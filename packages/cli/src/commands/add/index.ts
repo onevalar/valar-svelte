@@ -9,6 +9,7 @@ import * as cliConfig from "../../utils/config/index.js";
 import * as registry from "../../utils/registry/index.js";
 import { addRegistryItems } from "../../utils/add-registry-items.js";
 import { highlight } from "../../utils/colors.js";
+import { updateAgentsRules } from "../../utils/design-rules.js";
 import { ConfigError, error } from "../../utils/errors.js";
 import { getEnvProxy } from "../../utils/get-env-proxy.js";
 import { installDependencies } from "../../utils/install-deps.js";
@@ -127,6 +128,10 @@ async function runAdd(cwd: string, config: cliConfig.ResolvedConfig, options: Ad
 		overwrite: options.overwrite,
 		selectedItems: Array.from(selectedComponents),
 	});
+
+	// Keep AI agents in the project on the installed components' design rules.
+	const agents = await updateAgentsRules(config.resolvedPaths.ui, cwd);
+	p.log.info(`Design rules updated in ${color.gray(path.relative(cwd, agents))}`);
 
 	if (options.deps) {
 		await installDependencies({

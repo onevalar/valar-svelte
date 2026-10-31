@@ -327,6 +327,8 @@ describe("installable native component bundle", () => {
 		]);
 		expect(bundle.devDependencies?.some((d) => d.includes("dialkit"))).toBe(false);
 		expect(source(bundle, "button/button.svelte")).toBe(source(items[0], "button/button.svelte"));
+		// Design rules ship with the exported component too.
+		expect(source(bundle, "button/RULES.md")).toContain("Button 设计规范");
 		expect(JSON.stringify(items)).toBe(before);
 		const css = { ...bundle.css };
 		delete css[".existing-rule"];
