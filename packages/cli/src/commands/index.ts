@@ -4,3 +4,4 @@ export { init } from "./init/index.js";
 export { update } from "./update/index.js";
 export { registry } from "./registry/index.js";
 export { lint } from "./lint/index.js";
+export { mcp } from "./mcp/index.js";

@@ -15,20 +15,22 @@
 - 首页采用“全局 token／组件／调参”三块（方向 C）；主导航只保留组件、设计 token、文档。
 - DialKit 继续使用，直到 Valar 具备其全部控件（对照见文末）；缺什么补什么。
 
-| 顺序 | 任务                                | 状态                        | 要点                                                     |
-| ---- | ----------------------------------- | --------------------------- | -------------------------------------------------------- |
-| 1    | Button 组件参数写回组件库           | 完成                        | 写入 `styles/valar/style-*.css`，仅本地开发站可写        |
-| 2    | 首页方向 C、导航精简                | 完成                        | Studio 等入口隐藏不删                                    |
-| 3    | Button 全屏编辑器（方向 B）         | 完成                        | DialKit `inline` 模式                                    |
-| 4    | 补 Slider Field、Color Picker       | 完成                        | 见组件补充清单 VCOMP-005／006                            |
-| 5    | 全局 token 配置页（扩展 `/themes`） | 完成                        | 写入 `styles/valar/tokens.json`，仅本地开发站可写        |
-| 6    | 动效、边框宽度 token（第二期）      | 待办                        | 先建立 token，再替换 8 套样式中的写死值，单独验收        |
-| 7    | 把全屏编辑器推广到第二个组件        | 待办                        | 先抽出 Button 编辑器中可复用的部分，不提前抽象           |
-| 8    | 组件自带设计规范（AI 友好）         | 完成（样板：Button、Field） | 见下                                                     |
-| 9    | 组件说明卡（借鉴 Arc）              | 待办，第 5 步后             | 每个组件一份机器可读说明，是 10–12 步的唯一数据源        |
-| 10   | 给 AI 读的资料                      | 待办                        | catalog.json、三种 llms.txt、组件页 `/markdown`          |
-| 11   | Valar 可安装技能包                  | 待办                        | 替换上游旧技能包；组合、文案、动效由用户编写，只预留位置 |
-| 12   | 本地 MCP 服务 `valar-svelte mcp`    | 待办                        | 先做本地版；线上版等用户准备好服务器后再做               |
+| 顺序 | 任务                                | 状态                        | 要点                                              |
+| ---- | ----------------------------------- | --------------------------- | ------------------------------------------------- |
+| 1    | Button 组件参数写回组件库           | 完成                        | 写入 `styles/valar/style-*.css`，仅本地开发站可写 |
+| 2    | 首页方向 C、导航精简                | 完成                        | Studio 等入口隐藏不删                             |
+| 3    | Button 全屏编辑器（方向 B）         | 完成                        | DialKit `inline` 模式                             |
+| 4    | 补 Slider Field、Color Picker       | 完成                        | 见组件补充清单 VCOMP-005／006                     |
+| 5    | 全局 token 配置页（扩展 `/themes`） | 完成                        | 写入 `styles/valar/tokens.json`，仅本地开发站可写 |
+| 6    | 动效、边框宽度 token（第二期）      | 待办                        | 先建立 token，再替换 8 套样式中的写死值，单独验收 |
+| 7    | 把全屏编辑器推广到第二个组件        | 待办                        | 先抽出 Button 编辑器中可复用的部分，不提前抽象    |
+| 8    | 组件自带设计规范（AI 友好）         | 完成（样板：Button、Field） | 见下                                              |
+| 9    | 组件说明卡（借鉴 Arc）              | 完成（20 个常用组件）       | `ui/<组件>/meta.json`，是 10–12 步的唯一数据源    |
+| 10   | 给 AI 读的资料                      | 完成                        | catalog.json、三种 llms.txt、组件页 `.md`         |
+| 11   | Valar 可安装技能包                  | 完成（设计方法待用户编写）  | `skills/valar-svelte`；`guides/` 三个文件为占位   |
+| 12   | 本地 MCP 服务 `valar-svelte mcp`    | 完成（本地版）              | 线上版等用户准备好服务器后再做                    |
+
+**下一步**（2026-10-31，第 1–5、8–12 步已完成）：等待用户在第 6 步（动效、边框宽度 token）与第 7 步（全屏编辑器推广到第二个组件）中选择；可并行的小项是给其余组件补说明卡和 `RULES.md`。`skills/valar-svelte/guides/` 的组合、文案、动效内容由用户编写，AI 不要动。
 
 第 8 步的做法（推广到其他组件时沿用）：
 
@@ -39,10 +41,17 @@
 
 第 9–12 步的约定（2026-10-31 用户确认，参照 https://uiarc.dev/docs/ai ）：
 
-- 执行顺序：先完成第 5 步全局 token 配置页，再做 9 → 10 → 11 → 12。两条线都要做。
 - 第 9 步：说明卡放在组件目录（如 `meta.json`，与 `RULES.md` 并列），字段包括用途、关键词、分类、何时用／何时不用、无障碍与响应式注意、相关组件；目录、文档、技能包和 MCP 都从它生成，不在别处另写。先覆盖常用的 15–20 个组件，并加检查：缺说明卡的组件逐项列出，不静默跳过。
 - 第 11 步：页面组合、文案、动效方法由用户本人编写，AI 只建立文件结构和入口，不代写这些内容。
 - 第 12 步：工具参照 Arc 的 search_components、list_components、get_component、get_install_command、get_skill；只读，数据来自第 9、10 步。先做通过 CLI 在本机启动的版本；线上版需要部署网站和域名，等用户准备好服务器并授权后再做。所有组件免费公开，不做 Arc 的登录与 Pro 令牌机制。
+
+第 9–12 步的做法（2026-10-31 完成）：
+
+- **说明卡**：`docs/src/lib/registry/ui/<组件>/meta.json`，字段与校验在 `docs/src/lib/registry/component-cards.ts`（`title`、`description`、`categories` 六选一，`meta.valar` 下为关键词、何时用、何时不用＋改用组件、无障碍、响应式、相关组件）。`REQUIRED_CARDS` 列出必须有卡的 20 个组件；`docs/tests/component-cards.test.ts` 检查覆盖、引用的组件确实存在。其余组件进入 `catalog.json` 的 `missingCards`，构建日志逐项列出。补卡：新建 `meta.json` 并把组件名加入 `REQUIRED_CARDS`。
+- **AI 资料**：`build-registry` 生成 `static/registry/catalog.json`（说明卡＋渲染好的 markdown＋`RULES.md`＋文档链接＋安装命令）和 `static/registry/skills/valar-svelte.json`；`pnpm build` 的 `build:llms` 生成 `llms.txt`（加了 AI 资料入口）、`llms-small.txt`、`llms-full.txt`，组件 `.md` 顶部插入说明卡。文本格式只在 `docs/src/lib/registry/catalog.ts` 中定义。
+- **技能包**：`skills/valar-svelte`（由上游 `skills/shadcn-svelte` 改名改写）。`SKILL.md` 开头是 Valar 工作流程：查目录选组件 → `add` → 读 AGENTS.md 规范区块 → `lint`。上游的页面组合建议和组件选择表已删除，选组件只看说明卡。`guides/page-composition.md`、`copywriting.md`、`motion.md` 是占位，**由用户本人编写，AI 不得代写**。
+- **MCP**：`packages/cli/src/commands/mcp`＋`src/utils/mcp.ts`，stdio、换行分隔 JSON-RPC，无额外依赖。工具：list_components、search_components、get_component、get_install_command、get_skill，只读。数据来自 `--registry`（URL 或本地目录）、components.json 的 registry 或默认本地站。测试 `packages/cli/test/utils/mcp.test.ts`；用户文档在安装页“给 AI 的组件资料与 MCP”。
+- 后续：补齐其余组件说明卡（优先表单、弹层）；用户写好 `guides/` 后，MCP 的 get_skill 自动返回新内容；线上版 MCP（HTTP 传输）等服务器就绪并授权后再做。
 
 第 5 步的做法（全局 token 配置页，`/themes`）：
 

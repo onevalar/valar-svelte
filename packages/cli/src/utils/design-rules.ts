@@ -14,7 +14,8 @@ export const RULES_END = "<!-- valar-svelte:rules:end -->";
 const GLOBAL_RULES = `- 颜色只用语义 token 类，如 \`bg-primary\`、\`text-muted-foreground\`、\`border-border\`；不要用调色板色值（\`bg-blue-500\`）、黑白（\`bg-white\`）或十六进制（检查规则 \`valar/semantic-color\`）。
 - 圆角、字号、间距用 \`rounded-*\`、\`text-*\` 等档位，它们跟随全局 token；不要写 \`h-[37px]\` 这类像素任意值（检查规则 \`valar/no-arbitrary-px\`）。
 - 先用已安装的组件及其 \`variant\`、\`size\`，再考虑自定义样式；需要新组件时用 CLI 安装，不要手写一个相似的。
-- 改完界面后运行 \`valar-svelte lint\`（用项目的包运行器，如 \`pnpm dlx @valar/svelte-cli lint\`），修正所有 error。`;
+- 选组件前查组件说明卡里的“何时用／何时不用”：Valar MCP（\`valar-svelte mcp\` 的 search_components、get_component），或文档站的 \`llms-small.txt\`、registry 的 \`catalog.json\`。
+- 改完界面后运行 \`valar-svelte lint\`（用项目的包运行器，如 \`pnpm exec valar-svelte lint\`），修正所有 error。`;
 
 /** Builds the managed AGENTS.md block from every installed component's RULES.md. */
 export async function buildRulesBlock(uiDir: string, cwd: string): Promise<string> {

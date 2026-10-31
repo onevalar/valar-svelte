@@ -53,6 +53,30 @@ pnpm exec valar-svelte lint        # 默认检查 src，跳过已安装的组件
 
 目前检查：非语义颜色（`valar/semantic-color`）、像素任意值（`valar/no-arbitrary-px`）、Button 用 class 改尺寸（`valar/button-size-via-prop`）、图标按钮缺少名称（`valar/icon-button-label`）、原生 `<button>`（`valar/use-button-component`）和缺少标签的输入框（`valar/input-label`）。规则基于文本匹配，可能有漏报或误报；警告不会使命令失败。
 
+### 给 AI 的组件资料与 MCP
+
+常用组件（目前 20 个）带有说明卡：用途、何时用、何时不用（改用哪个组件）、无障碍与响应式注意事项、相关组件。说明卡是唯一来源，下面这些资料都从它生成：
+
+- `/llms-small.txt`：每个组件一行的索引；`/llms-full.txt`：全部文档合成一个文件；`/llms.txt`：文档目录。
+- `/docs/components/<组件>.md`：顶部是说明卡，下面是完整文档。
+- `/registry/catalog.json`：机器可读的组件目录，`missingCards` 列出尚无说明卡的组件。
+- Valar 技能包：仓库 `skills/valar-svelte`，告诉 AI 先查组件、再安装、按规范编写、最后 lint。页面组合、文案、动效部分由维护者编写，目前为占位。
+
+本地 MCP 服务（只读，无需登录）让 AI 工具直接查询组件。在 AI 工具的 MCP 配置中添加：
+
+```json
+{
+  "mcpServers": {
+    "valar-svelte": {
+      "command": "pnpm",
+      "args": ["exec", "valar-svelte", "mcp"]
+    }
+  }
+}
+```
+
+提供 `list_components`、`search_components`、`get_component`、`get_install_command`、`get_skill`。数据默认来自 components.json 的 registry（需要文档站在运行）；没有运行文档站时，可用 `--registry <Valar 仓库>/docs/static/registry` 直接读取本地文件。目前只有本地版，线上版待部署站点后提供。
+
 ## Registry
 
 默认只连接本地 Valar registry。其他地址可通过 `REGISTRY_URL` 环境变量设置，或在目标项目 components.json 的 registry 字段配置。请勿填写上游 registry，否则会安装上游版本。
