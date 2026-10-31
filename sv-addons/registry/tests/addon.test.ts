@@ -1,5 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import { expect } from "vitest";
 import { setupTest } from "./setup/suite.js";
 import addon from "../src/index.js";
@@ -17,6 +19,13 @@ const { test, testCases } = setupTest(
 		],
 		filter: (testCase) => testCase.variant.includes("kit") && testCase.variant.includes("ts"),
 		browser,
+		preAdd: ({ cwd }) => {
+			const filename = path.join(cwd, "package.json");
+			const pkg = JSON.parse(fs.readFileSync(filename, "utf8"));
+			pkg.devDependencies["@valar/svelte-cli"] =
+				`file:${fileURLToPath(new URL("../../../packages/cli", import.meta.url))}`;
+			fs.writeFileSync(filename, JSON.stringify(pkg));
+		},
 	}
 );
 
@@ -45,7 +54,7 @@ test.concurrent.for(testCases)("registry-template $kind.type $variant", async (t
 	expect(fs.readFileSync(button, "utf8")).toContain('lang="ts"');
 
 	const pkg = JSON.parse(fs.readFileSync(path.resolve(cwd, "package.json"), "utf8"));
-	expect(pkg.scripts?.["build:registry"]).toContain("shadcn-svelte registry build");
+	expect(pkg.scripts?.["build:registry"]).toBe("valar-svelte registry build");
 	expect(
 		pkg.devDependencies?.["@valar/svelte-cli"] || pkg.dependencies?.["@valar/svelte-cli"]
 	).toBeTruthy();
@@ -70,4 +79,16 @@ test.concurrent.for(testCases)("registry-template $kind.type $variant", async (t
 	);
 	expect(page).toContain("Custom Registry");
 	expect(page).toContain("HelloWorld");
+
+	// Build from outside the consumer: --cwd must also govern registry source paths.
+	execFileSync(path.join(cwd, "node_modules/.bin/valar-svelte"), [
+		"registry",
+		"build",
+		"--cwd",
+		cwd,
+	]);
+	const built = JSON.parse(fs.readFileSync(path.join(cwd, "static/r/hello-world.json"), "utf8"));
+	expect(
+		built.files.some((file: { content: string }) => file.content.includes("Hello world"))
+	).toBe(true);
 });

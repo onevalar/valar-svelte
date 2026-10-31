@@ -31,6 +31,6 @@
 		hugeicons="ArrowRight01Icon"
 		phosphor="CaretRightIcon"
 		remixicon="RiArrowRightSLine"
-		class="cn-rtl-flip ml-auto"
+		class="cn-rtl-flip ms-auto rtl:rotate-180"
 	/>
 </DropdownMenuPrimitive.SubTrigger>

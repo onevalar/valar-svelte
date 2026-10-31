@@ -125,7 +125,7 @@ async function runBuild(options: BuildOptions) {
 					"registry:file",
 				];
 				const toResolve = item.files.map(async (file) => {
-					let content = await fs.readFile(file.path, "utf8");
+					let content = await fs.readFile(path.resolve(options.cwd, file.path), "utf8");
 					content = transformAliases((registry.aliases ??= {}), content);
 
 					const name = path.basename(file.path);

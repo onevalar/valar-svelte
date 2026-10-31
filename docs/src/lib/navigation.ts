@@ -93,6 +93,11 @@ function generateGetStartedNav(): SidebarNavItem[] {
 			items: [],
 		},
 		{
+			title: "Direction / RTL",
+			href: "/docs/direction",
+			items: [],
+		},
+		{
 			title: "CLI",
 			href: "/docs/cli",
 			items: [],
@@ -114,7 +119,6 @@ function generateGetStartedNav(): SidebarNavItem[] {
 			href: "/llms.txt",
 			items: [],
 		},
-
 	];
 
 	return getStartedNavItems;

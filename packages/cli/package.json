@@ -81,7 +81,7 @@
     "start:dev": "cross-env REGISTRY_URL=http://localhost:5173/registry node dist/index.mjs",
     "start:proxy": "pnpm dlx straightforward@latest --port 9000",
     "test:setup": "pnpm -F @valar/svelte-registry demo:clean && pnpm -F @valar/svelte-registry demo:create && pnpm -F @valar/svelte-registry demo:add:ci && pnpm -F @valar/svelte-registry demo:build:registry-template",
-    "test": "pnpm test:setup && vitest"
+    "test": "pnpm test:setup && vitest run"
   },
   "peerDependencies": {
     "svelte": "^5.0.0"

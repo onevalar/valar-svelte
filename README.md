@@ -21,7 +21,7 @@ pnpm --filter docs exec vite dev --host 127.0.0.1 --port 5186 --strictPort
 
 ## 源码目录
 
-- `docs/src/lib/registry/ui/`：63 个基础组件目录。
+- `docs/src/lib/registry/ui/`：66 个基础组件目录。
 - `docs/src/lib/registry/examples/`、`blocks/`：示例与组合区块。
 - `docs/src/lib/registry/styles/`：8 套现有组件样式。
 - `docs/content/`：Valar 文档与组件用法。

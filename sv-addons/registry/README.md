@@ -4,11 +4,17 @@
 
 ## Usage
 
+This package and the CLI are private and are not available from npm. Build the
+workspace, pack `@valar/svelte-cli`, and install its local tarball in the target
+project before adding this local add-on:
+
 ```sh
-# add it during project creation
-npx sv create my-project --add @valar/svelte-registry
-# or add it afterwards
-npx sv add @valar/svelte-registry
+# from the Valar repository
+pnpm build:cli
+pnpm --filter @valar/svelte-cli pack
+# from the target SvelteKit project (replace the absolute paths)
+pnpm add -D @valar/svelte-cli@file:/absolute/path/to/valar-svelte/packages/cli/valar-svelte-cli-0.1.0.tgz
+pnpm dlx sv add file:/absolute/path/to/valar-svelte/sv-addons/registry
 ```
 
 This add-on:
@@ -27,9 +33,7 @@ Include the registry preview page.
 
 Default: `true`
 
-```sh
-npx sv add @valar/svelte-registry="demo:true"
-```
+Pass `demo:true` or `demo:false` on the local add-on specifier.
 
 ## Local development
 
@@ -43,6 +47,9 @@ pnpm demo:add
 ## run the tests
 pnpm test
 ```
+
+The demo installs the repository's built CLI using a local `file:` dependency,
+never an unpublished npm version. Build the workspace first (`pnpm build:cli`).
 
 You can also install a local build into any project with:
 

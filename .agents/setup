@@ -33,7 +33,7 @@ if [ ! -x "$node_bin/node" ]; then
 	step "installing Node.js $node_version"
 	# The installer cannot update the environment of this running script.
 	# shellcheck disable=SC1091
-	. "$NVM_DIR/nvm.sh"
+	. "$NVM_DIR/nvm.sh" --no-use
 	nvm install "$node_version" --no-progress
 fi
 export PATH="$node_bin:$PATH"

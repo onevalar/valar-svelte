@@ -27,7 +27,6 @@ export default defineAddon({
 	},
 
 	run: ({ sv, options, directory, file }) => {
-		sv.devDependency("@valar/svelte-cli", "^1.4.2");
 		sv.devDependency("bits-ui", "^2.7.0");
 		sv.devDependency("cn", "^0.3.0");
 		sv.devDependency("tailwind-variants", "^3.3.0");
@@ -37,7 +36,7 @@ export default defineAddon({
 		sv.file(
 			file.package,
 			transforms.json(({ data, json }) => {
-				json.packageScriptsUpsert(data, "build:registry", "shadcn-svelte registry build");
+				json.packageScriptsUpsert(data, "build:registry", "valar-svelte registry build");
 			})
 		);
 
@@ -67,12 +66,13 @@ export default defineAddon({
 
 	nextSteps: ({ packageManager }) => {
 		const runCmd = resolveCommandArray(packageManager, "run", ["build:registry"]);
-		const execCmd = resolveCommandArray(packageManager, "execute", [
-			"@valar/svelte-cli",
+		const execCmd = resolveCommandArray(packageManager, "execute-local", [
+			"valar-svelte",
 			"add",
 			"http://localhost:5173/r/<name>.json",
 		]);
 		return [
+			"Install the local @valar/svelte-cli tarball first; this private package is not on npm.",
 			`Run ${color.command(runCmd.join(" "))} to build your registry JSON files`,
 			`Serve the project and install items with ${color.command(execCmd.join(" "))}`,
 			`Docs: ${color.website("http://127.0.0.1:5186/docs/registry")}`,

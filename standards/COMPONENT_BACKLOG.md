@@ -1,21 +1,29 @@
 # Valar Svelte 组件补充清单
 
-记录日期：2026-10-31。状态：待后续实施。
+记录日期：2026-10-31。状态：本轮约定任务已按顺序在本地完成，未提交、推送、发布或部署。
 
-本清单承接此前对 React、Vue、Svelte 版组件的对比，保存后续补充方向。本次仅记录待办，不代表组件已经实现或完成跨框架等价验证。优先级是建议执行顺序，可按后续产品需求调整。
+本清单承接此前对 React、Vue、Svelte 版组件的对比。用户随后要求“按顺序，全部完成后向我汇报结果”；本轮先修复测试与本地分发，再依次交付 Number Field、Tags Input、Stepper 和 Direction／RTL。完成判断仅针对记录中的能力合同，不声明来源库全 API 等价或全库认证。实际命令、环境、分发路径、浏览器结果和限制见[共享验收记录](porting-records/acceptance-2026-10-31.md)。
 
 开始任何一项前，必须阅读[跨框架组件转换规范](COMPONENT_PORTING.md)，用[转换记录模板](templates/COMPONENT_PORTING_RECORD.md)建立独立记录；重新核对源项目当时的版本、许可、维护状态和本地已有能力，再确定实现方案。本清单不代替固定版本的源码分析。
 
-## 1. 待补组件与能力
+## 0. 先决修复：已完成
 
-本地核对范围为 `docs/src/lib/registry/ui/` 的组件目录与相关入口源码；未发现以下前三项的独立组件目录。此结论不表示现有组件无法组合出部分能力。
+- CLI 测试改为一次性执行；registry 模板测试不再跳过，覆盖从工程外传 `--cwd` 构建。
+- `registry build` 按 `--cwd` 解析文件，不再错误地按启动进程的目录寻址。
+- addon 生成 Valar 命令，使用本地 CLI，不从 npm 安装未发布的私有包；初始化 registry 不再把消费者的本地 CLI tarball 替换为 npm 依赖。
+- fresh orb 的 nvm 加载顺序已修复；固定 Node／pnpm 初始化和重复运行通过。
+- 安装说明、组件数量、示例、公共导出及 8 个 style 的 registry 已同步。
 
-| 编号 | 项目 | 建议顺序 | 当前状态 | 后续目标 |
-| --- | --- | --- | --- | --- |
-| VCOMP-001 | Number Field：数值输入 | 第一批 | 待补 | 提供完整数值编辑、步进、格式化与表单语义 |
-| VCOMP-002 | Tags Input：标签输入 | 第一批 | 待补 | 提供标签添加、删除、键盘导航、输入法和表单集成 |
-| VCOMP-003 | Stepper：步骤流程 | 第一批 | 待补 | 提供步骤状态、导航、校验及内容关联 |
-| VCOMP-004 | Direction／RTL：方向支持 | 第二批 | 待评估 | 审查现有原语和组件的方向能力，再决定补 Provider、封装、文档或修复 |
+## 1. 组件与能力交付
+
+初始核对范围为 `docs/src/lib/registry/ui/` 的组件目录与相关入口；前三项原先没有独立目录，本轮已新增。以下“完成”均指本地实现及约定验收，不代表已发布；用户未要求提交，故以源码路径和验收记录定位，不填写不存在的实现提交 SHA。
+
+| 编号      | 项目                     | 实施顺序 | 当前状态                           | 交付及验收                                                                                                                  |
+| --------- | ------------------------ | -------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| VCOMP-001 | Number Field：数值输入   | 1        | 完成（本地）                       | [源码](../docs/src/lib/registry/ui/number-field/index.ts) · [能力差异与验收](porting-records/number-field-vue-to-svelte.md) |
+| VCOMP-002 | Tags Input：标签输入     | 2        | 完成（本地）                       | [源码](../docs/src/lib/registry/ui/tags-input/index.ts) · [能力差异与验收](porting-records/tags-input-vue-to-svelte.md)     |
+| VCOMP-003 | Stepper：步骤流程        | 3        | 完成（本地）                       | [源码](../docs/src/lib/registry/ui/stepper/index.ts) · [能力差异与验收](porting-records/stepper-vue-to-svelte.md)           |
+| VCOMP-004 | Direction／RTL：方向支持 | 4        | 完成（评估、文档、代表组合与修复） | [用法](../docs/content/direction.md) · [能力缺口与验收](porting-records/direction-bits-ui-to-svelte.md)                     |
 
 前三项优先参考此前讨论的 Vue 版对应组件行为，最终使用适合 Svelte 的原生实现。Direction／RTL 作为跨组件能力评估，不因缺少同名目录就认定完全不支持 RTL，也不机械复制其他框架的 Provider。
 
@@ -54,13 +62,13 @@
 
 ## 2. 已有对应项：先核对能力，不重复新增
 
-这些项目保留在对照清单中，后续如发现真实差异，再拆出待办。存在对应实现不代表行为已经完全等价。
+这些项目已核对本地入口、底层接口和现有示例，未发现需要为名称对齐重复新增一套组件的依据。此项是源码／接口审查，不是三个现有系统的全面运行时回归；存在对应实现不代表来源行为完全等价。
 
-| 对比项 | 本地对应实现 | 后续处理 |
-| --- | --- | --- |
-| Pin Input | [Input OTP](../docs/src/lib/registry/ui/input-otp/input-otp.svelte)，底层使用 Bits UI PinInput | 复核粘贴、完成事件、输入限制、自动填充和无障碍；避免仅因名称不同再建一套 |
-| Toast | [Sonner](../docs/src/lib/registry/ui/sonner/index.ts) | 复核通知队列、关闭、动作、异步状态及播报；不为名称对齐引入另一套通知系统 |
-| Form | [Form](../docs/src/lib/registry/ui/form/index.ts)，另有 [Field](../docs/src/lib/registry/ui/field/index.ts) | 复核职责、校验、错误关联及使用文档；不列为完全缺失组件 |
+| 对比项    | 本地对应实现                                                                                                | 本轮核对结果                                                                                                                                                          |
+| --------- | ----------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Pin Input | [Input OTP](../docs/src/lib/registry/ui/input-otp/input-otp.svelte)，Bits UI 2.20.0 PinInput                | RootProps 原样透传，底层具备 pasteTransformer、maxlength、onComplete、one-time-code；已有 pattern/controlled/disabled/form 示例，不重复新增。真实自动填充与读屏未验证 |
+| Toast     | [Sonner](../docs/src/lib/registry/ui/sonner/index.ts)，svelte-sonner 1.2.1                                  | ToasterProps 透传、队列及 dismiss/action/promise 由原依赖提供，底层 polite live region；已有 types/promise 示例，不引入第二套通知系统。真实播报未验证                 |
+| Form      | [Form](../docs/src/lib/registry/ui/form/index.ts)，另有 [Field](../docs/src/lib/registry/ui/field/index.ts) | Formsnap/Superforms 管状态、校验与 ARIA，Field 管布局；Control/FieldErrors 透传语义，已有 forms 指南，不列为缺失组件。不声明所有业务表单均已验收                      |
 
 选择来源时还要核对其是否已废弃、改名或被替代；不要为了补齐历史名称而新增已被替代的设计。
 

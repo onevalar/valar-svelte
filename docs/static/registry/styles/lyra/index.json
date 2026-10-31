@@ -266,6 +266,12 @@
 		"relativeUrl": "navigation-menu.json"
 	},
 	{
+		"name": "number-field",
+		"type": "registry:ui",
+		"registryDependencies": [],
+		"relativeUrl": "number-field.json"
+	},
+	{
 		"name": "pagination",
 		"type": "registry:ui",
 		"registryDependencies": [
@@ -380,6 +386,12 @@
 		"relativeUrl": "spinner.json"
 	},
 	{
+		"name": "stepper",
+		"type": "registry:ui",
+		"registryDependencies": [],
+		"relativeUrl": "stepper.json"
+	},
+	{
 		"name": "switch",
 		"type": "registry:ui",
 		"registryDependencies": [],
@@ -396,6 +408,12 @@
 		"type": "registry:ui",
 		"registryDependencies": [],
 		"relativeUrl": "tabs.json"
+	},
+	{
+		"name": "tags-input",
+		"type": "registry:ui",
+		"registryDependencies": [],
+		"relativeUrl": "tags-input.json"
 	},
 	{
 		"name": "textarea",

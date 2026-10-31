@@ -271,7 +271,6 @@ export function buildRegistryBase(config: PresetConfig) {
 		"tailwind-variants",
 		"cn",
 		"tw-animate-css",
-		"@valar/svelte-cli",
 		...iconLibraryItem.packages,
 	];
 
