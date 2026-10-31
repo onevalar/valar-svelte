@@ -14,6 +14,7 @@ import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { chromium } from "@playwright/test";
 import { DEFAULT_PRESET_CONFIG, encodePreset } from "@valar/svelte-cli/preset";
+import { defaultPreset } from "../src/lib/features/workbench/model.js";
 
 const docs = fileURLToPath(new URL("..", import.meta.url));
 const root = path.resolve(docs, "..");
@@ -98,6 +99,24 @@ try {
 		"--no-deps-install",
 	]);
 	run(cli, ["add", "number-field", "tags-input", "stepper", "slider", "--yes"]);
+	const workbenchPreset = structuredClone(defaultPreset);
+	Object.assign(workbenchPreset.values, {
+		"button.height": 58,
+		"dialog.closeOnEscape": false,
+		"tooltip.delayDuration": 650,
+		"tooltip.side": "bottom",
+		"accordion.type": "multiple",
+	});
+	const exportResponse = await fetch(new URL("/api/workbench/export", env.REGISTRY_URL), {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify(workbenchPreset),
+	});
+	assert.ok(exportResponse.ok, `workbench export failed: ${await exportResponse.clone().text()}`);
+	const presetFile = path.join(app, "valar-preset.json");
+	writeFileSync(presetFile, await exportResponse.text());
+	// Exercise --cwd path resolution from outside the target app, not only absolute paths.
+	run(cli, ["add", "valar-preset.json", "--cwd", app, "--yes", "--overwrite"], temp);
 	assert.match(
 		JSON.parse(readFileSync(packagePath, "utf8")).devDependencies["@valar/svelte-cli"],
 		/^file:/
@@ -154,6 +173,9 @@ try {
 	assert.ok(ready, "consumer preview did not start");
 	const browser = await chromium.launch({
 		executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH,
+		args: [
+			"--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4",
+		],
 	});
 	try {
 		const page = await browser.newPage();
@@ -182,8 +204,46 @@ try {
 			["tags", "Valar"],
 		]);
 		assert.equal(await page.getByRole("slider", { name: "Volume", exact: true }).count(), 1);
+		const tunedButton = page.getByRole("button", { name: "Tuned button", exact: true });
+		assert.equal(await tunedButton.evaluate((node) => getComputedStyle(node).height), "58px");
+		await page.getByRole("button", { name: "Open tuned dialog", exact: true }).click();
+		await page.keyboard.press("Escape");
+		assert.equal(
+			await page.getByRole("dialog").count(),
+			1,
+			"exported Escape default was not installed"
+		);
+		await page.getByRole("button", { name: "Close tuned dialog", exact: true }).click();
+		await page.getByRole("button", { name: "First tuned section", exact: true }).click();
+		await page.getByRole("button", { name: "Second tuned section", exact: true }).click();
+		assert.equal(
+			await page
+				.getByRole("button", { name: "First tuned section", exact: true })
+				.getAttribute("aria-expanded"),
+			"true"
+		);
+		assert.equal(
+			await page
+				.getByRole("button", { name: "Second tuned section", exact: true })
+				.getAttribute("aria-expanded"),
+			"true"
+		);
+		assert.equal(await page.evaluate(() => matchMedia("(hover: hover)").matches), true);
+		await page.getByRole("button", { name: "Tuned tooltip", exact: true }).hover();
+		// This wait tests a real delay boundary: the upstream 0ms default must fail here.
+		await page.waitForTimeout(200);
+		const tooltip = page.locator('[data-slot="tooltip-content"]');
+		assert.equal(await tooltip.count(), 0, "exported tooltip delay was not installed");
+		await tooltip.waitFor();
+		assert.equal(await tooltip.getAttribute("data-side"), "bottom");
+		assert.equal(
+			await page
+				.getByRole("button", { name: "Tuned tooltip", exact: true })
+				.getAttribute("aria-describedby"),
+			await tooltip.getAttribute("id")
+		);
 		console.log(
-			"PASS independent tarball install, check/build, repeated native reset, tag Enter and named Slider"
+			"PASS independent tarball install, strict check/build, reset/tag/Slider contracts and installed workbench CSS/Dialog/Accordion/Tooltip defaults"
 		);
 	} finally {
 		await browser.close();

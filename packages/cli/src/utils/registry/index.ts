@@ -1,4 +1,6 @@
 import path from "node:path";
+import { readFile } from "node:fs/promises";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { fetch } from "node-fetch-native";
 import { createProxy } from "node-fetch-native/proxy";
 import { parse as parseCss } from "postcss";
@@ -93,6 +95,7 @@ type ResolveRegistryItemsProps = {
 	registryIndex: schemas.RegistryIndex;
 	items: string[];
 	parentUrl?: URL;
+	cwd?: string;
 };
 
 type ResolvedRegistryItem = schemas.RegistryItem | schemas.RegistryIndexItem;
@@ -101,6 +104,7 @@ export async function resolveRegistryItems({
 	registryIndex,
 	items,
 	parentUrl,
+	cwd = process.cwd(),
 }: ResolveRegistryItemsProps): Promise<ResolvedRegistryItem[]> {
 	const resolvedItems: ResolvedRegistryItem[] = [];
 
@@ -117,7 +121,20 @@ export async function resolveRegistryItems({
 		 */
 		if (!resolvedItem) {
 			const isRelative = item.startsWith("./") || item.startsWith("../");
-			if (isUrl(item) || (parentUrl && isRelative)) {
+			const isLocalJson =
+				!isUrl(item) && item.endsWith(".json") && (!parentUrl || parentUrl.protocol === "file:");
+			if (isLocalJson) {
+				const directory = parentUrl ? path.dirname(fileURLToPath(parentUrl)) : cwd;
+				const filename = path.resolve(directory, item);
+				try {
+					resolvedItem = schemas.registryItemSchema.parse(
+						JSON.parse(await readFile(filename, "utf8"))
+					);
+					remoteUrl = pathToFileURL(filename);
+				} catch (cause) {
+					throw error(`Failed to read local registry item '${filename}'.`, cause);
+				}
+			} else if (isUrl(item) || (parentUrl && isRelative)) {
 				remoteUrl = new URL(item, parentUrl);
 				const [result] = await fetchRegistry([remoteUrl]);
 				resolvedItem = schemas.registryItemSchema.parse(result);
@@ -145,6 +162,7 @@ export async function resolveRegistryItems({
 				registryIndex,
 				items: resolvedItem.registryDependencies,
 				parentUrl: remoteUrl,
+				cwd,
 			});
 			resolvedItems.push(...registryDeps);
 		}

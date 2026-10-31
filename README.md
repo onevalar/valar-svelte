@@ -30,6 +30,12 @@ pnpm --filter docs exec vite dev --host 127.0.0.1 --port 5186 --strictPort
 - `packages/parity/`：内部对照工具。
 - `sv-addons/`：内部扩展模板，尚未发布。
 
+## 设计师调参工作台
+
+站点导航 **Studio**（`/workbench`）提供中文参数面板与真实组件画布，支持草稿、具名版本、撤销重做、导入及可安装预设导出，手机上可切换预览和参数页签。
+
+首批接入 Button、Dialog、Tooltip、Accordion，共 65 个全局／组件参数；其余 62 个组件仍待逐项接入，不代表全库或每一个 API 已覆盖。设计师操作、开发者安装、能力边界和后续顺序见[工作台说明](standards/WORKBENCH.md)。保存仅发生在当前浏览器；导出不等于发布或部署。
+
 ## 分发状态
 
 全部自有工作区包保持 private，尚未发布到 npm。默认 registry 为 `http://127.0.0.1:5186/registry`；可以通过目标项目 components.json 或 REGISTRY_URL 指定新的 Valar 地址。未配置生产域名。

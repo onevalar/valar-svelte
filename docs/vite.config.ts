@@ -2,9 +2,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import tailwindcss from "@tailwindcss/vite";
-import { injectStyleClasses, parseStyleCss } from "@valar/svelte-parity/inject-style-classes";
 import { enhancedImages } from "@sveltejs/enhanced-img";
 import { sveltekit } from "@sveltejs/kit/vite";
+import { injectStyleClasses, parseStyleCss } from "@valar/svelte-parity/inject-style-classes";
 import { visualizer } from "rollup-plugin-visualizer";
 import { defineConfig, type Plugin } from "vite";
 import packageJson from "./package.json" with { type: "json" };
@@ -210,6 +210,9 @@ export default defineConfig({
 		},
 	},
 	ssr: {
+		// The workbench exporter uses PostCSS at runtime. Its ESM entry wraps CJS;
+		// prebundle that boundary for dev SSR while keeping production Workers self-contained.
+		optimizeDeps: { include: ["postcss"] },
 		noExternal: Object.keys(packageJson.devDependencies),
 	},
 });

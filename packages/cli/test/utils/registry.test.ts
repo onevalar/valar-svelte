@@ -1,4 +1,6 @@
 import path from "node:path";
+import { mkdtemp, writeFile, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import { fetch } from "node-fetch-native";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { toPosixPath } from "./test-helpers.js";
@@ -159,6 +161,77 @@ describe("Registry Utilities", () => {
 
 	describe("resolveRegistryItems", () => {
 		const registryUrl = "http://127.0.0.1:5186/registry";
+
+		it("installs validated local JSON from the target cwd and resolves adjacent dependencies", async () => {
+			const directory = await mkdtemp(path.join(tmpdir(), "valar-local-registry-"));
+			try {
+				await writeFile(
+					path.join(directory, "preset.json"),
+					JSON.stringify({
+						name: "designer-preset",
+						type: "registry:ui",
+						files: [],
+						registryDependencies: ["./adjacent.json", "theme"],
+					})
+				);
+				await writeFile(
+					path.join(directory, "adjacent.json"),
+					JSON.stringify({ name: "adjacent", type: "registry:ui", files: [] })
+				);
+				for (const item of ["preset.json", path.join(directory, "preset.json")]) {
+					const result = await resolveRegistryItems({
+						registryUrl,
+						registryIndex: mockRegistryIndex,
+						items: [item],
+						cwd: directory,
+					});
+					expect(result.map(({ name }) => name)).toEqual(["designer-preset", "adjacent", "theme"]);
+				}
+				await writeFile(
+					path.join(directory, "invalid.json"),
+					JSON.stringify({ name: "invalid", type: "not-a-registry-item" })
+				);
+				await expect(
+					resolveRegistryItems({
+						registryUrl,
+						registryIndex: [],
+						items: ["invalid.json"],
+						cwd: directory,
+					})
+				).rejects.toThrow("Failed to read local registry item");
+			} finally {
+				await rm(directory, { recursive: true, force: true });
+			}
+		});
+
+		it("does not let a remote registry dependency open a local JSON file", async () => {
+			const directory = await mkdtemp(path.join(tmpdir(), "valar-remote-boundary-"));
+			try {
+				const filename = path.join(directory, "private.json");
+				await writeFile(
+					filename,
+					JSON.stringify({ name: "private-local", type: "registry:ui", files: [] })
+				);
+				vi.mocked(fetch).mockResolvedValueOnce({
+					ok: true,
+					json: async () => ({
+						name: "remote",
+						type: "registry:ui",
+						registryDependencies: [filename],
+					}),
+				} as Response);
+				await expect(
+					resolveRegistryItems({
+						registryUrl,
+						registryIndex: [],
+						items: ["https://remote.example/preset.json"],
+						cwd: directory,
+					})
+				).rejects.toThrow("does not exist in the remote registry");
+			} finally {
+				await rm(directory, { recursive: true, force: true });
+			}
+		});
 
 		it("should resolve items from registry index", async () => {
 			const result = await resolveRegistryItems({

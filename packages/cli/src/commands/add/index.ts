@@ -32,7 +32,7 @@ type AddOptions = z.infer<typeof addOptionsSchema>;
 export const add = new Command()
 	.command("add")
 	.description("add components to your project")
-	.argument("[components...]", "the components to add or a url to the component")
+	.argument("[components...]", "component names, URLs, or local registry JSON files")
 	.option("-c, --cwd <path>", "the working directory", process.cwd())
 	.addOption(new Option("--no-deps", "skips adding & installing package dependencies").hideHelp())
 	.option("--no-deps-install", "add dependencies to package.json without running install")
