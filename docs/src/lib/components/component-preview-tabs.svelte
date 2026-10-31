@@ -1,4 +1,5 @@
 <script lang="ts">
+	import ButtonTuner from "$lib/features/workbench/button-tuner.svelte";
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { cn } from "$lib/utils.js";
 	import type { PresetConfig } from "@valar/svelte-cli/preset";
@@ -46,6 +47,14 @@
 	{/if}
 {/snippet}
 
+{#snippet PreviewExample()}
+	{#if example}
+		{@render example()}
+	{:else}
+		{@render ExampleFallback()}
+	{/if}
+{/snippet}
+
 <div
 	data-slot="component-preview"
 	class={cn(
@@ -61,13 +70,14 @@
 			class={cn(
 				"preview relative flex min-h-72 w-full min-w-0 justify-center overflow-x-auto p-4 data-[align=center]:items-center data-[align=end]:items-start data-[align=start]:items-start data-[chromeless=true]:h-auto data-[chromeless=true]:p-0 sm:p-10 sm:data-[align=end]:items-end",
 				previewStyle && `style-${previewStyle}`,
-				previewClassName
+				previewClassName,
+				name === "button-demo" && "p-0 sm:p-0"
 			)}
 		>
-			{#if example}
-				{@render example()}
+			{#if name === "button-demo"}
+				<ButtonTuner>{@render PreviewExample()}</ButtonTuner>
 			{:else}
-				{@render ExampleFallback()}
+				{@render PreviewExample()}
 			{/if}
 		</div>
 	</div>

@@ -170,6 +170,11 @@ export default defineConfig({
 		sveltekit(),
 	],
 	server: {
+		// Exact hosts for this orb's docs and Button portals; keep host validation enabled.
+		allowedHosts: [
+			"t-03h5f29rtolc7tkv2akz2xj95-p21410.onamp.dev",
+			"t-03h5f29rtolc7tkv2akz2xj95-p26160.onamp.dev",
+		],
 		fs: {
 			allow: [veliteDirPath, staticDirPath, contentDirPath, ogDirPath],
 		},
