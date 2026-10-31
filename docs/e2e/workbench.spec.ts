@@ -114,7 +114,7 @@ test.describe("touch workbench", () => {
 	});
 });
 
-test("Button docs tune component parameters for every variant, compare and restore versions", async ({
+test("Button editor tunes every variant full screen, compares and restores versions", async ({
 	page,
 }) => {
 	test.setTimeout(90_000);
@@ -122,12 +122,17 @@ test("Button docs tune component parameters for every variant, compare and resto
 	page.on("pageerror", (error) => errors.push(error.message));
 	await page.goto("/docs/components/button", { waitUntil: "networkidle" });
 	const tuner = page.getByRole("region", { name: "Button 样式微调", exact: true });
-	const current = tuner.locator('[data-tuning-current] [data-size="default"]').first();
-	const before = tuner.locator('[data-tuning-before] [data-size="default"]').first();
+	const pageSample = tuner.locator('[data-tuning-current] [data-size="default"]').first();
+	const editor = page.getByRole("dialog", { name: "Button · 组件参数" });
+	const cell = (pane: string, variant: string, size: string) =>
+		editor.locator(`[data-tuning-${pane}] [data-variant="${variant}"][data-size="${size}"]`);
+	const openButton = tuner.getByRole("button", { name: "微调 Button", exact: true });
 	await expect(page.getByTestId("button-dials")).toHaveCount(0);
-	await expect(current).toHaveCSS("height", "32px");
-	await tuner.getByRole("button", { name: "微调 Button", exact: true }).click();
-	// Initial values are read from the rendered Nova Button of each size.
+	await expect(pageSample).toHaveCSS("height", "32px");
+	await openButton.click();
+	await expect(editor).toBeVisible();
+	// DialKit is embedded in the editor, not floating over the page.
+	await expect(editor.getByTestId("button-dials")).toBeVisible();
 	for (const [label, value] of [
 		["特小 · 高度（px）", "24"],
 		["小 · 高度（px）", "28"],
@@ -135,64 +140,60 @@ test("Button docs tune component parameters for every variant, compare and resto
 		["默认 · 横向内边距（px）", "10"],
 		["大 · 高度（px）", "36"],
 	])
-		await expect(page.getByRole("slider", { name: label, exact: true })).toHaveAttribute(
+		await expect(editor.getByRole("slider", { name: label, exact: true })).toHaveAttribute(
 			"aria-valuenow",
 			value
 		);
-	await expect(page.getByRole("button", { name: "圆角档位 lg · 1 × 基数" })).toBeVisible();
-	// Global tokens are shown read-only and point to the theme page.
-	const versions = tuner.getByRole("region", { name: "样式版本" });
-	await expect(versions.getByText("--radius", { exact: true })).toBeVisible();
-	await expect(versions.getByRole("link", { name: "全局主题页" })).toHaveAttribute(
-		"href",
-		"/themes"
-	);
+	await expect(editor.getByRole("button", { name: "圆角档位 lg · 1 × 基数" })).toBeVisible();
+	// Global tokens are read-only and point to the token page.
+	await expect(editor.getByText("--radius", { exact: true })).toBeVisible();
+	await expect(editor.getByRole("link", { name: "全局主题页" })).toHaveAttribute("href", "/themes");
 	// Production preview never offers file writes.
-	await expect(versions.getByRole("button", { name: "写回组件库…" })).toHaveCount(0);
-	await expect(versions.getByText("写回只在本地开发站")).toBeVisible();
+	await expect(editor.getByRole("button", { name: "写回组件库…" })).toHaveCount(0);
+	await expect(editor.getByText("写回只在本地开发站")).toBeVisible();
 
 	await setNumber(page, "默认 · 高度（px）", 44);
 	await setNumber(page, "默认 · 横向内边距（px）", 16);
-	await expect(current).toHaveCSS("height", "44px");
-	await expect(current).toHaveCSS("padding-left", "16px");
-	await expect(current).toHaveCSS("padding-right", "16px");
-	await expect(before).toHaveCSS("height", "32px");
-	// The same size of another variant and its icon button follow; other sizes do not.
-	const draftRow = tuner.locator("[data-tuning-current] .size-row");
-	await expect(draftRow.locator('[data-size="icon"]')).toHaveCSS("height", "44px");
-	await expect(draftRow.locator('[data-size="icon"]')).toHaveCSS("width", "44px");
-	await expect(draftRow.locator('[data-size="sm"]')).toHaveCSS("height", "28px");
-	// Buttons elsewhere on the page are untouched by the preview.
-	await expect(page.getByRole("button", { name: "Outline", exact: true })).toHaveCSS(
-		"height",
-		"32px"
-	);
-	await tuner.getByRole("textbox", { name: "Button 版本名称" }).fill("宽松 v1");
-	await tuner.getByRole("button", { name: "保存新版本", exact: true }).click();
-	await expect(tuner.getByRole("status")).toContainText("已保存「宽松 v1」");
+	await expect(editor.getByText("已修改 2 项", { exact: true })).toBeVisible();
+	// Every variant of the default size follows, plus the matching icon button.
+	for (const variant of ["default", "outline", "secondary", "ghost", "destructive"]) {
+		await expect(cell("current", variant, "default")).toHaveCSS("height", "44px");
+		await expect(cell("current", variant, "default")).toHaveCSS("padding-left", "16px");
+	}
+	await expect(cell("current", "outline", "icon")).toHaveCSS("width", "44px");
+	await expect(cell("current", "default", "sm")).toHaveCSS("height", "28px");
+	await editor.getByRole("radio", { name: "并排对比" }).click();
+	await expect(cell("before", "default", "default")).toHaveCSS("height", "32px");
+	await editor.getByRole("textbox", { name: "Button 版本名称" }).fill("宽松 v1");
+	await editor.getByRole("button", { name: "保存版本", exact: true }).click();
+	await expect(editor.getByRole("status")).toContainText("已保存「宽松 v1」");
 	await setNumber(page, "默认 · 高度（px）", 52);
-	await tuner.getByRole("button", { name: "保存新版本", exact: true }).click();
-	await expect(tuner.getByRole("status")).toContainText("名称已存在");
-	await tuner.getByRole("textbox", { name: "Button 版本名称" }).fill("宽松 v2");
-	await tuner.getByRole("button", { name: "保存新版本", exact: true }).click();
-	await tuner.getByRole("combobox", { name: "Button 对比版本" }).selectOption({ label: "宽松 v1" });
-	await expect(before).toHaveCSS("height", "44px");
-	await expect(current).toHaveCSS("height", "52px");
-	await tuner.getByRole("button", { name: "取消未保存修改 / 关闭" }).click();
-	await expect(page.getByTestId("button-dials")).toHaveCount(0);
-	await expect(tuner.getByRole("button", { name: "微调 Button", exact: true })).toBeFocused();
+	await editor.getByRole("button", { name: "保存版本", exact: true }).click();
+	await expect(editor.getByRole("status")).toContainText("名称已存在");
+	await editor.getByRole("textbox", { name: "Button 版本名称" }).fill("宽松 v2");
+	await editor.getByRole("button", { name: "保存版本", exact: true }).click();
+	await editor
+		.getByRole("combobox", { name: "Button 对比版本" })
+		.selectOption({ label: "宽松 v1" });
+	await expect(cell("before", "default", "default")).toHaveCSS("height", "44px");
+	await expect(cell("current", "default", "default")).toHaveCSS("height", "52px");
+	await page.keyboard.press("Escape");
+	await expect(editor).toHaveCount(0);
+	await expect(openButton).toBeFocused();
+	// The page sample shows the selected saved version (v2 after saving).
+	await expect(pageSample).toHaveCSS("height", "52px");
 	await page.reload({ waitUntil: "networkidle" });
-	await expect(current).toHaveCSS("height", "32px");
+	await expect(pageSample).toHaveCSS("height", "32px");
 	await tuner.getByRole("combobox", { name: "Button 使用版本" }).selectOption({ label: "宽松 v1" });
-	await expect(current).toHaveCSS("height", "44px");
-	await tuner.getByRole("button", { name: "微调 Button", exact: true }).click();
+	await expect(pageSample).toHaveCSS("height", "44px");
+	await openButton.click();
 	await expect(
-		page.getByRole("slider", { name: "默认 · 高度（px）", exact: true })
+		editor.getByRole("slider", { name: "默认 · 高度（px）", exact: true })
 	).toHaveAttribute("aria-valuenow", "44");
 	await setNumber(page, "默认 · 高度（px）", 60);
-	await tuner.getByRole("button", { name: "撤回未保存修改" }).click();
-	await expect(current).toHaveCSS("height", "44px");
-	await tuner.getByRole("button", { name: "取消未保存修改 / 关闭" }).click();
+	await editor.getByRole("button", { name: "撤回未保存修改" }).click();
+	await expect(cell("current", "default", "default")).toHaveCSS("height", "44px");
+	await editor.getByRole("button", { name: "关闭", exact: true }).click();
 	const downloadPromise = page.waitForEvent("download");
 	await tuner.getByRole("button", { name: "导出当前版本" }).click();
 	const download = await downloadPromise;
@@ -218,7 +219,7 @@ test("Button docs tune component parameters for every variant, compare and resto
 		buffer: Buffer.from('{"format":999}'),
 	});
 	await expect(tuner.getByRole("status")).toContainText("导入失败");
-	await expect(current).toHaveCSS("height", "44px");
+	await expect(pageSample).toHaveCSS("height", "44px");
 	expect(errors).toEqual([]);
 });
 
@@ -228,28 +229,30 @@ test("Button radius level follows the global radius and drafts survive storage f
 	await page.emulateMedia({ colorScheme: "dark" });
 	await page.goto("/docs/components/button", { waitUntil: "networkidle" });
 	const tuner = page.getByRole("region", { name: "Button 样式微调", exact: true });
-	const current = tuner.locator('[data-tuning-current] [data-size="default"]').first();
+	const editor = page.getByRole("dialog", { name: "Button · 组件参数" });
+	const current = editor.locator(
+		'[data-tuning-current] [data-variant="outline"][data-size="default"]'
+	);
 	await tuner.getByRole("button", { name: "微调 Button", exact: true }).click();
-	await page.getByRole("button", { name: "圆角档位 lg · 1 × 基数" }).click();
+	await editor.getByRole("button", { name: "圆角档位 lg · 1 × 基数" }).click();
 	await page.getByRole("option", { name: "xl · 1.4 × 基数", exact: true }).click();
 	// xl is 1.4 × the theme radius (0.625rem = 10px), not a fixed pixel value.
 	await expect(current).toHaveCSS("border-top-left-radius", "14px");
-	await expect(tuner.locator('[data-tuning-current] [data-size="xs"]')).toHaveCSS(
-		"border-top-left-radius",
-		"14px"
-	);
+	await expect(
+		editor.locator('[data-tuning-current] [data-variant="outline"][data-size="xs"]')
+	).toHaveCSS("border-top-left-radius", "14px");
 	await setNumber(page, "默认 · 高度（px）", 59);
 	// After keyboard input, focusing shows the original focus ring.
 	await current.focus();
 	await expect(current).not.toHaveCSS("box-shadow", "none");
-	await tuner.getByRole("textbox", { name: "Button 版本名称" }).fill("存储失败不得丢失");
+	await editor.getByRole("textbox", { name: "Button 版本名称" }).fill("存储失败不得丢失");
 	await page.evaluate(() => {
 		Storage.prototype.setItem = () => {
 			throw new DOMException("Storage full", "QuotaExceededError");
 		};
 	});
-	await tuner.getByRole("button", { name: "保存新版本", exact: true }).click();
-	await expect(tuner.getByRole("status")).toContainText("保存失败");
+	await editor.getByRole("button", { name: "保存版本", exact: true }).click();
+	await expect(editor.getByRole("status")).toContainText("保存失败");
 	await expect(current).toHaveCSS("height", "59px");
 	for (const width of [320, 390, 768]) {
 		await page.setViewportSize({ width, height: 900 });

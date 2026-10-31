@@ -80,7 +80,7 @@
 	>
 		<div class="flex flex-col gap-12 overflow-auto px-6 py-6">
 			<div class="flex flex-col gap-4">
-				<div class="text-sm font-medium text-muted-foreground">Menu</div>
+				<div class="text-sm font-medium text-muted-foreground">导航</div>
 				<div class="flex flex-col gap-3">
 					{#each mainNavItems as item, i (i)}
 						{@render MobileLink({ href: item.href, content: item.title })}

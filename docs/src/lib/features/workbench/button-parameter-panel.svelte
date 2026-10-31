@@ -30,7 +30,7 @@
 	for (const parameter of BUTTON_NUMBER_PARAMETERS) {
 		config[parameter.label] = [start[parameter.key], parameter.min, parameter.max, 1];
 	}
-	const values = createDialKit("Button · 组件参数", config);
+	const values = createDialKit("尺寸与圆角", config);
 	$effect(() => {
 		onchange({
 			radius: values[RADIUS_LABEL] as RadiusLevel,
@@ -42,5 +42,5 @@
 </script>
 
 <div data-testid="button-dials">
-	<DialRoot {theme} productionEnabled />
+	<DialRoot mode="inline" {theme} productionEnabled />
 </div>

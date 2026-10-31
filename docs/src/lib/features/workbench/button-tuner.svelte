@@ -1,7 +1,13 @@
 <script lang="ts">
 	import ArrowUpIcon from "@lucide/svelte/icons/arrow-up";
+	import XIcon from "@lucide/svelte/icons/x";
 	import { onMount, tick, type Component, type Snippet } from "svelte";
+	import * as AlertDialog from "$lib/registry/ui/alert-dialog/index.js";
+	import * as Dialog from "$lib/registry/ui/dialog/index.js";
+	import * as ToggleGroup from "$lib/registry/ui/toggle-group/index.js";
+	import { Badge } from "$lib/registry/ui/badge/index.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
+	import { Input } from "$lib/registry/ui/input/index.js";
 	import {
 		BUTTON_NUMBER_PARAMETERS,
 		BUTTON_SIZES,
@@ -52,6 +58,16 @@
 	let confirming = $state(false);
 	let writing = $state(false);
 	let panelKey = $state(0);
+	let view = $state<"draft" | "compare">("draft");
+	let canvasMode = $state<"light" | "dark">("light");
+	const VARIANTS = [
+		{ id: "default", label: "默认" },
+		{ id: "outline", label: "描边" },
+		{ id: "secondary", label: "次要" },
+		{ id: "ghost", label: "幽灵" },
+		{ id: "destructive", label: "危险" },
+		{ id: "link", label: "链接" },
+	] as const;
 	let Panel = $state<
 		Component<{
 			initial: ButtonValues;
@@ -109,6 +125,8 @@
 			Panel = (await import("./button-parameter-panel.svelte")).default;
 			source = readSource();
 			mode = document.documentElement.classList.contains("dark") ? "dark" : "light";
+			canvasMode = mode;
+			view = "draft";
 			baseline = readButtonValues(probe!);
 			const computed = getComputedStyle(probe!.querySelector<HTMLElement>("[data-probe-size]")!);
 			tokens = TOKENS.map(([name, label]) => ({
@@ -122,8 +140,6 @@
 			confirming = false;
 			editing = true;
 			panelKey++;
-			await tick();
-			document.getElementById(`${id}-title`)?.focus({ preventScroll: true });
 		} catch {
 			message = "参数面板加载失败，请重试。";
 		} finally {
@@ -137,6 +153,12 @@
 		confirming = false;
 		await tick();
 		openButton?.focus({ preventScroll: true });
+	}
+
+	function revert() {
+		draft = { ...active?.overrides };
+		confirming = false;
+		panelKey++;
 	}
 
 	function makeVersion(): ButtonVersion {
@@ -236,19 +258,43 @@
 	}
 </script>
 
-{#snippet sizeRow(isProbe = false)}
-	<div class="size-row">
-		{#each BUTTON_SIZES as size (size.id)}
-			<div class="size-pair">
-				<Button variant="outline" size={size.id} data-probe-size={isProbe ? size.id : undefined}
-					>{size.label}</Button
-				>
-				<Button variant="outline" size={size.icon} aria-label={`${size.label}尺寸图标按钮`}
-					><ArrowUpIcon /></Button
-				>
+{#snippet sizeRow()}
+	{#each BUTTON_SIZES as size (size.id)}
+		<Button variant="outline" size={size.id} data-probe-size={size.id}>{size.label}</Button>
+	{/each}
+{/snippet}
+
+{#snippet grid(pane: "current" | "before", caption: string)}
+	<figure
+		class={[
+			"min-w-0 rounded-xl border bg-background text-foreground",
+			canvasMode === "dark" && "dark",
+		]}
+		data-tuning-current={pane === "current" ? "" : undefined}
+		data-tuning-before={pane === "before" ? "" : undefined}
+	>
+		<figcaption class="border-b px-4 py-2.5 text-xs text-muted-foreground">{caption}</figcaption>
+		<div class="overflow-x-auto p-4">
+			<div class="matrix">
+				<span></span>
+				{#each VARIANTS as variant (variant.id)}<span class="axis">{variant.label}</span>{/each}
+				<span class="axis">图标</span>
+				{#each BUTTON_SIZES as size (size.id)}
+					<span class="axis">{size.label}</span>
+					{#each VARIANTS as variant (variant.id)}
+						<Button variant={variant.id} size={size.id}>按钮</Button>
+					{/each}
+					<Button variant="outline" size={size.icon} aria-label={`${size.label}尺寸图标按钮`}
+						><ArrowUpIcon /></Button
+					>
+				{/each}
 			</div>
-		{/each}
-	</div>
+		</div>
+	</figure>
+{/snippet}
+
+{#snippet status()}
+	{#if message}<p role="status" class="notice">{message}</p>{/if}
 {/snippet}
 
 <section class="button-tuner" data-button-tuner={id} aria-label="Button 样式微调">
@@ -257,182 +303,227 @@
 			<span class="eyebrow">BUTTON / 组件参数</span>
 			<p class="context">{styleName} · 全部变体共用尺寸与圆角档位</p>
 		</div>
-		{#if !editing}
-			<label class="version-select"
-				>使用版本
-				<select aria-label="Button 使用版本" bind:value={selected}>
-					<option value="">当前组件库样式</option>
-					{#each compatible as version (version.id)}<option value={version.id}
-							>{version.name}</option
-						>{/each}
-				</select>
-			</label>
-			<button class="action primary" bind:this={openButton} onclick={begin} disabled={loading}
-				>{loading ? "加载 DialKit…" : "微调 Button"}</button
-			>
-		{:else}
-			<button class="action" onclick={close}>取消未保存修改 / 关闭</button>
-		{/if}
+		<label class="version-select"
+			>使用版本
+			<select aria-label="Button 使用版本" bind:value={selected} disabled={editing}>
+				<option value="">当前组件库样式</option>
+				{#each compatible as version (version.id)}<option value={version.id}>{version.name}</option
+					>{/each}
+			</select>
+		</label>
+		<button class="action primary" bind:this={openButton} onclick={begin} disabled={loading}
+			>{loading ? "加载中…" : "微调 Button"}</button
+		>
 	</div>
-	{#if message}<p role="status" class="notice">{message}</p>{/if}
-	{#if editing}
-		<div class="editor-heading">
-			<h2 id={`${id}-title`} tabindex="-1">微调 Button 组件参数</h2>
-			<p>
-				尺寸参数作用于该尺寸的所有变体（实心、描边、幽灵等），图标按钮跟随同档高度。颜色、圆角基数和字号属于全局
-				token，这里只读。
-			</p>
-		</div>
-	{/if}
-	<div class:comparing={editing} class="samples">
-		{#if editing}
-			<div class="sample-column">
-				<label class="sample-label"
-					>对比基线
-					<select aria-label="Button 对比版本" bind:value={comparison}>
-						<option value="">当前组件库样式</option>
-						{#each compatible as version (version.id)}<option value={version.id}
-								>{version.name}</option
-							>{/each}
-					</select>
-				</label>
-				<div class="sample" data-tuning-before>
-					{@render children()}
-					{@render sizeRow()}
-				</div>
-			</div>
-		{/if}
-		<div class="sample-column">
-			{#if editing}<p class="sample-label">
-					当前草稿 <span>{changed.length} 项修改 · 实时预览</span>
-				</p>{/if}
-			<div class="sample" data-tuning-current>
-				{@render children()}
-				{#if editing}{@render sizeRow()}{/if}
-			</div>
-		</div>
-	</div>
+	{#if !editing}{@render status()}{/if}
+	<div class="sample" data-tuning-current>{@render children()}</div>
 	<!-- Unmodified instances supply the rendered values of every size and the radius levels. -->
 	<div class="probe" bind:this={probe} aria-hidden="true" inert>
-		{@render sizeRow(true)}
+		{@render sizeRow()}
 		<span data-probe-radius></span>
 	</div>
-	{#if editing && Panel && initial && baseline}
-		{#key panelKey}
-			<Panel
-				{initial}
-				theme={mode}
-				onchange={(values) => {
-					draft = buttonChanges(baseline!, values);
-					confirming = false;
-				}}
+	<div class="backup-row">
+		<label class="import-label"
+			>导入版本备份<input
+				aria-label="导入 Button 版本"
+				type="file"
+				accept=".json,application/json"
+				onchange={importVersion}
+			/></label
+		>
+		{#if active}<button class="action" onclick={download}>导出当前版本</button>{/if}
+		<span>版本保存在本地浏览器；写回组件库在微调编辑器中确认</span>
+	</div>
+</section>
+
+<Dialog.Root
+	open={editing}
+	onOpenChange={(open) => {
+		if (!open) close();
+	}}
+>
+	<Dialog.Content
+		data-button-tuner={id}
+		showCloseButton={false}
+		class="flex h-dvh w-screen max-w-none flex-col gap-0 rounded-none p-0 ring-0 sm:max-w-none"
+		onCloseAutoFocus={(event) => {
+			event.preventDefault();
+			openButton?.focus({ preventScroll: true });
+		}}
+	>
+		<header class="flex flex-wrap items-center gap-2 border-b px-4 py-3">
+			<div class="mr-auto min-w-0">
+				<Dialog.Title class="text-base font-semibold">Button · 组件参数</Dialog.Title>
+				<Dialog.Description class="text-xs text-muted-foreground">
+					{styleName} · 尺寸参数作用于该尺寸的所有变体，图标按钮跟随同档高度
+				</Dialog.Description>
+			</div>
+			<Badge variant={changed.length ? "default" : "secondary"}>已修改 {changed.length} 项</Badge>
+			<Input
+				aria-label="Button 版本名称"
+				bind:value={name}
+				maxlength={60}
+				placeholder="版本名称"
+				class="w-40"
 			/>
-		{/key}
-		<div role="region" aria-label="样式版本">
-			<div class="versions">
-				<p class="section-label">写回组件库</p>
-				{#if !canWrite}
-					<p class="help">写回只在本地开发站（pnpm dev）提供；当前站点只能保存和导出版本。</p>
-				{:else if !confirming}
-					<button
-						class="action primary"
-						disabled={!changed.length || writing}
-						onclick={() => (confirming = true)}>写回组件库…</button
-					>
-					<p class="help">
-						把当前草稿设为 Valar Button 的默认样式（{styleName}）。写入后需要提交到 Git 才会保留。
-					</p>
-				{:else}
-					<div class="confirm" role="group" aria-label="确认写回">
-						<p>
-							将写入 <code>docs/{styleOverridePath(styleName)}</code>，并重建
-							registry。上游样式文件不变；以后从 Valar 安装的 Button 都会使用以下修改：
-						</p>
-						<ul>
-							{#each changed as key (key)}<li>
-									{LABELS[key]}：{baseline[key]} → {draft[key]}
-								</li>{/each}
-						</ul>
-						<div class="actions">
-							<button class="action primary" onclick={writeBack} disabled={writing}
-								>{writing ? "写回中…" : "确认写回"}</button
-							>
-							<button class="action" onclick={() => (confirming = false)} disabled={writing}
-								>返回修改</button
-							>
-						</div>
-					</div>
-				{/if}
-			</div>
-			<div class="versions">
-				<p class="section-label">全局 token（只读）</p>
-				<p class="help">
-					这些值影响所有组件，在组件页不能修改，请到<a href="/themes">全局主题页</a>统一配置。
-				</p>
-				<dl class="tokens">
-					{#each tokens as token (token.name)}
-						<div>
-							<dt>{token.label}</dt>
-							<dd><code>{token.name}</code> {token.value}</dd>
-						</div>
-					{/each}
-				</dl>
-			</div>
-			<div class="versions">
-				<p class="section-label">保存为新样式版本</p>
-				<label
-					>版本名称<input
-						aria-label="Button 版本名称"
-						bind:value={name}
-						maxlength="60"
-						placeholder="例如：更宽松的按钮"
-					/></label
+			<Button variant="outline" onclick={save} disabled={!name.trim()}>保存版本</Button>
+			{#if canWrite}
+				<Button onclick={() => (confirming = true)} disabled={!changed.length || writing}
+					>写回组件库…</Button
 				>
-				<div class="actions">
-					<button class="action primary" onclick={save} disabled={!name.trim()}>保存新版本</button>
-					<button class="action" onclick={download} disabled={!name.trim()}>导出备份</button>
-					<button
-						class="action"
-						onclick={() => {
-							draft = { ...active?.overrides };
-							confirming = false;
-							panelKey++;
-						}}>撤回未保存修改</button
+			{/if}
+			<Button variant="ghost" size="icon" aria-label="关闭" onclick={close}><XIcon /></Button>
+		</header>
+		<div
+			class="grid min-h-0 flex-1 overflow-y-auto lg:grid-cols-[minmax(0,1fr)_320px] lg:overflow-hidden"
+		>
+			<section aria-label="预览" class="flex min-w-0 flex-col gap-4 p-4 md:p-6 lg:overflow-y-auto">
+				<div class="flex flex-wrap items-center gap-3">
+					<ToggleGroup.Root
+						type="single"
+						variant="outline"
+						size="sm"
+						value={view}
+						onValueChange={(value) => value && (view = value as typeof view)}
+						aria-label="预览方式"
 					>
+						<ToggleGroup.Item value="draft">仅草稿</ToggleGroup.Item>
+						<ToggleGroup.Item value="compare">并排对比</ToggleGroup.Item>
+					</ToggleGroup.Root>
+					{#if view === "compare"}
+						<label class="flex items-center gap-2 text-sm"
+							>对比基线
+							<select
+								aria-label="Button 对比版本"
+								bind:value={comparison}
+								class="h-8 rounded-md border bg-background px-2 text-sm"
+							>
+								<option value="">当前组件库样式</option>
+								{#each compatible as version (version.id)}<option value={version.id}
+										>{version.name}</option
+									>{/each}
+							</select>
+						</label>
+					{/if}
+					<ToggleGroup.Root
+						type="single"
+						variant="outline"
+						size="sm"
+						class="ml-auto"
+						value={canvasMode}
+						onValueChange={(value) => value && (canvasMode = value as typeof canvasMode)}
+						aria-label="画布明暗"
+					>
+						<ToggleGroup.Item value="light">浅色</ToggleGroup.Item>
+						<ToggleGroup.Item value="dark">深色</ToggleGroup.Item>
+					</ToggleGroup.Root>
 				</div>
-				<p class="help">
-					版本只保存在当前浏览器，最多 50 个；同名不覆盖。导出文件可在其他浏览器导入。DialKit
-					的原生缩略图用于本次微调；跨刷新保留请在此命名保存或导出。
-				</p>
-				<details open>
-					<summary>已修改参数（{changed.length}）</summary>
-					{#if !changed.length}<p class="help">尚未修改，当前效果与所选样式一致。</p>{/if}
-					<dl>
+				<div class={["grid gap-4", view === "compare" && "2xl:grid-cols-2"]}>
+					{#if view === "compare"}
+						{@render grid("before", `对比基线 · ${previous?.name ?? "当前组件库样式"}`)}
+					{/if}
+					{@render grid("current", `草稿 · ${changed.length} 项修改 · 实时预览`)}
+				</div>
+			</section>
+			<aside
+				aria-label="参数"
+				class="flex min-w-0 flex-col gap-5 border-t p-4 lg:overflow-y-auto lg:border-t-0 lg:border-l"
+			>
+				{@render status()}
+				{#if Panel && initial && baseline}
+					{#key panelKey}
+						<Panel
+							{initial}
+							theme={mode}
+							onchange={(values) => {
+								draft = buttonChanges(baseline!, values);
+								confirming = false;
+							}}
+						/>
+					{/key}
+				{/if}
+				<section class="grid gap-2">
+					<h3 class="text-xs font-semibold text-muted-foreground">
+						已修改参数（{changed.length}）
+					</h3>
+					{#if !changed.length}<p class="text-xs text-muted-foreground">尚未修改。</p>{/if}
+					<dl class="grid gap-1.5 text-xs">
 						{#each changed as key (key)}
-							<div>
+							<div class="flex justify-between gap-2">
 								<dt>{LABELS[key]}</dt>
-								<dd>{baseline[key]} → {draft[key]}</dd>
+								<dd class="text-muted-foreground tabular-nums">
+									{baseline?.[key]} → {draft[key]}
+								</dd>
 							</div>
 						{/each}
 					</dl>
-				</details>
-			</div>
+					<div class="flex flex-wrap gap-2 pt-1">
+						<Button variant="outline" size="sm" onclick={revert} disabled={!changed.length}
+							>撤回未保存修改</Button
+						>
+						<Button variant="ghost" size="sm" onclick={download} disabled={!name.trim()}
+							>导出备份</Button
+						>
+					</div>
+				</section>
+				<section class="grid gap-2">
+					<h3 class="text-xs font-semibold text-muted-foreground">全局 token（只读）</h3>
+					<p class="text-xs leading-relaxed text-muted-foreground">
+						影响所有组件，在组件页不能修改，请到<a class="underline" href="/themes">全局主题页</a
+						>统一配置。
+					</p>
+					<dl class="grid gap-1.5 text-xs">
+						{#each tokens as token (token.name)}
+							<div class="flex items-center justify-between gap-2">
+								<dt class="flex items-center gap-2">
+									<span
+										class="size-3 shrink-0 rounded-sm border"
+										style:background={token.name === "--radius" || token.name === "--text-sm"
+											? "transparent"
+											: `var(${token.name})`}
+									></span>{token.label}
+								</dt>
+								<dd class="truncate text-muted-foreground">
+									<code>{token.name}</code>
+									{token.value}
+								</dd>
+							</div>
+						{/each}
+					</dl>
+				</section>
+				<p class="text-xs leading-relaxed text-muted-foreground">
+					{#if canWrite}
+						版本只保存在当前浏览器，最多 50 个，同名不覆盖。“写回组件库”会修改仓库源码，需要提交到
+						Git 才会保留。
+					{:else}
+						写回只在本地开发站（pnpm dev）提供；当前站点只能保存和导出版本。
+					{/if}
+				</p>
+			</aside>
 		</div>
-	{:else if !editing}
-		<div class="backup-row">
-			<label class="import-label"
-				>导入版本备份<input
-					aria-label="导入 Button 版本"
-					type="file"
-					accept=".json,application/json"
-					onchange={importVersion}
-				/></label
+	</Dialog.Content>
+</Dialog.Root>
+
+<AlertDialog.Root bind:open={confirming}>
+	<AlertDialog.Content>
+		<AlertDialog.Header>
+			<AlertDialog.Title>写回组件库</AlertDialog.Title>
+			<AlertDialog.Description>
+				将写入 <code>docs/{styleOverridePath(styleName)}</code> 并重建 registry。上游样式文件不变；以后从
+				Valar 安装的 Button 都会使用以下修改：
+			</AlertDialog.Description>
+		</AlertDialog.Header>
+		<ul class="list-disc pl-5 text-sm">
+			{#each changed as key (key)}<li>{LABELS[key]}：{baseline?.[key]} → {draft[key]}</li>{/each}
+		</ul>
+		<AlertDialog.Footer>
+			<AlertDialog.Cancel disabled={writing}>返回修改</AlertDialog.Cancel>
+			<AlertDialog.Action onclick={writeBack} disabled={writing}
+				>{writing ? "写回中…" : "确认写回"}</AlertDialog.Action
 			>
-			{#if active}<button class="action" onclick={download}>导出当前版本</button>{/if}
-			<span>版本保存在本地浏览器；写回组件库需在微调面板中确认</span>
-		</div>
-	{/if}
-</section>
+		</AlertDialog.Footer>
+	</AlertDialog.Content>
+</AlertDialog.Root>
 
 <style>
 	.button-tuner {
@@ -442,7 +533,6 @@
 		font-size: 13px;
 	}
 	.toolbar,
-	.actions,
 	.backup-row {
 		display: flex;
 		flex-wrap: wrap;
@@ -456,8 +546,7 @@
 	.toolbar > :first-child {
 		margin-right: auto;
 	}
-	.eyebrow,
-	.section-label {
+	.eyebrow {
 		font-size: 11px;
 		font-weight: 600;
 		letter-spacing: 0.08em;
@@ -469,8 +558,7 @@
 		color: var(--muted-foreground);
 	}
 	.action,
-	select,
-	input:not([type="file"]) {
+	select {
 		border: 1px solid var(--border);
 		border-radius: 7px;
 		background: var(--background);
@@ -486,7 +574,8 @@
 	.action:hover {
 		background: var(--muted);
 	}
-	.action:disabled {
+	.action:disabled,
+	select:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
@@ -514,66 +603,8 @@
 	.version-select select {
 		max-width: 170px;
 	}
-	.editor-heading {
-		padding: 20px 16px 4px;
-	}
-	.editor-heading h2 {
-		margin: 0 0 6px;
-		font-size: 18px;
-		font-weight: 600;
-	}
-	.editor-heading p,
-	.help {
-		color: var(--muted-foreground);
-		font-size: 12px;
-		line-height: 1.7;
-	}
-	.samples {
-		display: grid;
-	}
-	.comparing {
-		grid-template-columns: repeat(2, minmax(0, 1fr));
-		grid-template-rows: auto 1fr;
-		margin: 16px;
-		border: 1px solid var(--border);
-		border-radius: 10px;
-		overflow: hidden;
-	}
-	.sample-column {
-		min-width: 0;
-	}
-	.comparing .sample-column {
-		display: grid;
-		grid-template-rows: subgrid;
-		grid-row: span 2;
-	}
-	.comparing .sample-column + .sample-column {
-		border-left: 1px solid var(--border);
-	}
-	.sample-label {
-		display: flex;
-		flex-direction: column;
-		flex-wrap: wrap;
-		gap: 8px;
-		align-items: flex-start;
-		min-height: 63px;
-		margin: 0;
-		padding: 10px;
-		font-size: 12px;
-		border-bottom: 1px solid var(--border);
-		background: var(--muted);
-	}
-	.sample-label span {
-		color: var(--muted-foreground);
-		font-size: 11px;
-	}
-	.sample-label select {
-		width: 100%;
-	}
 	.sample {
 		display: flex;
-		flex-direction: column;
-		gap: 20px;
 		align-items: center;
 		justify-content: center;
 		min-height: 140px;
@@ -587,76 +618,15 @@
 		top: 0;
 		left: 0;
 	}
-	.size-row {
+	.matrix {
 		display: grid;
-		grid-template-columns: repeat(2, auto);
-		justify-content: center;
+		grid-template-columns: auto repeat(7, auto);
+		gap: 16px 14px;
 		align-items: center;
-		gap: 12px 20px;
+		justify-items: start;
+		width: max-content;
 	}
-	.size-pair {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-	}
-	.confirm {
-		border: 1px solid var(--border);
-		border-radius: 8px;
-		padding: 12px;
-		font-size: 12px;
-		line-height: 1.7;
-	}
-	.confirm ul {
-		margin: 8px 0;
-		padding-left: 18px;
-		list-style: disc;
-	}
-	.confirm code,
-	.tokens code {
-		overflow-wrap: anywhere;
-	}
-	.help a {
-		text-decoration: underline;
-		color: var(--foreground);
-	}
-	.section-label {
-		margin: 0 0 14px;
-		padding: 0 8px;
-	}
-	.versions {
-		border-top: 1px solid var(--border);
-		padding: 16px;
-		min-width: 0;
-	}
-	.versions .section-label {
-		padding: 0;
-	}
-	.versions label {
-		display: grid;
-		gap: 8px;
-		margin-bottom: 12px;
-	}
-	.actions {
-		margin: 12px 0;
-	}
-	details {
-		border-top: 1px solid var(--border);
-		padding: 14px 0;
-		margin-top: 14px;
-	}
-	summary {
-		cursor: pointer;
-		font-weight: 500;
-	}
-	dl {
-		margin: 12px 0 0;
-	}
-	dl > div {
-		margin-bottom: 10px;
-	}
-	dd {
-		margin: 2px 0 0;
-		overflow-wrap: anywhere;
+	.axis {
 		font-size: 11px;
 		color: var(--muted-foreground);
 	}
@@ -683,10 +653,11 @@
 		font-size: 12px;
 		overflow-wrap: anywhere;
 	}
+	aside .notice {
+		border: 1px solid var(--border);
+		border-radius: 8px;
+	}
 	@media (max-width: 640px) {
-		.comparing {
-			margin: 12px;
-		}
 		.sample {
 			min-height: 120px;
 			padding: 16px 8px;

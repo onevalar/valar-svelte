@@ -365,32 +365,11 @@ export const sidebarNavItems: SidebarNavItem[] = [
 	},
 ];
 
+// Blocks, Charts, Create and Studio stay reachable by URL but are not promoted.
 export const mainNavItems: NavItem[] = [
-	{ title: "Home", href: "/" },
-	{
-		title: "Docs",
-		href: "/docs/installation",
-	},
-	{
-		title: "Components",
-		href: "/docs/components",
-	},
-	{
-		title: "Blocks",
-		href: "/blocks",
-	},
-	{
-		title: "Charts",
-		href: "/charts/area",
-	},
-	{
-		title: "Studio",
-		href: "/workbench",
-	},
-	{
-		title: "Create",
-		href: "/create",
-	},
+	{ title: "组件", href: "/docs/components" },
+	{ title: "设计 token", href: "/themes" },
+	{ title: "文档", href: "/docs/installation" },
 ];
 
 export function getFullNavItems(): Array<SidebarNavItem & { index: number }> {

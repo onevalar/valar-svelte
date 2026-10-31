@@ -1,0 +1,21 @@
+{
+	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
+	"name": "slider-field",
+	"type": "registry:ui",
+	"registryDependencies": [
+		"number-field",
+		"slider"
+	],
+	"files": [
+		{
+			"content": "export { default as SliderField, type SliderFieldProps } from \"./slider-field.svelte\";\n",
+			"type": "registry:file",
+			"target": "slider-field/index.ts"
+		},
+		{
+			"content": "<script lang=\"ts\" module>\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\texport type SliderFieldProps = Omit<HTMLAttributes<HTMLDivElement>, \"children\"> & {\n\t\t/** Visible label; also names the slider and the number input. */\n\t\tlabel: string;\n\t\tvalue?: number;\n\t\tmin?: number;\n\t\tmax?: number;\n\t\tstep?: number;\n\t\t/** Shown after the number, e.g. \"px\". Not part of the value. */\n\t\tunit?: string;\n\t\tdisabled?: boolean;\n\t\t/** Submitted by the number input as a plain number. */\n\t\tname?: string;\n\t\tonValueChange?: (value: number) => void;\n\t};\n</script>\n\n<script lang=\"ts\">\n\timport { NumberField } from \"$UI$/number-field/index.js\";\n\timport { Slider } from \"$UI$/slider/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tlabel,\n\t\tvalue = $bindable(0),\n\t\tmin = 0,\n\t\tmax = 100,\n\t\tstep = 1,\n\t\tunit,\n\t\tdisabled = false,\n\t\tname,\n\t\tonValueChange,\n\t\tid: idProp,\n\t\tclass: className,\n\t\t...restProps\n\t}: SliderFieldProps = $props();\n\tconst generated = $props.id();\n\tconst id = $derived(idProp ?? generated);\n\n\tfunction set(next: number | undefined) {\n\t\t// An emptied or invalid number box keeps the last value instead of becoming 0.\n\t\t// Out-of-range typing is shown as invalid by the number box until it is corrected.\n\t\tif (next === undefined || !Number.isFinite(next) || next < min || next > max) return;\n\t\tif (Object.is(next, value)) return;\n\t\tvalue = next;\n\t\tonValueChange?.(next);\n\t}\n</script>\n\n<div\n\tdata-slot=\"slider-field\"\n\tdata-disabled={disabled || undefined}\n\tclass={cn(\"grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2\", className)}\n\t{...restProps}\n>\n\t<label for={`${id}-input`} class=\"col-span-2 text-sm font-medium\">{label}</label>\n\t<Slider\n\t\ttype=\"single\"\n\t\t{value}\n\t\tonValueChange={set}\n\t\t{min}\n\t\t{max}\n\t\t{step}\n\t\t{disabled}\n\t\taria-label={label}\n\t/>\n\t<div class=\"flex items-center gap-1.5\">\n\t\t<NumberField\n\t\t\tid={`${id}-input`}\n\t\t\t{name}\n\t\t\t{value}\n\t\t\tonValueChange={set}\n\t\t\t{min}\n\t\t\t{max}\n\t\t\t{step}\n\t\t\t{disabled}\n\t\t\tclass=\"w-32\"\n\t\t\tdecrementLabel={`减小${label}`}\n\t\t\tincrementLabel={`增大${label}`}\n\t\t/>\n\t\t{#if unit}<span class=\"text-xs text-muted-foreground\">{unit}</span>{/if}\n\t</div>\n</div>\n",
+			"type": "registry:file",
+			"target": "slider-field/slider-field.svelte"
+		}
+	]
+}

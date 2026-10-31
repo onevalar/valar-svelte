@@ -18,12 +18,17 @@
 
 初始核对范围为 `docs/src/lib/registry/ui/` 的组件目录与相关入口；前三项原先没有独立目录，本轮已新增。以下“完成”均指本地实现及约定验收，不代表已发布；用户未要求提交，故以源码路径和验收记录定位，不填写不存在的实现提交 SHA。
 
-| 编号      | 项目                     | 实施顺序 | 当前状态                           | 交付及验收                                                                                                                  |
-| --------- | ------------------------ | -------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| VCOMP-001 | Number Field：数值输入   | 1        | 完成（本地）                       | [源码](../docs/src/lib/registry/ui/number-field/index.ts) · [能力差异与验收](porting-records/number-field-vue-to-svelte.md) |
-| VCOMP-002 | Tags Input：标签输入     | 2        | 完成（本地）                       | [源码](../docs/src/lib/registry/ui/tags-input/index.ts) · [能力差异与验收](porting-records/tags-input-vue-to-svelte.md)     |
-| VCOMP-003 | Stepper：步骤流程        | 3        | 完成（本地）                       | [源码](../docs/src/lib/registry/ui/stepper/index.ts) · [能力差异与验收](porting-records/stepper-vue-to-svelte.md)           |
-| VCOMP-004 | Direction／RTL：方向支持 | 4        | 完成（评估、文档、代表组合与修复） | [用法](../docs/content/direction.md) · [能力缺口与验收](porting-records/direction-bits-ui-to-svelte.md)                     |
+| 编号      | 项目                                                                                         | 实施顺序 | 当前状态                           | 交付及验收                                                                                                                  |
+| --------- | -------------------------------------------------------------------------------------------- | -------- | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
+| VCOMP-001 | Number Field：数值输入                                                                       | 1        | 完成（本地）                       | [源码](../docs/src/lib/registry/ui/number-field/index.ts) · [能力差异与验收](porting-records/number-field-vue-to-svelte.md) |
+| VCOMP-002 | Tags Input：标签输入                                                                         | 2        | 完成（本地）                       | [源码](../docs/src/lib/registry/ui/tags-input/index.ts) · [能力差异与验收](porting-records/tags-input-vue-to-svelte.md)     |
+| VCOMP-003 | Stepper：步骤流程                                                                            | 3        | 完成（本地）                       | [源码](../docs/src/lib/registry/ui/stepper/index.ts) · [能力差异与验收](porting-records/stepper-vue-to-svelte.md)           |
+| VCOMP-004 | Direction／RTL：方向支持                                                                     | 4        | 完成（评估、文档、代表组合与修复） | [用法](../docs/content/direction.md) · [能力缺口与验收](porting-records/direction-bits-ui-to-svelte.md)                     |
+| VCOMP-005 | Slider Field：滑块 + 数值输入                                                                | 5        | 完成（本地，Valar 新增）           | [源码](../docs/src/lib/registry/ui/slider-field/index.ts) · [文档](../docs/content/components/slider-field.md)              |
+| VCOMP-006 | Color Picker：颜色选择                                                                       | 6        | 完成（本地，Valar 新增）           | [源码](../docs/src/lib/registry/ui/color-picker/index.ts) · [文档](../docs/content/components/color-picker.md)              |
+| VCOMP-007 | DialKit 剩余缺口：缓动／弹簧曲线、二维拖动板、时间线、版本缩略图、快捷键、浮动面板、图片选择 | —        | 待办（按需）                       | 对照与规则见[工作台说明](WORKBENCH.md)文末；有实际页面需要时再逐项补                                                        |
+
+VCOMP-005／006 不是跨框架转换，而是为替代 DialKit 控件新增的 Valar 组件，验收以文档页“行为合同”和 `docs/tests/slider-field.test.ts` 为准。
 
 前三项优先参考此前讨论的 Vue 版对应组件行为，最终使用适合 Svelte 的原生实现。Direction／RTL 作为跨组件能力评估，不因缺少同名目录就认定完全不支持 RTL，也不机械复制其他框架的 Provider。
 

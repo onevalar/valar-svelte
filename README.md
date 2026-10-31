@@ -21,7 +21,7 @@ pnpm --filter docs exec vite dev --host 127.0.0.1 --port 5186 --strictPort
 
 ## 源码目录
 
-- `docs/src/lib/registry/ui/`：66 个基础组件目录。
+- `docs/src/lib/registry/ui/`：68 个基础组件目录（含新增 Slider Field、Color Picker）。
 - `docs/src/lib/registry/examples/`、`blocks/`：示例与组合区块。
 - `docs/src/lib/registry/styles/`：8 套现有组件样式。
 - `docs/content/`：Valar 文档与组件用法。
@@ -32,9 +32,11 @@ pnpm --filter docs exec vite dev --host 127.0.0.1 --port 5186 --strictPort
 
 ## 设计师调参工作台
 
-调参主线是组件文档页内的按需微调（2026-10-31 确认），首个样板是 Button 文档页的“微调 Button”。下面的 Studio 保留现有功能，暂不继续扩展。
+调参主线是组件文档页内的按需微调（2026-10-31 确认），首个样板是 Button 文档页的“微调 Button”，点击后进入全屏编辑器。下面的 Studio 保留现有功能，暂不继续扩展，也不再出现在主导航（`/workbench` 仍可访问）。
 
-站点导航 **Studio**（`/workbench`）提供中文参数面板与真实组件画布，支持草稿、具名版本、撤销重做、导入及可安装预设导出，手机上可切换预览和参数页签。
+首页按“全局 token／组件／调参”三块展示，主导航只保留组件、设计 token（`/themes`）、文档。
+
+**Studio**（`/workbench`）提供中文参数面板与真实组件画布，支持草稿、具名版本、撤销重做、导入及可安装预设导出，手机上可切换预览和参数页签。
 
 首批接入 Button、Dialog、Tooltip、Accordion，共 65 个全局／组件参数；其余 62 个组件仍待逐项接入，不代表全库或每一个 API 已覆盖。设计师操作、开发者安装、能力边界和后续顺序见[工作台说明](standards/WORKBENCH.md)。保存仅发生在当前浏览器；导出不等于发布或部署。
 

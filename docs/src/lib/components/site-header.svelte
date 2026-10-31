@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { page } from "$app/state";
-	import PlusIcon from "@lucide/svelte/icons/plus";
 	import SquareTerminal from "@lucide/svelte/icons/square-terminal";
 	import Separator from "$lib/registry/ui/separator/separator.svelte";
 	import { getColors } from "$lib/colors.js";
@@ -70,11 +69,6 @@
 					{/if}
 				{:else}
 					<ModeSwitcher />
-					<Separator orientation="vertical" class="hidden sm:block" />
-					<Button href="/create" variant="default" size="sm" class="h-[31px] rounded-lg">
-						<PlusIcon />
-						<span class="sr-only sm:not-sr-only">New</span>
-					</Button>
 				{/if}
 			</div>
 		</div>

@@ -326,7 +326,7 @@ describe("installable native component bundle", () => {
 			...new Set(items.flatMap((item) => item.devDependencies ?? [])),
 		]);
 		expect(bundle.devDependencies?.some((d) => d.includes("dialkit"))).toBe(false);
-		expect(source(bundle, "button/button.svelte")).toBe(items[0].files![0].content);
+		expect(source(bundle, "button/button.svelte")).toBe(source(items[0], "button/button.svelte"));
 		expect(JSON.stringify(items)).toBe(before);
 		const css = { ...bundle.css };
 		delete css[".existing-rule"];

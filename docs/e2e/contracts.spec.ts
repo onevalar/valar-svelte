@@ -127,6 +127,8 @@ test.describe("phone layout and touch navigation", () => {
 				"number-field",
 				"tags-input",
 				"stepper",
+				"slider-field",
+				"color-picker",
 				"data-table",
 			]) {
 				await page.goto(`/docs/components/${route}`, { waitUntil: "networkidle" });
@@ -167,4 +169,17 @@ test("local CLI tarball installs into an independent, checked and built consumer
 		env: { ...process.env, REGISTRY_URL: `${baseURL}/registry` },
 		stdio: "inherit",
 	});
+});
+
+test("homepage promotes only components, tokens and docs and fits one desktop screen", async ({
+	page,
+}) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto("/", { waitUntil: "networkidle" });
+	const nav = page.locator("header nav").first();
+	await expect(nav.getByRole("link")).toHaveText(["组件", "设计 token", "文档"]);
+	await expect(page.getByRole("link", { name: "New" })).toHaveCount(0);
+	for (const name of ["全局 token", "组件", "调参"])
+		await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();
+	expect(await page.evaluate(() => document.documentElement.scrollHeight)).toBeLessThan(1300);
 });

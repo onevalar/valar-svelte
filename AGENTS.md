@@ -4,6 +4,7 @@
 
 - 将 React、Vue、Svelte 等任意框架的组件转换为另一框架，或替换组件底层交互库时，所有 AI 与人工贡献者必须先阅读 [Valar 跨框架组件转换规范](standards/COMPONENT_PORTING.md)，再开始设计和实现。
 - 后续补缺任务见[组件补充清单](standards/COMPONENT_BACKLOG.md)。实施前核对已有能力，完成后更新状态及验收记录链接；清单中的待办不代表已经提供的组件。
+- 调参功能、首页与全局 token 的路线图和**下一步任务**见[工作台说明](standards/WORKBENCH.md)开头的“路线图与下一步”；完成一步后更新其中的状态表。
 - 使用[转换记录模板](standards/templates/COMPONENT_PORTING_RECORD.md)，将能力对照、状态与行为差异、逐项验收及实际证据保存到 `standards/porting-records/<component>-<source>-to-<target>.md`。
 - 外观相似或编译通过不代表转换完成；约定范围内的必要能力或验证仍有缺口时，必须标记部分实现或待验证，不能宣称完整转换。
 - 不自动读取 `AGENTS.md` 的 AI 工具须在任务上下文中显式收到本文件、规范与模板。未来新建 Valar 的其他框架仓库时同步这套入口和规范，并保留版本信息。

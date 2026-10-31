@@ -121,6 +121,14 @@
 		"relativeUrl": "collapsible.json"
 	},
 	{
+		"name": "color-picker",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"popover"
+		],
+		"relativeUrl": "color-picker.json"
+	},
+	{
 		"name": "command",
 		"type": "registry:ui",
 		"registryDependencies": [
@@ -372,6 +380,15 @@
 		"type": "registry:ui",
 		"registryDependencies": [],
 		"relativeUrl": "slider.json"
+	},
+	{
+		"name": "slider-field",
+		"type": "registry:ui",
+		"registryDependencies": [
+			"number-field",
+			"slider"
+		],
+		"relativeUrl": "slider-field.json"
 	},
 	{
 		"name": "sonner",
