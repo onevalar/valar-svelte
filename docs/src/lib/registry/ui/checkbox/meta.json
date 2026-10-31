@@ -1,0 +1,26 @@
+{
+	"name": "checkbox",
+	"type": "registry:ui",
+	"title": "Checkbox 复选框",
+	"description": "勾选或取消勾选一项，可多选。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["复选框", "checkbox", "勾选", "多选", "同意条款"],
+			"whenToUse": ["从多个选项中选任意个", "表单提交前确认一项（如同意条款）"],
+			"whenNotToUse": [
+				{
+					"case": "立即生效的开关设置",
+					"use": "switch"
+				},
+				{
+					"case": "只能选一个",
+					"use": "radio-group"
+				}
+			],
+			"accessibility": ["每个复选框都有可点击的标签", "一组复选框用 FieldSet 和 legend 说明"],
+			"responsive": ["标签区域可点击，扩大触控范围"],
+			"related": ["switch", "radio-group", "field"]
+		}
+	}
+}

@@ -1,11 +1,51 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "popover",
+	"title": "Popover 弹出层",
 	"type": "registry:ui",
+	"description": "点击触发的小浮层，展示附加内容或简短表单。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"弹出层",
+				"popover",
+				"浮层",
+				"气泡"
+			],
+			"whenToUse": [
+				"点击后显示少量内容或控件"
+			],
+			"whenNotToUse": [
+				{
+					"case": "悬停提示文字",
+					"use": "tooltip"
+				},
+				{
+					"case": "操作菜单",
+					"use": "dropdown-menu"
+				},
+				{
+					"case": "复杂流程",
+					"use": "dialog"
+				}
+			],
+			"accessibility": [
+				"由按钮触发，Esc 关闭并归还焦点"
+			],
+			"responsive": [
+				"窄屏下自动翻转位置并保持在视口内"
+			],
+			"related": [
+				"tooltip",
+				"dropdown-menu",
+				"hover-card"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "import Close from \"./popover-close.svelte\";\nimport Content from \"./popover-content.svelte\";\nimport Description from \"./popover-description.svelte\";\nimport Header from \"./popover-header.svelte\";\nimport Portal from \"./popover-portal.svelte\";\nimport Title from \"./popover-title.svelte\";\nimport Trigger from \"./popover-trigger.svelte\";\nimport Root from \"./popover.svelte\";\n\nexport {\n\tRoot,\n\tContent,\n\tDescription,\n\tHeader,\n\tTitle,\n\tTrigger,\n\tClose,\n\tPortal,\n\t//\n\tRoot as Popover,\n\tContent as PopoverContent,\n\tDescription as PopoverDescription,\n\tHeader as PopoverHeader,\n\tTitle as PopoverTitle,\n\tTrigger as PopoverTrigger,\n\tClose as PopoverClose,\n\tPortal as PopoverPortal,\n};\n",

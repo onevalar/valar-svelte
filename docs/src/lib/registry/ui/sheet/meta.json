@@ -1,0 +1,26 @@
+{
+	"name": "sheet",
+	"type": "registry:ui",
+	"title": "Sheet 侧边面板",
+	"description": "从屏幕边缘滑出的面板，用于补充主内容的信息或设置。",
+	"categories": ["弹层"],
+	"meta": {
+		"valar": {
+			"keywords": ["侧边栏", "sheet", "抽屉", "面板", "side panel"],
+			"whenToUse": ["查看或编辑与当前页面相关的详细信息", "移动端导航菜单"],
+			"whenNotToUse": [
+				{
+					"case": "需要专注完成的流程",
+					"use": "dialog"
+				},
+				{
+					"case": "移动端从底部拉起",
+					"use": "drawer"
+				}
+			],
+			"accessibility": ["必须有标题", "Esc 关闭并归还焦点"],
+			"responsive": ["窄屏下宽度占满或接近占满"],
+			"related": ["dialog", "drawer", "sidebar"]
+		}
+	}
+}

@@ -26,7 +26,8 @@ async function main() {
 			await writeFile(outputPath, "\n", "utf-8");
 		}
 
-		await writeFile(join(__dirname, "../static/llms.txt"), "\n", "utf-8");
+		for (const name of ["llms.txt", "llms-small.txt", "llms-full.txt"])
+			await writeFile(join(__dirname, "../static", name), "\n", "utf-8");
 	} catch (error) {
 		console.error("Error building LLM placeholder files:", error);
 	}

@@ -1,0 +1,26 @@
+{
+	"name": "sonner",
+	"type": "registry:ui",
+	"title": "Sonner 轻提示",
+	"description": "操作后在屏幕角落短暂出现的通知（toast）。",
+	"categories": ["反馈"],
+	"meta": {
+		"valar": {
+			"keywords": ["通知", "toast", "sonner", "轻提示", "消息"],
+			"whenToUse": ["告知操作结果，如“已保存”"],
+			"whenNotToUse": [
+				{
+					"case": "需要用户处理的错误",
+					"use": "alert"
+				},
+				{
+					"case": "需要确认",
+					"use": "alert-dialog"
+				}
+			],
+			"accessibility": ["通知内容会被读屏器播报", "包含操作按钮时停留时间足够长"],
+			"responsive": ["移动端在顶部或底部居中显示"],
+			"related": ["alert"]
+		}
+	}
+}

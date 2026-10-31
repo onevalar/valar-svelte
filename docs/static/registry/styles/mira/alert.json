@@ -1,10 +1,47 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "alert",
+	"title": "Alert 提示条",
 	"type": "registry:ui",
+	"description": "页面内的提示信息块，用于需要用户注意的状态说明。",
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"提示",
+				"alert",
+				"警告",
+				"通知",
+				"横幅"
+			],
+			"whenToUse": [
+				"持续显示在页面中的状态或警告"
+			],
+			"whenNotToUse": [
+				{
+					"case": "操作后的短暂通知",
+					"use": "sonner"
+				},
+				{
+					"case": "需要用户确认",
+					"use": "alert-dialog"
+				}
+			],
+			"accessibility": [
+				"重要提示使用 role=alert",
+				"不只靠颜色区分类型，配合图标和文字"
+			],
+			"responsive": [
+				"窄屏下图标与文字保持对齐，文字可换行"
+			],
+			"related": [
+				"sonner",
+				"card"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"alert-action\"\n\tclass={cn(\"absolute top-1.5 right-2\", className)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",

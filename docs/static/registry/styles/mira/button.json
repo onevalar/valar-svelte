@@ -1,10 +1,54 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "button",
+	"title": "Button 按钮",
 	"type": "registry:ui",
+	"description": "触发一个操作或跳转，是界面里最常见的可点击元素。",
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"按钮",
+				"button",
+				"提交",
+				"CTA",
+				"操作",
+				"点击"
+			],
+			"whenToUse": [
+				"提交表单、确认、保存等明确操作",
+				"需要像按钮一样的链接（传 href）"
+			],
+			"whenNotToUse": [
+				{
+					"case": "在一组互斥选项间切换",
+					"use": "toggle-group"
+				},
+				{
+					"case": "开关某个设置",
+					"use": "switch"
+				},
+				{
+					"case": "一行内的纯文字链接"
+				}
+			],
+			"accessibility": [
+				"只有图标时必须加 aria-label",
+				"禁用时用 disabled，不要只改颜色"
+			],
+			"responsive": [
+				"触屏场景至少使用 default 尺寸，避免误触",
+				"窄屏下主操作可占满整行"
+			],
+			"related": [
+				"button-group",
+				"toggle",
+				"alert-dialog"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "# Button 设计规范\n\n- 一个区域（卡片、弹窗底部、表单）最多一个 `variant=\"default\"` 实心主按钮；其余操作用 `outline`、`secondary` 或 `ghost`。\n- 不可撤销的危险操作用 `variant=\"destructive\"`，并先用 Alert Dialog 确认。\n- 尺寸只用 `size` 属性（`xs`、`sm`、`default`、`lg`，图标按钮用 `icon`、`icon-sm` 等）；不要用 `class` 写高度、内边距或圆角（检查规则 `valar/button-size-via-prop`）。\n- 只有图标的按钮必须有 `aria-label`（检查规则 `valar/icon-button-label`）。\n- 跳转用 `href`，不要在按钮里再包一个链接；表单提交用 `type=\"submit\"`。\n- 不要用原生 `<button>` 或自己写样式的元素冒充按钮（检查规则 `valar/use-button-component`）。\n",

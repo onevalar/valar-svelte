@@ -1,0 +1,25 @@
+{
+	"name": "textarea",
+	"type": "registry:ui",
+	"title": "Textarea 多行输入",
+	"description": "多行文本输入，用于备注、描述、留言等较长内容。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["多行输入", "textarea", "备注", "描述", "留言"],
+			"whenToUse": ["输入可能超过一行的文本"],
+			"whenNotToUse": [
+				{
+					"case": "一行即可的短文本",
+					"use": "input"
+				},
+				{
+					"case": "需要格式化的富文本"
+				}
+			],
+			"accessibility": ["必须有可见标签（用 Field 包裹）", "有字数限制时显示剩余字数"],
+			"responsive": ["窄屏下占满容器宽度", "高度随内容增长时设置最大高度"],
+			"related": ["field", "input"]
+		}
+	}
+}

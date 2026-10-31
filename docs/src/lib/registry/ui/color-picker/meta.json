@@ -1,0 +1,22 @@
+{
+	"name": "color-picker",
+	"type": "registry:ui",
+	"title": "Color Picker 颜色选择",
+	"description": "用色盘、十六进制输入或预设色块选择颜色，值为 #rrggbb。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["颜色", "color", "取色", "色板", "picker"],
+			"whenToUse": ["选择任意颜色或从预设色中挑选"],
+			"whenNotToUse": [
+				{
+					"case": "只在少数固定颜色间选择",
+					"use": "radio-group"
+				}
+			],
+			"accessibility": ["触发器读出标签和当前色值", "十六进制输入有错误提示"],
+			"responsive": ["面板在窄屏下保持在视口内"],
+			"related": ["slider-field", "popover"]
+		}
+	}
+}

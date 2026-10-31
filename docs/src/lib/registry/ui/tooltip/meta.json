@@ -1,0 +1,25 @@
+{
+	"name": "tooltip",
+	"type": "registry:ui",
+	"title": "Tooltip 提示",
+	"description": "悬停或聚焦时显示的简短文字说明。",
+	"categories": ["反馈"],
+	"meta": {
+		"valar": {
+			"keywords": ["提示", "tooltip", "悬停", "说明"],
+			"whenToUse": ["解释图标按钮或缩写的含义"],
+			"whenNotToUse": [
+				{
+					"case": "包含可点击内容",
+					"use": "popover"
+				},
+				{
+					"case": "关键信息（触屏无法悬停）"
+				}
+			],
+			"accessibility": ["键盘聚焦也能显示", "不能替代图标按钮的 aria-label"],
+			"responsive": ["触屏设备无悬停，重要信息不要只放在提示里"],
+			"related": ["popover", "hover-card"]
+		}
+	}
+}

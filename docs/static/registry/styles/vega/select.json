@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "select",
+	"title": "Select 下拉选择",
 	"type": "registry:ui",
+	"description": "从一组固定选项中选择一个值，选项收在下拉面板里。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
@@ -9,6 +11,47 @@
 	"registryDependencies": [
 		"separator"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"下拉",
+				"select",
+				"选择框",
+				"选项",
+				"dropdown"
+			],
+			"whenToUse": [
+				"选项超过 5 个且只能选一个"
+			],
+			"whenNotToUse": [
+				{
+					"case": "选项 2–5 个且需要一眼看全",
+					"use": "radio-group"
+				},
+				{
+					"case": "触发操作而不是选值",
+					"use": "dropdown-menu"
+				},
+				{
+					"case": "需要搜索大量选项",
+					"use": "command"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（方向键、回车、Esc）",
+				"用 Field 提供可见标签"
+			],
+			"responsive": [
+				"窄屏下触发器占满宽度",
+				"选项很多时面板内部滚动"
+			],
+			"related": [
+				"radio-group",
+				"native-select",
+				"field"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "import Content from \"./select-content.svelte\";\nimport GroupHeading from \"./select-group-heading.svelte\";\nimport Group from \"./select-group.svelte\";\nimport Item from \"./select-item.svelte\";\nimport Label from \"./select-label.svelte\";\nimport Portal from \"./select-portal.svelte\";\nimport ScrollDownButton from \"./select-scroll-down-button.svelte\";\nimport ScrollUpButton from \"./select-scroll-up-button.svelte\";\nimport Separator from \"./select-separator.svelte\";\nimport Trigger from \"./select-trigger.svelte\";\nimport Value from \"./select-value.svelte\";\nimport Root from \"./select.svelte\";\n\nexport {\n\tRoot,\n\tGroup,\n\tLabel,\n\tItem,\n\tContent,\n\tTrigger,\n\tSeparator,\n\tScrollDownButton,\n\tScrollUpButton,\n\tGroupHeading,\n\tPortal,\n\tValue,\n\t//\n\tRoot as Select,\n\tGroup as SelectGroup,\n\tLabel as SelectLabel,\n\tItem as SelectItem,\n\tContent as SelectContent,\n\tTrigger as SelectTrigger,\n\tSeparator as SelectSeparator,\n\tScrollDownButton as SelectScrollDownButton,\n\tScrollUpButton as SelectScrollUpButton,\n\tGroupHeading as SelectGroupHeading,\n\tPortal as SelectPortal,\n\tValue as SelectValue,\n};\n",

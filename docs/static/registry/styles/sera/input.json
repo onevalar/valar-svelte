@@ -1,7 +1,51 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "input",
+	"title": "Input 输入框",
 	"type": "registry:ui",
+	"description": "单行文本输入，用于姓名、邮箱、搜索词等短文本。",
+	"meta": {
+		"valar": {
+			"keywords": [
+				"输入框",
+				"input",
+				"文本框",
+				"表单",
+				"text field"
+			],
+			"whenToUse": [
+				"输入一行短文本",
+				"邮箱、密码、数字等带 type 的输入"
+			],
+			"whenNotToUse": [
+				{
+					"case": "多行长文本",
+					"use": "textarea"
+				},
+				{
+					"case": "从固定选项中选择",
+					"use": "select"
+				},
+				{
+					"case": "调整一个数值范围",
+					"use": "slider-field"
+				}
+			],
+			"accessibility": [
+				"必须有可见标签（用 Field 包裹）",
+				"错误信息用 aria-invalid 并关联说明文字"
+			],
+			"responsive": [
+				"窄屏下占满容器宽度",
+				"移动端设置合适的 type 与 inputmode 以弹出正确键盘"
+			],
+			"related": [
+				"field",
+				"textarea",
+				"input-group"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "import Root from \"./input.svelte\";\n\nexport {\n\tRoot,\n\t//\n\tRoot as Input,\n};\n",

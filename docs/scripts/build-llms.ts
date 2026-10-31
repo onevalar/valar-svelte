@@ -18,6 +18,7 @@ import {
 	utils,
 	aiElements,
 } from "../.velite";
+import { cardMarkdown, llmsSmall, type Catalog } from "../src/lib/registry/catalog.js";
 import type { Root, Link, Node, Paragraph, Text } from "mdast";
 import type { Plugin } from "unified";
 
@@ -206,10 +207,8 @@ async function toMarkdown(rawHtml: string) {
 		.replace(REGEX_PATTERNS.escapedBackticks, "`$1`")
 		.replace(REGEX_PATTERNS.codeBlockIndent, "```$1\n")
 		.replace(REGEX_PATTERNS.trailingLinkSpaces, "[$1]")
+		// Valar docs are partly Chinese, so non-ASCII text is kept (upstream stripped it).
 		.replace(/\u00C2/g, "") // Â
-		.replace(/\u2014/g, "") // â€"
-		// eslint-disable-next-line no-control-regex
-		.replace(/[^\u0000-\u007F\u2019]/g, "") // preserve fancy apostrophe
 		.replaceAll("\t", " ")
 		.trim();
 
@@ -414,6 +413,12 @@ async function createLLMsIndex(files: FileMap) {
 
 > Valar Svelte is a collection of beautifully-designed, accessible components for Svelte and SvelteKit. It is built with TypeScript, Tailwind CSS, and Bits UI primitives. Open Source. Open Code. AI-Ready. It also comes with a command-line tool to install and manage components and a registry system to publish and distribute code.
 
+## AI 资料
+
+- [组件索引 llms-small.txt](http://127.0.0.1:5186/llms-small.txt): 每个组件一行，含“何时不用、改用什么”
+- [全部文档 llms-full.txt](http://127.0.0.1:5186/llms-full.txt): 所有文档页合并为一个文件
+- [组件目录 catalog.json](http://127.0.0.1:5186/registry/catalog.json): 组件说明卡（用途、何时用／不用、无障碍、响应式、相关组件）
+
 ## Overview
 
 ${categorizedLinks.overview
@@ -520,6 +525,11 @@ async function main() {
 		const rootPath = join(__dirname, "../.svelte-kit/cloudflare/docs");
 		console.info("Collecting files from", rootPath);
 		const files = await collectFiles(rootPath, rootPath);
+		const catalog: Catalog = JSON.parse(
+			await readFile(join(__dirname, "../static/registry/catalog.json"), "utf-8")
+		);
+		const cards = new Map(catalog.components.map((card) => [card.name, card]));
+		const pages: { path: string; content: string }[] = [];
 		const fileNames = Object.keys(files).filter((fileName) => fileName.endsWith(".html"));
 
 		// build individual llms.txt files and collect content
@@ -544,13 +554,28 @@ async function main() {
 							: join(__dirname, destinationDir, dirPath, `${outputName}.md`);
 				const outputDir = dirname(outputPath);
 				await mkdir(outputDir, { recursive: true });
-				await writeFile(outputPath, cleanedContent);
+				await writeFile(outputPath, content);
 			};
 
+			const card = fileName.startsWith("components/") ? cards.get(outputName) : undefined;
+			const content = card ? `${cardMarkdown(card)}\n---\n\n${cleanedContent}` : cleanedContent;
+			pages.push({ path: fileName, content });
 			await createFile("../.svelte-kit/cloudflare/docs");
 		}
 
 		await createLLMsIndex(files);
+
+		// Valar AI files: a short component index and every page in one file.
+		const out = join(__dirname, "../.svelte-kit/cloudflare");
+		await writeFile(join(out, "llms-small.txt"), llmsSmall(catalog));
+		await writeFile(
+			join(out, "llms-full.txt"),
+			pages
+				.sort((a, b) => a.path.localeCompare(b.path))
+				.map((page) => `<!-- ${page.path.replace(/\.html$/, ".md")} -->\n\n${page.content}`)
+				.join("\n\n")
+		);
+		consola.info("Created llms-small.txt and llms-full.txt");
 	} catch (error) {
 		console.error("Error building LLM files:", error);
 	}

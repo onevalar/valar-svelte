@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "sheet",
+	"title": "Sheet 侧边面板",
 	"type": "registry:ui",
+	"description": "从屏幕边缘滑出的面板，用于补充主内容的信息或设置。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
@@ -9,6 +11,43 @@
 	"registryDependencies": [
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"侧边栏",
+				"sheet",
+				"抽屉",
+				"面板",
+				"side panel"
+			],
+			"whenToUse": [
+				"查看或编辑与当前页面相关的详细信息",
+				"移动端导航菜单"
+			],
+			"whenNotToUse": [
+				{
+					"case": "需要专注完成的流程",
+					"use": "dialog"
+				},
+				{
+					"case": "移动端从底部拉起",
+					"use": "drawer"
+				}
+			],
+			"accessibility": [
+				"必须有标题",
+				"Esc 关闭并归还焦点"
+			],
+			"responsive": [
+				"窄屏下宽度占满或接近占满"
+			],
+			"related": [
+				"dialog",
+				"drawer",
+				"sidebar"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "import Close from \"./sheet-close.svelte\";\nimport Content from \"./sheet-content.svelte\";\nimport Description from \"./sheet-description.svelte\";\nimport Footer from \"./sheet-footer.svelte\";\nimport Header from \"./sheet-header.svelte\";\nimport Overlay from \"./sheet-overlay.svelte\";\nimport Portal from \"./sheet-portal.svelte\";\nimport Title from \"./sheet-title.svelte\";\nimport Trigger from \"./sheet-trigger.svelte\";\nimport Root from \"./sheet.svelte\";\n\nexport {\n\tRoot,\n\tClose,\n\tTrigger,\n\tPortal,\n\tOverlay,\n\tContent,\n\tHeader,\n\tFooter,\n\tTitle,\n\tDescription,\n\t//\n\tRoot as Sheet,\n\tClose as SheetClose,\n\tTrigger as SheetTrigger,\n\tPortal as SheetPortal,\n\tOverlay as SheetOverlay,\n\tContent as SheetContent,\n\tHeader as SheetHeader,\n\tFooter as SheetFooter,\n\tTitle as SheetTitle,\n\tDescription as SheetDescription,\n};\n",

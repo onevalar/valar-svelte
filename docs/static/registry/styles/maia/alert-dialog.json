@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "alert-dialog",
+	"title": "Alert Dialog 确认对话框",
 	"type": "registry:ui",
+	"description": "打断用户、要求确认的对话框，用于不可撤销或重要的操作。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
@@ -9,6 +11,41 @@
 	"registryDependencies": [
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"确认",
+				"alert dialog",
+				"二次确认",
+				"删除确认",
+				"警告"
+			],
+			"whenToUse": [
+				"删除、覆盖、发布等不可撤销操作前确认"
+			],
+			"whenNotToUse": [
+				{
+					"case": "普通表单或内容",
+					"use": "dialog"
+				},
+				{
+					"case": "操作后的结果通知",
+					"use": "sonner"
+				}
+			],
+			"accessibility": [
+				"必须有标题和说明",
+				"点击遮罩不会关闭，必须明确选择"
+			],
+			"responsive": [
+				"窄屏下按钮纵向排列，主操作在最下方便于拇指点击"
+			],
+			"related": [
+				"dialog",
+				"button"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "<script lang=\"ts\">\n\timport { AlertDialog as AlertDialogPrimitive } from \"bits-ui\";\n\timport {\n\t\tbuttonVariants,\n\t\ttype ButtonVariant,\n\t\ttype ButtonSize,\n\t} from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tvariant = \"default\",\n\t\tsize = \"default\",\n\t\t...restProps\n\t}: AlertDialogPrimitive.ActionProps & {\n\t\tvariant?: ButtonVariant;\n\t\tsize?: ButtonSize;\n\t} = $props();\n</script>\n\n<AlertDialogPrimitive.Action\n\tbind:ref\n\tdata-slot=\"alert-dialog-action\"\n\tclass={cn(buttonVariants({ variant, size }), \"\", className)}\n\t{...restProps}\n/>\n",

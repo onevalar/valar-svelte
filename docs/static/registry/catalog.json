@@ -1,0 +1,1032 @@
+{
+	"name": "valar-svelte",
+	"site": "http://127.0.0.1:5186",
+	"components": [
+		{
+			"name": "alert",
+			"type": "registry:ui",
+			"title": "Alert 提示条",
+			"description": "页面内的提示信息块，用于需要用户注意的状态说明。",
+			"categories": [
+				"反馈"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"提示",
+						"alert",
+						"警告",
+						"通知",
+						"横幅"
+					],
+					"whenToUse": [
+						"持续显示在页面中的状态或警告"
+					],
+					"whenNotToUse": [
+						{
+							"case": "操作后的短暂通知",
+							"use": "sonner"
+						},
+						{
+							"case": "需要用户确认",
+							"use": "alert-dialog"
+						}
+					],
+					"accessibility": [
+						"重要提示使用 role=alert",
+						"不只靠颜色区分类型，配合图标和文字"
+					],
+					"responsive": [
+						"窄屏下图标与文字保持对齐，文字可换行"
+					],
+					"related": [
+						"sonner",
+						"card"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/alert",
+			"install": "pnpm exec valar-svelte add alert",
+			"markdown": "# Alert 提示条\n\n页面内的提示信息块，用于需要用户注意的状态说明。\n\n- 分类：反馈\n- 关键词：提示、alert、警告、通知、横幅\n- 安装：`pnpm exec valar-svelte add alert`\n\n## 何时使用\n\n- 持续显示在页面中的状态或警告\n\n## 何时不用\n\n- 操作后的短暂通知：改用 `sonner`\n- 需要用户确认：改用 `alert-dialog`\n\n## 无障碍\n\n- 重要提示使用 role=alert\n- 不只靠颜色区分类型，配合图标和文字\n\n## 响应式\n\n- 窄屏下图标与文字保持对齐，文字可换行\n\n## 相关组件\n\n- `sonner`\n- `card`\n"
+		},
+		{
+			"name": "alert-dialog",
+			"type": "registry:ui",
+			"title": "Alert Dialog 确认对话框",
+			"description": "打断用户、要求确认的对话框，用于不可撤销或重要的操作。",
+			"categories": [
+				"弹层"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"确认",
+						"alert dialog",
+						"二次确认",
+						"删除确认",
+						"警告"
+					],
+					"whenToUse": [
+						"删除、覆盖、发布等不可撤销操作前确认"
+					],
+					"whenNotToUse": [
+						{
+							"case": "普通表单或内容",
+							"use": "dialog"
+						},
+						{
+							"case": "操作后的结果通知",
+							"use": "sonner"
+						}
+					],
+					"accessibility": [
+						"必须有标题和说明",
+						"点击遮罩不会关闭，必须明确选择"
+					],
+					"responsive": [
+						"窄屏下按钮纵向排列，主操作在最下方便于拇指点击"
+					],
+					"related": [
+						"dialog",
+						"button"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/alert-dialog",
+			"install": "pnpm exec valar-svelte add alert-dialog",
+			"markdown": "# Alert Dialog 确认对话框\n\n打断用户、要求确认的对话框，用于不可撤销或重要的操作。\n\n- 分类：弹层\n- 关键词：确认、alert dialog、二次确认、删除确认、警告\n- 安装：`pnpm exec valar-svelte add alert-dialog`\n\n## 何时使用\n\n- 删除、覆盖、发布等不可撤销操作前确认\n\n## 何时不用\n\n- 普通表单或内容：改用 `dialog`\n- 操作后的结果通知：改用 `sonner`\n\n## 无障碍\n\n- 必须有标题和说明\n- 点击遮罩不会关闭，必须明确选择\n\n## 响应式\n\n- 窄屏下按钮纵向排列，主操作在最下方便于拇指点击\n\n## 相关组件\n\n- `dialog`\n- `button`\n"
+		},
+		{
+			"name": "button",
+			"type": "registry:ui",
+			"title": "Button 按钮",
+			"description": "触发一个操作或跳转，是界面里最常见的可点击元素。",
+			"categories": [
+				"操作"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"按钮",
+						"button",
+						"提交",
+						"CTA",
+						"操作",
+						"点击"
+					],
+					"whenToUse": [
+						"提交表单、确认、保存等明确操作",
+						"需要像按钮一样的链接（传 href）"
+					],
+					"whenNotToUse": [
+						{
+							"case": "在一组互斥选项间切换",
+							"use": "toggle-group"
+						},
+						{
+							"case": "开关某个设置",
+							"use": "switch"
+						},
+						{
+							"case": "一行内的纯文字链接"
+						}
+					],
+					"accessibility": [
+						"只有图标时必须加 aria-label",
+						"禁用时用 disabled，不要只改颜色"
+					],
+					"responsive": [
+						"触屏场景至少使用 default 尺寸，避免误触",
+						"窄屏下主操作可占满整行"
+					],
+					"related": [
+						"button-group",
+						"toggle",
+						"alert-dialog"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/button",
+			"install": "pnpm exec valar-svelte add button",
+			"markdown": "# Button 按钮\n\n触发一个操作或跳转，是界面里最常见的可点击元素。\n\n- 分类：操作\n- 关键词：按钮、button、提交、CTA、操作、点击\n- 安装：`pnpm exec valar-svelte add button`\n\n## 何时使用\n\n- 提交表单、确认、保存等明确操作\n- 需要像按钮一样的链接（传 href）\n\n## 何时不用\n\n- 在一组互斥选项间切换：改用 `toggle-group`\n- 开关某个设置：改用 `switch`\n- 一行内的纯文字链接\n\n## 无障碍\n\n- 只有图标时必须加 aria-label\n- 禁用时用 disabled，不要只改颜色\n\n## 响应式\n\n- 触屏场景至少使用 default 尺寸，避免误触\n- 窄屏下主操作可占满整行\n\n## 相关组件\n\n- `button-group`\n- `toggle`\n- `alert-dialog`\n",
+			"rules": "# Button 设计规范\n\n- 一个区域（卡片、弹窗底部、表单）最多一个 `variant=\"default\"` 实心主按钮；其余操作用 `outline`、`secondary` 或 `ghost`。\n- 不可撤销的危险操作用 `variant=\"destructive\"`，并先用 Alert Dialog 确认。\n- 尺寸只用 `size` 属性（`xs`、`sm`、`default`、`lg`，图标按钮用 `icon`、`icon-sm` 等）；不要用 `class` 写高度、内边距或圆角（检查规则 `valar/button-size-via-prop`）。\n- 只有图标的按钮必须有 `aria-label`（检查规则 `valar/icon-button-label`）。\n- 跳转用 `href`，不要在按钮里再包一个链接；表单提交用 `type=\"submit\"`。\n- 不要用原生 `<button>` 或自己写样式的元素冒充按钮（检查规则 `valar/use-button-component`）。\n"
+		},
+		{
+			"name": "card",
+			"type": "registry:ui",
+			"title": "Card 卡片",
+			"description": "带边框的内容容器，可包含标题、内容和底部操作。",
+			"categories": [
+				"展示"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"卡片",
+						"card",
+						"容器",
+						"面板"
+					],
+					"whenToUse": [
+						"把一组相关信息与操作包在一起"
+					],
+					"whenNotToUse": [
+						{
+							"case": "整页布局分区",
+							"use": "separator"
+						},
+						{
+							"case": "可展开折叠的内容",
+							"use": "accordion"
+						}
+					],
+					"accessibility": [
+						"标题使用合适的标题层级"
+					],
+					"responsive": [
+						"窄屏下卡片占满宽度并纵向堆叠"
+					],
+					"related": [
+						"item",
+						"alert"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/card",
+			"install": "pnpm exec valar-svelte add card",
+			"markdown": "# Card 卡片\n\n带边框的内容容器，可包含标题、内容和底部操作。\n\n- 分类：展示\n- 关键词：卡片、card、容器、面板\n- 安装：`pnpm exec valar-svelte add card`\n\n## 何时使用\n\n- 把一组相关信息与操作包在一起\n\n## 何时不用\n\n- 整页布局分区：改用 `separator`\n- 可展开折叠的内容：改用 `accordion`\n\n## 无障碍\n\n- 标题使用合适的标题层级\n\n## 响应式\n\n- 窄屏下卡片占满宽度并纵向堆叠\n\n## 相关组件\n\n- `item`\n- `alert`\n"
+		},
+		{
+			"name": "checkbox",
+			"type": "registry:ui",
+			"title": "Checkbox 复选框",
+			"description": "勾选或取消勾选一项，可多选。",
+			"categories": [
+				"表单"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"复选框",
+						"checkbox",
+						"勾选",
+						"多选",
+						"同意条款"
+					],
+					"whenToUse": [
+						"从多个选项中选任意个",
+						"表单提交前确认一项（如同意条款）"
+					],
+					"whenNotToUse": [
+						{
+							"case": "立即生效的开关设置",
+							"use": "switch"
+						},
+						{
+							"case": "只能选一个",
+							"use": "radio-group"
+						}
+					],
+					"accessibility": [
+						"每个复选框都有可点击的标签",
+						"一组复选框用 FieldSet 和 legend 说明"
+					],
+					"responsive": [
+						"标签区域可点击，扩大触控范围"
+					],
+					"related": [
+						"switch",
+						"radio-group",
+						"field"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/checkbox",
+			"install": "pnpm exec valar-svelte add checkbox",
+			"markdown": "# Checkbox 复选框\n\n勾选或取消勾选一项，可多选。\n\n- 分类：表单\n- 关键词：复选框、checkbox、勾选、多选、同意条款\n- 安装：`pnpm exec valar-svelte add checkbox`\n\n## 何时使用\n\n- 从多个选项中选任意个\n- 表单提交前确认一项（如同意条款）\n\n## 何时不用\n\n- 立即生效的开关设置：改用 `switch`\n- 只能选一个：改用 `radio-group`\n\n## 无障碍\n\n- 每个复选框都有可点击的标签\n- 一组复选框用 FieldSet 和 legend 说明\n\n## 响应式\n\n- 标签区域可点击，扩大触控范围\n\n## 相关组件\n\n- `switch`\n- `radio-group`\n- `field`\n"
+		},
+		{
+			"name": "color-picker",
+			"type": "registry:ui",
+			"title": "Color Picker 颜色选择",
+			"description": "用色盘、十六进制输入或预设色块选择颜色，值为 #rrggbb。",
+			"categories": [
+				"表单"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"颜色",
+						"color",
+						"取色",
+						"色板",
+						"picker"
+					],
+					"whenToUse": [
+						"选择任意颜色或从预设色中挑选"
+					],
+					"whenNotToUse": [
+						{
+							"case": "只在少数固定颜色间选择",
+							"use": "radio-group"
+						}
+					],
+					"accessibility": [
+						"触发器读出标签和当前色值",
+						"十六进制输入有错误提示"
+					],
+					"responsive": [
+						"面板在窄屏下保持在视口内"
+					],
+					"related": [
+						"slider-field",
+						"popover"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/color-picker",
+			"install": "pnpm exec valar-svelte add color-picker",
+			"markdown": "# Color Picker 颜色选择\n\n用色盘、十六进制输入或预设色块选择颜色，值为 #rrggbb。\n\n- 分类：表单\n- 关键词：颜色、color、取色、色板、picker\n- 安装：`pnpm exec valar-svelte add color-picker`\n\n## 何时使用\n\n- 选择任意颜色或从预设色中挑选\n\n## 何时不用\n\n- 只在少数固定颜色间选择：改用 `radio-group`\n\n## 无障碍\n\n- 触发器读出标签和当前色值\n- 十六进制输入有错误提示\n\n## 响应式\n\n- 面板在窄屏下保持在视口内\n\n## 相关组件\n\n- `slider-field`\n- `popover`\n"
+		},
+		{
+			"name": "dialog",
+			"type": "registry:ui",
+			"title": "Dialog 对话框",
+			"description": "覆盖在页面上的窗口，用于需要专注完成的内容或表单，背后内容不可操作。",
+			"categories": [
+				"弹层"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"对话框",
+						"dialog",
+						"弹窗",
+						"modal",
+						"模态"
+					],
+					"whenToUse": [
+						"需要用户专注完成的短流程或表单"
+					],
+					"whenNotToUse": [
+						{
+							"case": "确认危险操作",
+							"use": "alert-dialog"
+						},
+						{
+							"case": "从边缘滑出的辅助面板",
+							"use": "sheet"
+						},
+						{
+							"case": "轻量的附加信息",
+							"use": "popover"
+						}
+					],
+					"accessibility": [
+						"必须有标题（Dialog.Title）",
+						"Esc 关闭，关闭后焦点回到触发按钮"
+					],
+					"responsive": [
+						"移动端可改用 drawer",
+						"内容超出时对话框内部滚动"
+					],
+					"related": [
+						"alert-dialog",
+						"sheet",
+						"drawer"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/dialog",
+			"install": "pnpm exec valar-svelte add dialog",
+			"markdown": "# Dialog 对话框\n\n覆盖在页面上的窗口，用于需要专注完成的内容或表单，背后内容不可操作。\n\n- 分类：弹层\n- 关键词：对话框、dialog、弹窗、modal、模态\n- 安装：`pnpm exec valar-svelte add dialog`\n\n## 何时使用\n\n- 需要用户专注完成的短流程或表单\n\n## 何时不用\n\n- 确认危险操作：改用 `alert-dialog`\n- 从边缘滑出的辅助面板：改用 `sheet`\n- 轻量的附加信息：改用 `popover`\n\n## 无障碍\n\n- 必须有标题（Dialog.Title）\n- Esc 关闭，关闭后焦点回到触发按钮\n\n## 响应式\n\n- 移动端可改用 drawer\n- 内容超出时对话框内部滚动\n\n## 相关组件\n\n- `alert-dialog`\n- `sheet`\n- `drawer`\n"
+		},
+		{
+			"name": "dropdown-menu",
+			"type": "registry:ui",
+			"title": "Dropdown Menu 下拉菜单",
+			"description": "点击按钮后展开的操作列表。",
+			"categories": [
+				"导航"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"菜单",
+						"dropdown",
+						"更多操作",
+						"操作列表",
+						"menu"
+					],
+					"whenToUse": [
+						"收纳一组相关操作，如“更多”菜单"
+					],
+					"whenNotToUse": [
+						{
+							"case": "为表单选值",
+							"use": "select"
+						},
+						{
+							"case": "右键菜单",
+							"use": "context-menu"
+						},
+						{
+							"case": "站点导航",
+							"use": "navigation-menu"
+						}
+					],
+					"accessibility": [
+						"方向键在菜单项间移动，Esc 关闭",
+						"危险操作项使用 destructive 样式"
+					],
+					"responsive": [
+						"窄屏下菜单保持在视口内"
+					],
+					"related": [
+						"context-menu",
+						"select",
+						"popover"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/dropdown-menu",
+			"install": "pnpm exec valar-svelte add dropdown-menu",
+			"markdown": "# Dropdown Menu 下拉菜单\n\n点击按钮后展开的操作列表。\n\n- 分类：导航\n- 关键词：菜单、dropdown、更多操作、操作列表、menu\n- 安装：`pnpm exec valar-svelte add dropdown-menu`\n\n## 何时使用\n\n- 收纳一组相关操作，如“更多”菜单\n\n## 何时不用\n\n- 为表单选值：改用 `select`\n- 右键菜单：改用 `context-menu`\n- 站点导航：改用 `navigation-menu`\n\n## 无障碍\n\n- 方向键在菜单项间移动，Esc 关闭\n- 危险操作项使用 destructive 样式\n\n## 响应式\n\n- 窄屏下菜单保持在视口内\n\n## 相关组件\n\n- `context-menu`\n- `select`\n- `popover`\n"
+		},
+		{
+			"name": "field",
+			"type": "registry:ui",
+			"title": "Field 表单字段",
+			"description": "把标签、控件、说明和错误信息组合成一个无障碍的表单字段。",
+			"categories": [
+				"表单"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"表单字段",
+						"field",
+						"标签",
+						"label",
+						"校验",
+						"错误提示"
+					],
+					"whenToUse": [
+						"任何需要标签的表单控件",
+						"把相关字段分组（FieldSet、FieldGroup）"
+					],
+					"whenNotToUse": [
+						{
+							"case": "单纯的说明文字，没有控件"
+						}
+					],
+					"accessibility": [
+						"标签通过 for/id 与控件关联",
+						"错误信息用 FieldError，与控件 aria-describedby 关联"
+					],
+					"responsive": [
+						"窄屏下标签在控件上方；宽屏可用横向布局"
+					],
+					"related": [
+						"input",
+						"select",
+						"checkbox"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/field",
+			"install": "pnpm exec valar-svelte add field",
+			"markdown": "# Field 表单字段\n\n把标签、控件、说明和错误信息组合成一个无障碍的表单字段。\n\n- 分类：表单\n- 关键词：表单字段、field、标签、label、校验、错误提示\n- 安装：`pnpm exec valar-svelte add field`\n\n## 何时使用\n\n- 任何需要标签的表单控件\n- 把相关字段分组（FieldSet、FieldGroup）\n\n## 何时不用\n\n- 单纯的说明文字，没有控件\n\n## 无障碍\n\n- 标签通过 for/id 与控件关联\n- 错误信息用 FieldError，与控件 aria-describedby 关联\n\n## 响应式\n\n- 窄屏下标签在控件上方；宽屏可用横向布局\n\n## 相关组件\n\n- `input`\n- `select`\n- `checkbox`\n",
+			"rules": "# Field 设计规范\n\n- 每个输入控件都放在 `Field.Field` 中，并用 `Field.Label for={id}` 关联控件的 `id`；不要只靠 `placeholder` 说明用途（检查规则 `valar/input-label`）。\n- 补充说明用 `Field.Description`，校验错误用 `Field.Error`，不要用自定义颜色的文字代替。\n- 一组相关字段用 `Field.Set` + `Field.Legend` 包起来，多组之间用 `Field.Separator`。\n- 开关、复选框等横向排列时用 `<Field.Field orientation=\"horizontal\">`，不要手写 flex 布局。\n- 表单状态与校验交给 Form（Formsnap/Superforms）；Field 只负责布局和语义。\n"
+		},
+		{
+			"name": "input",
+			"type": "registry:ui",
+			"title": "Input 输入框",
+			"description": "单行文本输入，用于姓名、邮箱、搜索词等短文本。",
+			"categories": [
+				"表单"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"输入框",
+						"input",
+						"文本框",
+						"表单",
+						"text field"
+					],
+					"whenToUse": [
+						"输入一行短文本",
+						"邮箱、密码、数字等带 type 的输入"
+					],
+					"whenNotToUse": [
+						{
+							"case": "多行长文本",
+							"use": "textarea"
+						},
+						{
+							"case": "从固定选项中选择",
+							"use": "select"
+						},
+						{
+							"case": "调整一个数值范围",
+							"use": "slider-field"
+						}
+					],
+					"accessibility": [
+						"必须有可见标签（用 Field 包裹）",
+						"错误信息用 aria-invalid 并关联说明文字"
+					],
+					"responsive": [
+						"窄屏下占满容器宽度",
+						"移动端设置合适的 type 与 inputmode 以弹出正确键盘"
+					],
+					"related": [
+						"field",
+						"textarea",
+						"input-group"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/input",
+			"install": "pnpm exec valar-svelte add input",
+			"markdown": "# Input 输入框\n\n单行文本输入，用于姓名、邮箱、搜索词等短文本。\n\n- 分类：表单\n- 关键词：输入框、input、文本框、表单、text field\n- 安装：`pnpm exec valar-svelte add input`\n\n## 何时使用\n\n- 输入一行短文本\n- 邮箱、密码、数字等带 type 的输入\n\n## 何时不用\n\n- 多行长文本：改用 `textarea`\n- 从固定选项中选择：改用 `select`\n- 调整一个数值范围：改用 `slider-field`\n\n## 无障碍\n\n- 必须有可见标签（用 Field 包裹）\n- 错误信息用 aria-invalid 并关联说明文字\n\n## 响应式\n\n- 窄屏下占满容器宽度\n- 移动端设置合适的 type 与 inputmode 以弹出正确键盘\n\n## 相关组件\n\n- `field`\n- `textarea`\n- `input-group`\n"
+		},
+		{
+			"name": "popover",
+			"type": "registry:ui",
+			"title": "Popover 弹出层",
+			"description": "点击触发的小浮层，展示附加内容或简短表单。",
+			"categories": [
+				"弹层"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"弹出层",
+						"popover",
+						"浮层",
+						"气泡"
+					],
+					"whenToUse": [
+						"点击后显示少量内容或控件"
+					],
+					"whenNotToUse": [
+						{
+							"case": "悬停提示文字",
+							"use": "tooltip"
+						},
+						{
+							"case": "操作菜单",
+							"use": "dropdown-menu"
+						},
+						{
+							"case": "复杂流程",
+							"use": "dialog"
+						}
+					],
+					"accessibility": [
+						"由按钮触发，Esc 关闭并归还焦点"
+					],
+					"responsive": [
+						"窄屏下自动翻转位置并保持在视口内"
+					],
+					"related": [
+						"tooltip",
+						"dropdown-menu",
+						"hover-card"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/popover",
+			"install": "pnpm exec valar-svelte add popover",
+			"markdown": "# Popover 弹出层\n\n点击触发的小浮层，展示附加内容或简短表单。\n\n- 分类：弹层\n- 关键词：弹出层、popover、浮层、气泡\n- 安装：`pnpm exec valar-svelte add popover`\n\n## 何时使用\n\n- 点击后显示少量内容或控件\n\n## 何时不用\n\n- 悬停提示文字：改用 `tooltip`\n- 操作菜单：改用 `dropdown-menu`\n- 复杂流程：改用 `dialog`\n\n## 无障碍\n\n- 由按钮触发，Esc 关闭并归还焦点\n\n## 响应式\n\n- 窄屏下自动翻转位置并保持在视口内\n\n## 相关组件\n\n- `tooltip`\n- `dropdown-menu`\n- `hover-card`\n"
+		},
+		{
+			"name": "radio-group",
+			"type": "registry:ui",
+			"title": "Radio Group 单选组",
+			"description": "从少量互斥选项中选一个，所有选项同时可见。",
+			"categories": [
+				"表单"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"单选",
+						"radio",
+						"单选组",
+						"选项"
+					],
+					"whenToUse": [
+						"2–5 个互斥选项，需要用户比较后选择"
+					],
+					"whenNotToUse": [
+						{
+							"case": "选项很多",
+							"use": "select"
+						},
+						{
+							"case": "可以多选",
+							"use": "checkbox"
+						},
+						{
+							"case": "切换视图或模式",
+							"use": "tabs"
+						}
+					],
+					"accessibility": [
+						"整组有 legend 或 aria-label",
+						"方向键在选项间移动"
+					],
+					"responsive": [
+						"窄屏下纵向排列"
+					],
+					"related": [
+						"select",
+						"checkbox",
+						"toggle-group"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/radio-group",
+			"install": "pnpm exec valar-svelte add radio-group",
+			"markdown": "# Radio Group 单选组\n\n从少量互斥选项中选一个，所有选项同时可见。\n\n- 分类：表单\n- 关键词：单选、radio、单选组、选项\n- 安装：`pnpm exec valar-svelte add radio-group`\n\n## 何时使用\n\n- 2–5 个互斥选项，需要用户比较后选择\n\n## 何时不用\n\n- 选项很多：改用 `select`\n- 可以多选：改用 `checkbox`\n- 切换视图或模式：改用 `tabs`\n\n## 无障碍\n\n- 整组有 legend 或 aria-label\n- 方向键在选项间移动\n\n## 响应式\n\n- 窄屏下纵向排列\n\n## 相关组件\n\n- `select`\n- `checkbox`\n- `toggle-group`\n"
+		},
+		{
+			"name": "select",
+			"type": "registry:ui",
+			"title": "Select 下拉选择",
+			"description": "从一组固定选项中选择一个值，选项收在下拉面板里。",
+			"categories": [
+				"表单"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"下拉",
+						"select",
+						"选择框",
+						"选项",
+						"dropdown"
+					],
+					"whenToUse": [
+						"选项超过 5 个且只能选一个"
+					],
+					"whenNotToUse": [
+						{
+							"case": "选项 2–5 个且需要一眼看全",
+							"use": "radio-group"
+						},
+						{
+							"case": "触发操作而不是选值",
+							"use": "dropdown-menu"
+						},
+						{
+							"case": "需要搜索大量选项",
+							"use": "command"
+						}
+					],
+					"accessibility": [
+						"保留 Bits UI 的键盘操作（方向键、回车、Esc）",
+						"用 Field 提供可见标签"
+					],
+					"responsive": [
+						"窄屏下触发器占满宽度",
+						"选项很多时面板内部滚动"
+					],
+					"related": [
+						"radio-group",
+						"native-select",
+						"field"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/select",
+			"install": "pnpm exec valar-svelte add select",
+			"markdown": "# Select 下拉选择\n\n从一组固定选项中选择一个值，选项收在下拉面板里。\n\n- 分类：表单\n- 关键词：下拉、select、选择框、选项、dropdown\n- 安装：`pnpm exec valar-svelte add select`\n\n## 何时使用\n\n- 选项超过 5 个且只能选一个\n\n## 何时不用\n\n- 选项 2–5 个且需要一眼看全：改用 `radio-group`\n- 触发操作而不是选值：改用 `dropdown-menu`\n- 需要搜索大量选项：改用 `command`\n\n## 无障碍\n\n- 保留 Bits UI 的键盘操作（方向键、回车、Esc）\n- 用 Field 提供可见标签\n\n## 响应式\n\n- 窄屏下触发器占满宽度\n- 选项很多时面板内部滚动\n\n## 相关组件\n\n- `radio-group`\n- `native-select`\n- `field`\n"
+		},
+		{
+			"name": "sheet",
+			"type": "registry:ui",
+			"title": "Sheet 侧边面板",
+			"description": "从屏幕边缘滑出的面板，用于补充主内容的信息或设置。",
+			"categories": [
+				"弹层"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"侧边栏",
+						"sheet",
+						"抽屉",
+						"面板",
+						"side panel"
+					],
+					"whenToUse": [
+						"查看或编辑与当前页面相关的详细信息",
+						"移动端导航菜单"
+					],
+					"whenNotToUse": [
+						{
+							"case": "需要专注完成的流程",
+							"use": "dialog"
+						},
+						{
+							"case": "移动端从底部拉起",
+							"use": "drawer"
+						}
+					],
+					"accessibility": [
+						"必须有标题",
+						"Esc 关闭并归还焦点"
+					],
+					"responsive": [
+						"窄屏下宽度占满或接近占满"
+					],
+					"related": [
+						"dialog",
+						"drawer",
+						"sidebar"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/sheet",
+			"install": "pnpm exec valar-svelte add sheet",
+			"markdown": "# Sheet 侧边面板\n\n从屏幕边缘滑出的面板，用于补充主内容的信息或设置。\n\n- 分类：弹层\n- 关键词：侧边栏、sheet、抽屉、面板、side panel\n- 安装：`pnpm exec valar-svelte add sheet`\n\n## 何时使用\n\n- 查看或编辑与当前页面相关的详细信息\n- 移动端导航菜单\n\n## 何时不用\n\n- 需要专注完成的流程：改用 `dialog`\n- 移动端从底部拉起：改用 `drawer`\n\n## 无障碍\n\n- 必须有标题\n- Esc 关闭并归还焦点\n\n## 响应式\n\n- 窄屏下宽度占满或接近占满\n\n## 相关组件\n\n- `dialog`\n- `drawer`\n- `sidebar`\n"
+		},
+		{
+			"name": "slider-field",
+			"type": "registry:ui",
+			"title": "Slider Field 滑块数值",
+			"description": "滑块与数值输入框组合，拖动调整或直接输入精确数值。",
+			"categories": [
+				"表单"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"滑块",
+						"slider",
+						"数值",
+						"范围",
+						"参数调节"
+					],
+					"whenToUse": [
+						"在已知范围内调整数值，并需要精确输入"
+					],
+					"whenNotToUse": [
+						{
+							"case": "没有明确范围的数字",
+							"use": "number-field"
+						},
+						{
+							"case": "只需粗略拖动",
+							"use": "slider"
+						}
+					],
+					"accessibility": [
+						"标签同时命名滑块和输入框",
+						"超出范围的输入标为无效而不是静默截断"
+					],
+					"responsive": [
+						"窄屏下滑块与输入框保持同一行，空间不足时换行"
+					],
+					"related": [
+						"slider",
+						"number-field",
+						"field"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/slider-field",
+			"install": "pnpm exec valar-svelte add slider-field",
+			"markdown": "# Slider Field 滑块数值\n\n滑块与数值输入框组合，拖动调整或直接输入精确数值。\n\n- 分类：表单\n- 关键词：滑块、slider、数值、范围、参数调节\n- 安装：`pnpm exec valar-svelte add slider-field`\n\n## 何时使用\n\n- 在已知范围内调整数值，并需要精确输入\n\n## 何时不用\n\n- 没有明确范围的数字：改用 `number-field`\n- 只需粗略拖动：改用 `slider`\n\n## 无障碍\n\n- 标签同时命名滑块和输入框\n- 超出范围的输入标为无效而不是静默截断\n\n## 响应式\n\n- 窄屏下滑块与输入框保持同一行，空间不足时换行\n\n## 相关组件\n\n- `slider`\n- `number-field`\n- `field`\n"
+		},
+		{
+			"name": "sonner",
+			"type": "registry:ui",
+			"title": "Sonner 轻提示",
+			"description": "操作后在屏幕角落短暂出现的通知（toast）。",
+			"categories": [
+				"反馈"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"通知",
+						"toast",
+						"sonner",
+						"轻提示",
+						"消息"
+					],
+					"whenToUse": [
+						"告知操作结果，如“已保存”"
+					],
+					"whenNotToUse": [
+						{
+							"case": "需要用户处理的错误",
+							"use": "alert"
+						},
+						{
+							"case": "需要确认",
+							"use": "alert-dialog"
+						}
+					],
+					"accessibility": [
+						"通知内容会被读屏器播报",
+						"包含操作按钮时停留时间足够长"
+					],
+					"responsive": [
+						"移动端在顶部或底部居中显示"
+					],
+					"related": [
+						"alert"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/sonner",
+			"install": "pnpm exec valar-svelte add sonner",
+			"markdown": "# Sonner 轻提示\n\n操作后在屏幕角落短暂出现的通知（toast）。\n\n- 分类：反馈\n- 关键词：通知、toast、sonner、轻提示、消息\n- 安装：`pnpm exec valar-svelte add sonner`\n\n## 何时使用\n\n- 告知操作结果，如“已保存”\n\n## 何时不用\n\n- 需要用户处理的错误：改用 `alert`\n- 需要确认：改用 `alert-dialog`\n\n## 无障碍\n\n- 通知内容会被读屏器播报\n- 包含操作按钮时停留时间足够长\n\n## 响应式\n\n- 移动端在顶部或底部居中显示\n\n## 相关组件\n\n- `alert`\n"
+		},
+		{
+			"name": "switch",
+			"type": "registry:ui",
+			"title": "Switch 开关",
+			"description": "立即开启或关闭一个设置。",
+			"categories": [
+				"表单"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"开关",
+						"switch",
+						"toggle",
+						"启用",
+						"设置"
+					],
+					"whenToUse": [
+						"改动立即生效的二元设置"
+					],
+					"whenNotToUse": [
+						{
+							"case": "需要点提交才生效的选项",
+							"use": "checkbox"
+						},
+						{
+							"case": "多个互斥选项",
+							"use": "radio-group"
+						}
+					],
+					"accessibility": [
+						"开关有可见标签说明它控制什么",
+						"状态由 aria-checked 表达，不只靠颜色"
+					],
+					"responsive": [
+						"设置列表中标签在左、开关在右"
+					],
+					"related": [
+						"checkbox",
+						"toggle"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/switch",
+			"install": "pnpm exec valar-svelte add switch",
+			"markdown": "# Switch 开关\n\n立即开启或关闭一个设置。\n\n- 分类：表单\n- 关键词：开关、switch、toggle、启用、设置\n- 安装：`pnpm exec valar-svelte add switch`\n\n## 何时使用\n\n- 改动立即生效的二元设置\n\n## 何时不用\n\n- 需要点提交才生效的选项：改用 `checkbox`\n- 多个互斥选项：改用 `radio-group`\n\n## 无障碍\n\n- 开关有可见标签说明它控制什么\n- 状态由 aria-checked 表达，不只靠颜色\n\n## 响应式\n\n- 设置列表中标签在左、开关在右\n\n## 相关组件\n\n- `checkbox`\n- `toggle`\n"
+		},
+		{
+			"name": "tabs",
+			"type": "registry:ui",
+			"title": "Tabs 标签页",
+			"description": "在同一位置切换显示几组相关内容。",
+			"categories": [
+				"导航"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"标签页",
+						"tabs",
+						"选项卡",
+						"切换"
+					],
+					"whenToUse": [
+						"同一层级、互相独立的几块内容"
+					],
+					"whenNotToUse": [
+						{
+							"case": "步骤有先后顺序",
+							"use": "stepper"
+						},
+						{
+							"case": "表单单选",
+							"use": "radio-group"
+						},
+						{
+							"case": "内容需要同时比较"
+						}
+					],
+					"accessibility": [
+						"方向键切换标签",
+						"每个面板与标签关联"
+					],
+					"responsive": [
+						"标签过多时横向滚动，不要换成多行"
+					],
+					"related": [
+						"toggle-group",
+						"accordion"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/tabs",
+			"install": "pnpm exec valar-svelte add tabs",
+			"markdown": "# Tabs 标签页\n\n在同一位置切换显示几组相关内容。\n\n- 分类：导航\n- 关键词：标签页、tabs、选项卡、切换\n- 安装：`pnpm exec valar-svelte add tabs`\n\n## 何时使用\n\n- 同一层级、互相独立的几块内容\n\n## 何时不用\n\n- 步骤有先后顺序：改用 `stepper`\n- 表单单选：改用 `radio-group`\n- 内容需要同时比较\n\n## 无障碍\n\n- 方向键切换标签\n- 每个面板与标签关联\n\n## 响应式\n\n- 标签过多时横向滚动，不要换成多行\n\n## 相关组件\n\n- `toggle-group`\n- `accordion`\n"
+		},
+		{
+			"name": "textarea",
+			"type": "registry:ui",
+			"title": "Textarea 多行输入",
+			"description": "多行文本输入，用于备注、描述、留言等较长内容。",
+			"categories": [
+				"表单"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"多行输入",
+						"textarea",
+						"备注",
+						"描述",
+						"留言"
+					],
+					"whenToUse": [
+						"输入可能超过一行的文本"
+					],
+					"whenNotToUse": [
+						{
+							"case": "一行即可的短文本",
+							"use": "input"
+						},
+						{
+							"case": "需要格式化的富文本"
+						}
+					],
+					"accessibility": [
+						"必须有可见标签（用 Field 包裹）",
+						"有字数限制时显示剩余字数"
+					],
+					"responsive": [
+						"窄屏下占满容器宽度",
+						"高度随内容增长时设置最大高度"
+					],
+					"related": [
+						"field",
+						"input"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/textarea",
+			"install": "pnpm exec valar-svelte add textarea",
+			"markdown": "# Textarea 多行输入\n\n多行文本输入，用于备注、描述、留言等较长内容。\n\n- 分类：表单\n- 关键词：多行输入、textarea、备注、描述、留言\n- 安装：`pnpm exec valar-svelte add textarea`\n\n## 何时使用\n\n- 输入可能超过一行的文本\n\n## 何时不用\n\n- 一行即可的短文本：改用 `input`\n- 需要格式化的富文本\n\n## 无障碍\n\n- 必须有可见标签（用 Field 包裹）\n- 有字数限制时显示剩余字数\n\n## 响应式\n\n- 窄屏下占满容器宽度\n- 高度随内容增长时设置最大高度\n\n## 相关组件\n\n- `field`\n- `input`\n"
+		},
+		{
+			"name": "tooltip",
+			"type": "registry:ui",
+			"title": "Tooltip 提示",
+			"description": "悬停或聚焦时显示的简短文字说明。",
+			"categories": [
+				"反馈"
+			],
+			"meta": {
+				"valar": {
+					"keywords": [
+						"提示",
+						"tooltip",
+						"悬停",
+						"说明"
+					],
+					"whenToUse": [
+						"解释图标按钮或缩写的含义"
+					],
+					"whenNotToUse": [
+						{
+							"case": "包含可点击内容",
+							"use": "popover"
+						},
+						{
+							"case": "关键信息（触屏无法悬停）"
+						}
+					],
+					"accessibility": [
+						"键盘聚焦也能显示",
+						"不能替代图标按钮的 aria-label"
+					],
+					"responsive": [
+						"触屏设备无悬停，重要信息不要只放在提示里"
+					],
+					"related": [
+						"popover",
+						"hover-card"
+					]
+				}
+			},
+			"docs": "http://127.0.0.1:5186/docs/components/tooltip",
+			"install": "pnpm exec valar-svelte add tooltip",
+			"markdown": "# Tooltip 提示\n\n悬停或聚焦时显示的简短文字说明。\n\n- 分类：反馈\n- 关键词：提示、tooltip、悬停、说明\n- 安装：`pnpm exec valar-svelte add tooltip`\n\n## 何时使用\n\n- 解释图标按钮或缩写的含义\n\n## 何时不用\n\n- 包含可点击内容：改用 `popover`\n- 关键信息（触屏无法悬停）\n\n## 无障碍\n\n- 键盘聚焦也能显示\n- 不能替代图标按钮的 aria-label\n\n## 响应式\n\n- 触屏设备无悬停，重要信息不要只放在提示里\n\n## 相关组件\n\n- `popover`\n- `hover-card`\n"
+		}
+	],
+	"missingCards": [
+		"accordion",
+		"aspect-ratio",
+		"attachment",
+		"avatar",
+		"badge",
+		"breadcrumb",
+		"bubble",
+		"button-group",
+		"calendar",
+		"carousel",
+		"chart",
+		"code-block",
+		"collapsible",
+		"command",
+		"context-menu",
+		"drawer",
+		"empty",
+		"form",
+		"hover-card",
+		"input-group",
+		"input-otp",
+		"item",
+		"kbd",
+		"label",
+		"marker",
+		"menubar",
+		"message",
+		"message-scroller",
+		"native-select",
+		"navigation-menu",
+		"number-field",
+		"pagination",
+		"progress",
+		"questionnaire",
+		"range-calendar",
+		"resizable",
+		"scroll-area",
+		"separator",
+		"sidebar",
+		"skeleton",
+		"slider",
+		"spinner",
+		"stepper",
+		"table",
+		"tags-input",
+		"toggle",
+		"toggle-group",
+		"trace"
+	]
+}

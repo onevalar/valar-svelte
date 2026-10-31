@@ -1,0 +1,26 @@
+{
+	"name": "switch",
+	"type": "registry:ui",
+	"title": "Switch 开关",
+	"description": "立即开启或关闭一个设置。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["开关", "switch", "toggle", "启用", "设置"],
+			"whenToUse": ["改动立即生效的二元设置"],
+			"whenNotToUse": [
+				{
+					"case": "需要点提交才生效的选项",
+					"use": "checkbox"
+				},
+				{
+					"case": "多个互斥选项",
+					"use": "radio-group"
+				}
+			],
+			"accessibility": ["开关有可见标签说明它控制什么", "状态由 aria-checked 表达，不只靠颜色"],
+			"responsive": ["设置列表中标签在左、开关在右"],
+			"related": ["checkbox", "toggle"]
+		}
+	}
+}

@@ -1,11 +1,46 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "tooltip",
+	"title": "Tooltip 提示",
 	"type": "registry:ui",
+	"description": "悬停或聚焦时显示的简短文字说明。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"提示",
+				"tooltip",
+				"悬停",
+				"说明"
+			],
+			"whenToUse": [
+				"解释图标按钮或缩写的含义"
+			],
+			"whenNotToUse": [
+				{
+					"case": "包含可点击内容",
+					"use": "popover"
+				},
+				{
+					"case": "关键信息（触屏无法悬停）"
+				}
+			],
+			"accessibility": [
+				"键盘聚焦也能显示",
+				"不能替代图标按钮的 aria-label"
+			],
+			"responsive": [
+				"触屏设备无悬停，重要信息不要只放在提示里"
+			],
+			"related": [
+				"popover",
+				"hover-card"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "import Content from \"./tooltip-content.svelte\";\nimport Portal from \"./tooltip-portal.svelte\";\nimport Provider from \"./tooltip-provider.svelte\";\nimport Trigger from \"./tooltip-trigger.svelte\";\nimport Root from \"./tooltip.svelte\";\n\nexport {\n\tRoot,\n\tTrigger,\n\tContent,\n\tProvider,\n\tPortal,\n\t//\n\tRoot as Tooltip,\n\tContent as TooltipContent,\n\tTrigger as TooltipTrigger,\n\tProvider as TooltipProvider,\n\tPortal as TooltipPortal,\n};\n",

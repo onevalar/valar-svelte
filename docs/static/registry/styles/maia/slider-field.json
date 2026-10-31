@@ -1,11 +1,49 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "slider-field",
+	"title": "Slider Field 滑块数值",
 	"type": "registry:ui",
+	"description": "滑块与数值输入框组合，拖动调整或直接输入精确数值。",
 	"registryDependencies": [
 		"number-field",
 		"slider"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"滑块",
+				"slider",
+				"数值",
+				"范围",
+				"参数调节"
+			],
+			"whenToUse": [
+				"在已知范围内调整数值，并需要精确输入"
+			],
+			"whenNotToUse": [
+				{
+					"case": "没有明确范围的数字",
+					"use": "number-field"
+				},
+				{
+					"case": "只需粗略拖动",
+					"use": "slider"
+				}
+			],
+			"accessibility": [
+				"标签同时命名滑块和输入框",
+				"超出范围的输入标为无效而不是静默截断"
+			],
+			"responsive": [
+				"窄屏下滑块与输入框保持同一行，空间不足时换行"
+			],
+			"related": [
+				"slider",
+				"number-field",
+				"field"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "export { default as SliderField, type SliderFieldProps } from \"./slider-field.svelte\";\n",

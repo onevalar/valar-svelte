@@ -1,0 +1,26 @@
+{
+	"name": "card",
+	"type": "registry:ui",
+	"title": "Card 卡片",
+	"description": "带边框的内容容器，可包含标题、内容和底部操作。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["卡片", "card", "容器", "面板"],
+			"whenToUse": ["把一组相关信息与操作包在一起"],
+			"whenNotToUse": [
+				{
+					"case": "整页布局分区",
+					"use": "separator"
+				},
+				{
+					"case": "可展开折叠的内容",
+					"use": "accordion"
+				}
+			],
+			"accessibility": ["标题使用合适的标题层级"],
+			"responsive": ["窄屏下卡片占满宽度并纵向堆叠"],
+			"related": ["item", "alert"]
+		}
+	}
+}

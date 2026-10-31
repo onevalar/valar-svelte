@@ -1,0 +1,29 @@
+{
+	"name": "button",
+	"type": "registry:ui",
+	"title": "Button 按钮",
+	"description": "触发一个操作或跳转，是界面里最常见的可点击元素。",
+	"categories": ["操作"],
+	"meta": {
+		"valar": {
+			"keywords": ["按钮", "button", "提交", "CTA", "操作", "点击"],
+			"whenToUse": ["提交表单、确认、保存等明确操作", "需要像按钮一样的链接（传 href）"],
+			"whenNotToUse": [
+				{
+					"case": "在一组互斥选项间切换",
+					"use": "toggle-group"
+				},
+				{
+					"case": "开关某个设置",
+					"use": "switch"
+				},
+				{
+					"case": "一行内的纯文字链接"
+				}
+			],
+			"accessibility": ["只有图标时必须加 aria-label", "禁用时用 disabled，不要只改颜色"],
+			"responsive": ["触屏场景至少使用 default 尺寸，避免误触", "窄屏下主操作可占满整行"],
+			"related": ["button-group", "toggle", "alert-dialog"]
+		}
+	}
+}

@@ -1,12 +1,51 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "tabs",
+	"title": "Tabs 标签页",
 	"type": "registry:ui",
+	"description": "在同一位置切换显示几组相关内容。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0",
 		"tailwind-variants@^3.3.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"标签页",
+				"tabs",
+				"选项卡",
+				"切换"
+			],
+			"whenToUse": [
+				"同一层级、互相独立的几块内容"
+			],
+			"whenNotToUse": [
+				{
+					"case": "步骤有先后顺序",
+					"use": "stepper"
+				},
+				{
+					"case": "表单单选",
+					"use": "radio-group"
+				},
+				{
+					"case": "内容需要同时比较"
+				}
+			],
+			"accessibility": [
+				"方向键切换标签",
+				"每个面板与标签关联"
+			],
+			"responsive": [
+				"标签过多时横向滚动，不要换成多行"
+			],
+			"related": [
+				"toggle-group",
+				"accordion"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "import Content from \"./tabs-content.svelte\";\nimport Trigger from \"./tabs-trigger.svelte\";\nimport Root from \"./tabs.svelte\";\nimport List, { tabsListVariants, type TabsListVariant } from \"./tabs-list.svelte\";\n\nexport {\n\tRoot,\n\tContent,\n\tList,\n\tTrigger,\n\ttabsListVariants,\n\ttype TabsListVariant,\n\t//\n\tRoot as Tabs,\n\tContent as TabsContent,\n\tList as TabsList,\n\tTrigger as TabsTrigger,\n};\n",

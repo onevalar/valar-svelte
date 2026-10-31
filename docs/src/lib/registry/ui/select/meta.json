@@ -1,0 +1,30 @@
+{
+	"name": "select",
+	"type": "registry:ui",
+	"title": "Select 下拉选择",
+	"description": "从一组固定选项中选择一个值，选项收在下拉面板里。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["下拉", "select", "选择框", "选项", "dropdown"],
+			"whenToUse": ["选项超过 5 个且只能选一个"],
+			"whenNotToUse": [
+				{
+					"case": "选项 2–5 个且需要一眼看全",
+					"use": "radio-group"
+				},
+				{
+					"case": "触发操作而不是选值",
+					"use": "dropdown-menu"
+				},
+				{
+					"case": "需要搜索大量选项",
+					"use": "command"
+				}
+			],
+			"accessibility": ["保留 Bits UI 的键盘操作（方向键、回车、Esc）", "用 Field 提供可见标签"],
+			"responsive": ["窄屏下触发器占满宽度", "选项很多时面板内部滚动"],
+			"related": ["radio-group", "native-select", "field"]
+		}
+	}
+}

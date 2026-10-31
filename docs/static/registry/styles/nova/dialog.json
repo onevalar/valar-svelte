@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "dialog",
+	"title": "Dialog 对话框",
 	"type": "registry:ui",
+	"description": "覆盖在页面上的窗口，用于需要专注完成的内容或表单，背后内容不可操作。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
@@ -9,6 +11,47 @@
 	"registryDependencies": [
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"对话框",
+				"dialog",
+				"弹窗",
+				"modal",
+				"模态"
+			],
+			"whenToUse": [
+				"需要用户专注完成的短流程或表单"
+			],
+			"whenNotToUse": [
+				{
+					"case": "确认危险操作",
+					"use": "alert-dialog"
+				},
+				{
+					"case": "从边缘滑出的辅助面板",
+					"use": "sheet"
+				},
+				{
+					"case": "轻量的附加信息",
+					"use": "popover"
+				}
+			],
+			"accessibility": [
+				"必须有标题（Dialog.Title）",
+				"Esc 关闭，关闭后焦点回到触发按钮"
+			],
+			"responsive": [
+				"移动端可改用 drawer",
+				"内容超出时对话框内部滚动"
+			],
+			"related": [
+				"alert-dialog",
+				"sheet",
+				"drawer"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "<script lang=\"ts\">\n\timport { Dialog as DialogPrimitive } from \"bits-ui\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\ttype = \"button\",\n\t\t...restProps\n\t}: DialogPrimitive.CloseProps = $props();\n</script>\n\n<DialogPrimitive.Close bind:ref data-slot=\"dialog-close\" {type} {...restProps} />\n",

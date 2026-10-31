@@ -1,0 +1,30 @@
+{
+	"name": "popover",
+	"type": "registry:ui",
+	"title": "Popover 弹出层",
+	"description": "点击触发的小浮层，展示附加内容或简短表单。",
+	"categories": ["弹层"],
+	"meta": {
+		"valar": {
+			"keywords": ["弹出层", "popover", "浮层", "气泡"],
+			"whenToUse": ["点击后显示少量内容或控件"],
+			"whenNotToUse": [
+				{
+					"case": "悬停提示文字",
+					"use": "tooltip"
+				},
+				{
+					"case": "操作菜单",
+					"use": "dropdown-menu"
+				},
+				{
+					"case": "复杂流程",
+					"use": "dialog"
+				}
+			],
+			"accessibility": ["由按钮触发，Esc 关闭并归还焦点"],
+			"responsive": ["窄屏下自动翻转位置并保持在视口内"],
+			"related": ["tooltip", "dropdown-menu", "hover-card"]
+		}
+	}
+}

@@ -1,7 +1,42 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "card",
+	"title": "Card 卡片",
 	"type": "registry:ui",
+	"description": "带边框的内容容器，可包含标题、内容和底部操作。",
+	"meta": {
+		"valar": {
+			"keywords": [
+				"卡片",
+				"card",
+				"容器",
+				"面板"
+			],
+			"whenToUse": [
+				"把一组相关信息与操作包在一起"
+			],
+			"whenNotToUse": [
+				{
+					"case": "整页布局分区",
+					"use": "separator"
+				},
+				{
+					"case": "可展开折叠的内容",
+					"use": "accordion"
+				}
+			],
+			"accessibility": [
+				"标题使用合适的标题层级"
+			],
+			"responsive": [
+				"窄屏下卡片占满宽度并纵向堆叠"
+			],
+			"related": [
+				"item",
+				"alert"
+			]
+		}
+	},
 	"files": [
 		{
 			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"card-action\"\n\tclass={cn(\n\t\t\"col-start-2 row-span-2 row-start-1 self-start justify-self-end\",\n\t\tclassName\n\t)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",

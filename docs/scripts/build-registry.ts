@@ -17,9 +17,13 @@ import {
 } from "@valar/svelte-parity/inject-style-classes";
 import { rimraf } from "rimraf";
 import { toJSONSchema } from "zod";
+import { readComponentCards } from "./component-cards.js";
 import { buildRegistry } from "./registry.js";
 import { getColorsData } from "../src/lib/components/colors/colors.js";
+import { buildCatalog } from "../src/lib/registry/catalog.js";
 import { THEMES } from "../src/lib/registry/themes.js";
+// Same local site the rest of the docs links point at (see build-llms.ts).
+const SITE_BASE_URL = "http://127.0.0.1:5186";
 
 interface BuildRegistryItem {
 	name: string;
@@ -175,6 +179,38 @@ export const Index = {`;
 			"utf-8"
 		);
 	}
+
+	// ----------------------------------------------------------------------------
+	// Build registry/catalog.json from component cards (ui/<name>/meta.json).
+	// The skill, llms files and the MCP server all read this file.
+	// ----------------------------------------------------------------------------
+	log("🗂️  Building registry/catalog.json...");
+	const {
+		cards,
+		components: uiComponents,
+		rules,
+	} = readComponentCards(path.join(INTERNAL_REGISTRY_PATH, "ui"));
+	const catalog = buildCatalog(cards, uiComponents, SITE_BASE_URL, rules);
+	writeFileWithDirs(
+		path.join(REGISTRY_PATH, "catalog.json"),
+		JSON.stringify(catalog, null, "\t") + "\n"
+	);
+	if (catalog.missingCards.length)
+		log(`  ${catalog.components.length} cards; missing: ${catalog.missingCards.join(", ")}`);
+
+	// The Valar skill (repo `skills/valar-svelte`) is served as one JSON file for `get_skill`.
+	const skillDir = path.resolve("..", "skills", "valar-svelte");
+	const skillFiles = (fs.readdirSync(skillDir, { recursive: true }) as string[])
+		.filter((file) => /\.(md|json|ya?ml)$/.test(file))
+		.sort()
+		.map((file) => ({
+			path: file.split(path.sep).join("/"),
+			content: fs.readFileSync(path.join(skillDir, file), "utf8"),
+		}));
+	writeFileWithDirs(
+		path.join(REGISTRY_PATH, "skills", "valar-svelte.json"),
+		JSON.stringify({ name: "valar-svelte", files: skillFiles }, null, "\t") + "\n"
+	);
 
 	// ----------------------------------------------------------------------------
 	// Build static/schema.json

@@ -1,0 +1,29 @@
+{
+	"name": "tabs",
+	"type": "registry:ui",
+	"title": "Tabs 标签页",
+	"description": "在同一位置切换显示几组相关内容。",
+	"categories": ["导航"],
+	"meta": {
+		"valar": {
+			"keywords": ["标签页", "tabs", "选项卡", "切换"],
+			"whenToUse": ["同一层级、互相独立的几块内容"],
+			"whenNotToUse": [
+				{
+					"case": "步骤有先后顺序",
+					"use": "stepper"
+				},
+				{
+					"case": "表单单选",
+					"use": "radio-group"
+				},
+				{
+					"case": "内容需要同时比较"
+				}
+			],
+			"accessibility": ["方向键切换标签", "每个面板与标签关联"],
+			"responsive": ["标签过多时横向滚动，不要换成多行"],
+			"related": ["toggle-group", "accordion"]
+		}
+	}
+}

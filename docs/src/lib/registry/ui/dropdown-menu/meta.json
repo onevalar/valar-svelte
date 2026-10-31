@@ -1,0 +1,30 @@
+{
+	"name": "dropdown-menu",
+	"type": "registry:ui",
+	"title": "Dropdown Menu 下拉菜单",
+	"description": "点击按钮后展开的操作列表。",
+	"categories": ["导航"],
+	"meta": {
+		"valar": {
+			"keywords": ["菜单", "dropdown", "更多操作", "操作列表", "menu"],
+			"whenToUse": ["收纳一组相关操作，如“更多”菜单"],
+			"whenNotToUse": [
+				{
+					"case": "为表单选值",
+					"use": "select"
+				},
+				{
+					"case": "右键菜单",
+					"use": "context-menu"
+				},
+				{
+					"case": "站点导航",
+					"use": "navigation-menu"
+				}
+			],
+			"accessibility": ["方向键在菜单项间移动，Esc 关闭", "危险操作项使用 destructive 样式"],
+			"responsive": ["窄屏下菜单保持在视口内"],
+			"related": ["context-menu", "select", "popover"]
+		}
+	}
+}
