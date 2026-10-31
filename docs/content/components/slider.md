@@ -66,8 +66,26 @@ Copy and paste the following code into your project.
 ```
 
 ```svelte
-<Slider type="single" bind:value max={100} step={1} />
+<Slider type="single" aria-label="Volume" bind:value max={100} step={1} />
 ```
+
+## Accessible Names
+
+Provide `aria-label` or `aria-labelledby` to name the focusable slider thumb, not
+just the outer track. An HTML label pointing to the root's `id` does not label
+the internal thumb. With `aria-labelledby`, reference the ID of visible text.
+
+For multiple thumbs, use `thumbLabels` in value order to distinguish each control:
+
+```svelte
+<Slider
+  type="multiple"
+  value={[20, 80]}
+  thumbLabels={["Minimum price", "Maximum price"]}
+/>
+```
+
+`aria-labelledby` follows the standard ARIA naming precedence over `aria-label`.
 
 ## Range
 

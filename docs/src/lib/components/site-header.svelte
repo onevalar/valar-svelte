@@ -29,24 +29,31 @@
 
 <header class="sticky top-0 z-50 w-full bg-background">
 	<div
-		class="container-wrapper px-6 group-has-data-[slot=designer]/layout:max-w-none 3xl:fixed:px-0"
+		class="container-wrapper px-4 group-has-data-[slot=designer]/layout:max-w-none sm:px-6 3xl:fixed:px-0"
 	>
 		<div
 			class="flex h-(--header-height) items-center **:data-[slot=separator]:h-4! **:data-[slot=separator]:self-center group-has-data-[slot=designer]/layout:fixed:max-w-none 3xl:fixed:container"
 		>
 			<MobileNav bind:this={mobileNavRef} class="flex lg:hidden" />
 
-			<a href="/" aria-label="Valar Svelte 首页" class="mr-5 ml-3 flex shrink-0 items-baseline gap-2 lg:ml-0"><span class="text-lg font-semibold tracking-tight">Valar</span><span class="text-xs text-muted-foreground">Svelte</span></a>
+			<a
+				href="/"
+				aria-label="Valar Svelte 首页"
+				class="mr-2 ml-3 flex shrink-0 items-baseline gap-2 sm:mr-5 lg:ml-0"
+				><span class="text-lg font-semibold tracking-tight">Valar</span><span
+					class="text-xs text-muted-foreground">Svelte</span
+				></a
+			>
 			<MainNav items={mainNavItems} class="hidden lg:flex" />
 			<div class="ml-auto flex items-center gap-2 md:flex-1 md:justify-end">
-				<div class="hidden w-full flex-1 md:flex md:w-auto md:flex-none">
+				<div class="flex shrink-0 md:w-auto md:flex-none">
 					<CommandMenu {colors} {closeMobileMenu} />
 				</div>
 				<Separator orientation="vertical" class="ml-2 hidden lg:block" />
-				<GithubLink />
+				<div class="hidden sm:block"><GithubLink /></div>
 				<Separator orientation="vertical" class="hidden 3xl:flex" />
 				<LayoutToggle class="hidden 3xl:flex" />
-				<Separator orientation="vertical" />
+				<Separator orientation="vertical" class="hidden sm:block" />
 				{#if page.url.pathname.startsWith("/create")}
 					<ModeSwitcher class="md:hidden" />
 					<Separator orientation="vertical" />
@@ -63,10 +70,10 @@
 					{/if}
 				{:else}
 					<ModeSwitcher />
-					<Separator orientation="vertical" />
+					<Separator orientation="vertical" class="hidden sm:block" />
 					<Button href="/create" variant="default" size="sm" class="h-[31px] rounded-lg">
 						<PlusIcon />
-						New
+						<span class="sr-only sm:not-sr-only">New</span>
 					</Button>
 				{/if}
 			</div>

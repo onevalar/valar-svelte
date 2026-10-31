@@ -1,0 +1,22 @@
+diff --git a/dist/bits/button/components/button.svelte.d.ts b/dist/bits/button/components/button.svelte.d.ts
+index 4cd35080daa1dd9be92fc29c2a94578870cfcd40..92a1ebdd411179343684dda0338ac9d2f8ba3552 100644
+--- a/dist/bits/button/components/button.svelte.d.ts
++++ b/dist/bits/button/components/button.svelte.d.ts
+@@ -1,4 +1,5 @@
+ import type { ButtonRootProps } from "../types.js";
+-declare const Button: import("svelte").Component<ButtonRootProps, {}, "ref">;
++type DeferredComponent<Bindings extends string, Props extends Partial<Record<Bindings, unknown>>> = import("svelte").Component<Props, {}, Bindings>;
++declare const Button: DeferredComponent<"ref", ButtonRootProps>;
+ type Button = ReturnType<typeof Button>;
+ export default Button;
+diff --git a/dist/bits/calendar/components/calendar.svelte.d.ts b/dist/bits/calendar/components/calendar.svelte.d.ts
+index 3f5b2128c1d15e89ee8187a57c381b7b972f10c1..f00e827b2ed9151d46cc91dc7b293787a38d7071 100644
+--- a/dist/bits/calendar/components/calendar.svelte.d.ts
++++ b/dist/bits/calendar/components/calendar.svelte.d.ts
+@@ -1,4 +1,5 @@
+ import type { CalendarRootProps } from "../types.js";
+-declare const Calendar: import("svelte").Component<CalendarRootProps, {}, "ref" | "value" | "placeholder">;
++type DeferredComponent<Bindings extends string, Props extends Partial<Record<Bindings, unknown>>> = import("svelte").Component<Props, {}, Bindings>;
++declare const Calendar: DeferredComponent<"ref" | "value" | "placeholder", CalendarRootProps>;
+ type Calendar = ReturnType<typeof Calendar>;
+ export default Calendar;

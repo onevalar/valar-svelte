@@ -51,6 +51,22 @@ pnpm --filter docs check
 pnpm build
 ```
 
+### 浏览器与独立安装回归
+
+```sh
+pnpm --filter docs exec playwright install --with-deps chromium
+pnpm build
+pnpm --filter docs test:e2e
+```
+
+浏览器回归会启动临时生产预览服务器，检查 Slider 的可访问名称、表单重置和 Enter 提交、Stepper 异步失败／取消、搜索按需加载与失败重试，以及 320／390／768px 文档布局与触摸导航。最后一项会打包实际 CLI，在工作区之外创建 SvelteKit 消费者，执行 init／add、严格第三方类型检查、生产构建和浏览器表单检查，结束后清理临时项目。不会发布包或部署。消费者显式带入类型补丁与 pnpm 兼容配置，步骤见站内安装说明的“严格检查第三方类型”。
+
+复用已运行的文档站时可设置 `E2E_BASE_URL`；单独执行消费者检查时使用 `pnpm --filter docs test:consumer`，通过 `REGISTRY_URL` 指定正在运行的 registry。默认地址仍是本地开发 registry。
+
+自有 GitHub CI 在 main push 和 pull request 时执行冻结安装、单元测试、工作区类型检查、整站构建和上述浏览器／消费者回归；只读仓库权限，没有发布或部署步骤。
+
+本轮手机适配、无障碍、持续回归、类型兼容与加载优化的结果和限制见[六项优化验收记录](standards/porting-records/optimization-2026-10-31.md)。
+
 ## 来源与归档
 
 技术基线来自 shadcn-svelte 的 main 提交 `fe4b0ad3b8b30c6745346db008c3307b5afeabb1`，于 2026-10-30 导入全部 6,132 个跟踪文件。原始文件摘要见 `upstream-source-manifest.json`，原始说明见 `UPSTREAM_README.md`。品牌独立不改变上游 MIT 许可及版权要求，相关声明继续保留。

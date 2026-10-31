@@ -127,3 +127,7 @@ _archive/initial-starter/.svelte-kit/
 repro/src/lib/components/ui/*
 !repro/src/lib/components/ui/light-switch/
 !repro/src/lib/components/ui/light-switch/**
+
+# Browser regression output
+docs/test-results/
+docs/playwright-report/

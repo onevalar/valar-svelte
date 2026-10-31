@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
-	import { base } from "$app/paths";
 	import ArrowRightIcon from "@lucide/svelte/icons/arrow-right";
 	import CornerDownLeftIcon from "@lucide/svelte/icons/corner-down-left";
+	import SearchIcon from "@lucide/svelte/icons/search";
 	import SquareDashedIcon from "@lucide/svelte/icons/square-dashed";
-	import { onMount } from "svelte";
 	import { SvelteSet } from "svelte/reactivity";
 	import * as Command from "$lib/registry/ui/command/index.js";
 	import * as Dialog from "$lib/registry/ui/dialog/index.js";
@@ -17,7 +16,7 @@
 	import { Separator } from "$lib/registry/ui/separator/index.js";
 	import { UserConfigContext, type PackageManager } from "$lib/user-config.svelte.js";
 	import { cn } from "$lib/utils.js";
-	import { createContentIndex, searchContentIndex } from "$lib/utils/search.js";
+	import { loadContentIndex, searchContentIndex } from "$lib/utils/search.js";
 	import CommandMenuItem from "./command-menu-item.svelte";
 
 	let {
@@ -182,16 +181,22 @@
 	);
 
 	let searchReady = $state(false);
-	onMount(async () => {
-		try {
-			const response = await fetch(`${base}/api/search.json`);
-			if (!response.ok) return;
-			await createContentIndex(await response.json());
-		} catch {
-			// Navigation search remains usable if the content index fails to load.
-		} finally {
-			searchReady = true;
-		}
+	let searchFailed = $state(false);
+	$effect(() => {
+		if (!open || searchReady) return;
+		let active = true;
+		searchFailed = false;
+		void loadContentIndex().then(
+			() => {
+				if (active) searchReady = true;
+			},
+			() => {
+				if (active) searchFailed = true;
+			}
+		);
+		return () => {
+			active = false;
+		};
 	});
 
 	const contentResults = $derived.by(() => {
@@ -279,29 +284,36 @@
 			<Button
 				{...props}
 				variant="outline"
+				aria-label="Search documentation"
 				class={cn(
-					"relative h-8 w-full justify-start rounded-lg border-none bg-muted pl-3 text-foreground shadow-none transition-colors hover:bg-muted/50 md:w-48 lg:w-40 xl:w-64 dark:bg-card"
+					"relative size-8 justify-center rounded-lg border-none bg-muted text-foreground shadow-none transition-colors hover:bg-muted/50 md:w-48 md:justify-start md:pl-3 lg:w-40 xl:w-64 dark:bg-card"
 				)}
 				onclick={() => openCommandMenu()}
 			>
+				<SearchIcon class="md:hidden" />
 				<span class="hidden xl:inline-flex">Search documentation...</span>
-				<span class="inline-flex xl:hidden">Search...</span>
+				<span class="hidden md:inline-flex xl:hidden">Search...</span>
 			</Button>
 		{/snippet}
 	</Dialog.Trigger>
 	<Dialog.Content
-		showCloseButton={false}
-		class="rounded-xl border-none bg-clip-padding p-2 pb-11 shadow-2xl ring-4 ring-neutral-200/80 dark:bg-neutral-900 dark:ring-neutral-800"
+		class="top-4 flex max-h-[calc(100dvh-2rem)] max-w-[calc(100%-2rem)] translate-y-0 flex-col overflow-hidden rounded-xl border-none bg-clip-padding p-2 pb-11 shadow-2xl ring-4 ring-neutral-200/80 sm:top-1/2 sm:max-w-lg sm:-translate-y-1/2 dark:bg-neutral-900 dark:ring-neutral-800"
 	>
 		<Dialog.Header class="sr-only">
 			<Dialog.Title>Search documentation...</Dialog.Title>
 			<Dialog.Description>Search for a command to run...</Dialog.Description>
 		</Dialog.Header>
-		<Command.Root class="rounded-none bg-transparent" bind:value shouldFilter={false}>
+		<Command.Root class="min-h-0 rounded-none bg-transparent" bind:value shouldFilter={false}>
 			<Command.Input bind:value={search} placeholder="Search documentation..." />
-			<Command.List tabindex={-1} class="no-scrollbar min-h-80 scroll-pt-2 scroll-pb-1.5">
+			<Command.List tabindex={-1} class="no-scrollbar min-h-0 scroll-pt-2 scroll-pb-1.5">
 				{#if !hasResults}
-					<div class="py-12 text-center text-sm text-muted-foreground">No results found.</div>
+					<div role="status" class="px-3 py-12 text-center text-sm text-muted-foreground">
+						{searchFailed
+							? "Full-text search unavailable. Close and reopen to retry."
+							: !searchReady
+								? "Loading documentation search…"
+								: "No results found."}
+					</div>
 				{/if}
 				{#if pageResults.length}
 					<Command.Group
@@ -441,14 +453,14 @@
 			{#if copyPayload}
 				<Separator
 					orientation="vertical"
-					class="!h-4 !self-center bg-neutral-200 dark:bg-neutral-700"
+					class="hidden !h-4 !self-center bg-neutral-200 sm:block dark:bg-neutral-700"
 				/>
-				<div class="flex items-center gap-1">
+				<div class="hidden min-w-0 items-center gap-1 sm:flex">
 					<Kbd.Group
 						><Kbd.Root class="border bg-background">⌘</Kbd.Root>
 						<Kbd.Root class="border bg-background">C</Kbd.Root>
 					</Kbd.Group>
-					{copyPayload}
+					<span class="truncate" title={copyPayload}>{copyPayload}</span>
 				</div>
 			{/if}
 		</div>

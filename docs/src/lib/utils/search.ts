@@ -1,3 +1,4 @@
+import { base } from "$app/paths";
 import type { Id, Index } from "flexsearch";
 
 export type SearchContent = {
@@ -18,31 +19,40 @@ export type SearchResult = SearchContent & {
 let titleIndex: Index | undefined;
 let contentIndex: Index | undefined;
 let content: SearchContent[] = [];
+let indexPromise: Promise<void> | undefined;
 
-export async function createContentIndex(data: SearchContent[]) {
+export function loadContentIndex(): Promise<void> {
 	// import.meta.env.SSR is replaced with `true` at build time, so rolldown
 	// eliminates the dynamic import below as dead code — flexsearch never
 	// enters the server/worker bundle.
-	if (import.meta.env.SSR) return;
+	if (import.meta.env.SSR) return Promise.resolve();
 
-	const { Index } = await import("flexsearch");
+	return (indexPromise ??= (async () => {
+		const response = await fetch(`${base}/api/search.json`);
+		if (!response.ok) throw new Error("Unable to load documentation search");
+		const data: SearchContent[] = await response.json();
+		const { Index } = await import("flexsearch");
 
-	titleIndex = new Index({
-		tokenize: "forward",
-		resolution: 9,
-	});
+		titleIndex = new Index({
+			tokenize: "forward",
+			resolution: 9,
+		});
 
-	contentIndex = new Index({
-		tokenize: "forward",
-		resolution: 5,
-	});
+		contentIndex = new Index({
+			tokenize: "forward",
+			resolution: 5,
+		});
 
-	for (const [i, item] of data.entries()) {
-		titleIndex.add(i, item.title);
-		contentIndex.add(i, `${item.content} ${item.description}`);
-	}
+		for (const [i, item] of data.entries()) {
+			titleIndex.add(i, item.title);
+			contentIndex.add(i, `${item.content} ${item.description}`);
+		}
 
-	content = data;
+		content = data;
+	})().catch((error) => {
+		indexPromise = undefined;
+		throw error;
+	}));
 }
 
 function getContentSnippet(text: string, query: string, maxLength = 150): string {

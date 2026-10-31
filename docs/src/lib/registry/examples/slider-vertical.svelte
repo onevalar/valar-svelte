@@ -6,9 +6,18 @@
 </script>
 
 <div class="mx-auto flex w-full max-w-xs items-center justify-center gap-6">
-	<Slider type="single" bind:value={first} max={100} step={1} orientation="vertical" class="h-40" />
 	<Slider
 		type="single"
+		aria-label="First vertical level"
+		bind:value={first}
+		max={100}
+		step={1}
+		orientation="vertical"
+		class="h-40"
+	/>
+	<Slider
+		type="single"
+		aria-label="Second vertical level"
 		bind:value={second}
 		max={100}
 		step={1}

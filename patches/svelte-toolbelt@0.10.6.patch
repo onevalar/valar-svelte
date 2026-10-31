@@ -1,0 +1,10 @@
+diff --git a/dist/box/box-extras.svelte.d.ts b/dist/box/box-extras.svelte.d.ts
+index 8f9409f938b2ea3fe2bb90cfd1fbea3eca0e6fbb..50a1e3b95a57ba8e61d06d4b745453271f1263e3 100644
+--- a/dist/box/box-extras.svelte.d.ts
++++ b/dist/box/box-extras.svelte.d.ts
+@@ -1,4 +1,4 @@
+-import type { Getter, MaybeBoxOrGetter } from "../types.js";
++import type { Expand, Getter, MaybeBoxOrGetter } from "../types.js";
+ export declare const BoxSymbol: unique symbol;
+ export declare const isWritableSymbol: unique symbol;
+ export type ReadableBox<T> = {

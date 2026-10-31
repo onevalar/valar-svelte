@@ -4,4 +4,11 @@
 	let value = $state(75);
 </script>
 
-<Slider type="single" bind:value max={100} step={1} class="mx-auto w-full max-w-xs" />
+<Slider
+	type="single"
+	aria-label="Volume"
+	bind:value
+	max={100}
+	step={1}
+	class="mx-auto w-full max-w-xs"
+/>

@@ -51,12 +51,8 @@ the docs container. The issue this resolves is prominent on slow connections (3G
 				<div class="h-12"></div>
 			</div>
 		{/if}
-		<div class="flex flex-1 flex-col gap-12 px-6">
-			
-		</div>
-		<div class="flex flex-col gap-12 px-6">
-			
-		</div>
+		<div class="flex flex-1 flex-col gap-12 px-6"></div>
+		<div class="flex flex-col gap-12 px-6"></div>
 	</div>
 	<div class="flex min-w-0 flex-1 flex-col">
 		<div class="h-(--top-spacing) shrink-0"></div>
@@ -65,7 +61,7 @@ the docs container. The issue this resolves is prominent on slow connections (3G
 		>
 			<div class="flex flex-col gap-2">
 				<div class="flex flex-col gap-2">
-					<div class="flex items-center justify-between md:items-start">
+					<div class="flex flex-wrap items-center justify-between gap-2 md:items-start">
 						<h1 class="scroll-m-24 text-3xl font-semibold tracking-tight sm:text-3xl">
 							{doc.title}
 						</h1>
@@ -108,7 +104,7 @@ the docs container. The issue this resolves is prominent on slow connections (3G
 					{/if}
 				</div>
 				{#if apiLink || docLink || source}
-					<div class="flex items-center space-x-2 pt-4">
+					<div class="flex flex-wrap items-center gap-2 pt-4">
 						{#if docLink}
 							<Badge href={docLink} variant="secondary" target="_blank" rel="noreferrer">
 								Docs
@@ -128,7 +124,7 @@ the docs container. The issue this resolves is prominent on slow connections (3G
 					</div>
 				{/if}
 			</div>
-			
+
 			<div class="w-full flex-1 pb-16 *:data-[slot=alert]:first:mt-0 sm:pb-0">
 				<Markdown viewerData={data.viewerData} />
 			</div>
