@@ -227,7 +227,7 @@ describe("Registry Utilities", () => {
 					registryIndex: mockRegistryIndex,
 					items: ["nonexistent-item"],
 				})
-			).rejects.toThrow(/https:\/\/shadcn-svelte\.com\/registry/);
+			).rejects.toThrow(/http:\/\/127\.0\.0\.1:5186\/registry/);
 		});
 	});
 

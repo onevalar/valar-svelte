@@ -28,7 +28,13 @@ function getFile(name: string) {
 	);
 }
 
-it("should accurately build the registry template", async () => {
+// The demo project and the registry it builds come from `pnpm test:setup`, which installs the CLI
+// from npm. Without that artifact there is nothing to compare, so skip instead of failing on ENOENT.
+const demoRegistryBuilt = fs.existsSync(
+	path.join(registryTemplateStaticRegistryPath, "index.json")
+);
+
+it.skipIf(!demoRegistryBuilt)("should accurately build the registry template", async () => {
 	const index = getFile("index");
 	const checkoutSteps = getFile("checkout-steps");
 	const complexComponent = getFile("complex-component");
