@@ -1,19 +1,34 @@
 ---
-name: Valar Svelte
-description: Manages Valar Svelte components and projects — adding, updating, fixing, debugging, styling, and composing UI. Provides project context, component docs, and usage examples. Applies when working with Valar Svelte, the CLI, design-system presets, or any project with a components.json file. Also triggers for "Valar Svelte init", "add component", or registry URLs.
+name: valar-svelte
+description: 使用 Valar Svelte 组件库构建或修改 Svelte／SvelteKit 界面——选组件、安装、组合、按组件自带设计规范（RULES.md）编写并用 lint 检查。适用于含 components.json 的项目、提到 Valar／valar-svelte、“添加组件”或需要写 UI 的任务。
 user-invocable: false
-allowed-tools: Bash(npx @valar/svelte-cli *), Bash(pnpm dlx @valar/svelte-cli *), Bash(bunx --bun @valar/svelte-cli *)
+allowed-tools: Bash(pnpm exec valar-svelte *), Bash(npx valar-svelte *)
 ---
 
 # Valar Svelte
 
-A framework for building UI, components, and design systems for Svelte. Components are added as source to the user's project via the CLI.
+Valar Svelte 的组件以源码形式通过 CLI 安装进项目，每个组件可附带设计规范 `RULES.md`。写 UI 时按下面的顺序做，不凭记忆拼凑。
 
-> **IMPORTANT:** Run all CLI commands using the project's package runner: `npx @valar/svelte-cli`, `pnpm dlx @valar/svelte-cli`, or `bunx --bun @valar/svelte-cli` — based on the project's package manager. Examples below use `npx @valar/svelte-cli` but substitute the correct runner for the project.
+> **CLI：** `valar-svelte` 从 Valar 仓库以本地 tarball 安装（未发布到 npm），用项目的包运行器执行：`pnpm exec valar-svelte`（或 `npx valar-svelte`）。
 
-## Current Project Context
+## 工作流程（必须遵守）
 
-Read `components.json` at the project root and, when you need the live file layout, list the directory given by the `aliases.ui` path (resolved with the same rules as the CLI).
+1. **读项目上下文**：`components.json`（`aliases`、`style`、`iconLibrary`），列出 `aliases.ui` 目录下已安装的组件。
+2. **选组件**：先查组件目录，按“何时用／何时不用”选择，不要自己写已有组件能做的东西。
+   - 有 Valar MCP 时调用 `search_components` / `get_component`（启动：`pnpm exec valar-svelte mcp`）。
+   - 否则读 `http://127.0.0.1:5186/llms-small.txt`（每个组件一行，含“不适用→改用”）或 `http://127.0.0.1:5186/registry/catalog.json`。
+   - 组件详细用法：`http://127.0.0.1:5186/docs/components/<name>.md`（顶部是说明卡，下面是完整文档）。
+3. **安装**：`pnpm exec valar-svelte add <name...>`。不要导入未安装的组件。
+4. **按规范编写**：安装后项目 `AGENTS.md` 中 `<!-- valar-svelte:rules:start -->` 区块汇总了通用规则和已装组件的 `RULES.md`；写代码前读它，并遵守下方“关键规则”与 `rules/` 中的写法。
+5. **检查**：`pnpm exec valar-svelte lint`，修复所有 error 后再交付。
+
+## 设计方法（由 Valar 维护者编写）
+
+以下文件是页面组合、文案与动效的方法。**内容由维护者本人编写；AI 不得代写或自行补全。** 文件仍是占位时，按组件说明卡和 RULES.md 执行，不要自行发明这些方面的规范。
+
+- [guides/page-composition.md](./guides/page-composition.md) — 页面组合
+- [guides/copywriting.md](./guides/copywriting.md) — 界面文案
+- [guides/motion.md](./guides/motion.md) — 动效
 
 ## Imports (Svelte)
 
@@ -32,10 +47,9 @@ Use the real aliases from `components.json` (often `$lib/components/ui/...`), no
 
 ## Principles
 
-1. **Use existing components first.** Run `npx @valar/svelte-cli add` with no arguments to browse available components, or check [Components](http://127.0.0.1:5186/docs/components) before writing custom UI.
-2. **Compose, don't reinvent.** Settings page = Tabs + Card + form controls. Dashboard = Sidebar + Card + Chart + Table.
-3. **Use built-in variants before custom styles.** `variant="outline"`, `size="sm"`, etc.
-4. **Use semantic colors.** `bg-primary`, `text-muted-foreground` — never raw values like `bg-blue-500`.
+1. **Use existing components first.** Check the component catalog (step 2 of the workflow) before writing custom UI.
+2. **Use built-in variants before custom styles.** `variant="outline"`, `size="sm"`, etc.
+3. **Use semantic colors.** `bg-primary`, `text-muted-foreground` — never raw values like `bg-blue-500`.
 
 ## Critical Rules
 
@@ -90,7 +104,7 @@ These rules are **always enforced**. Each links to a file with Incorrect/Correct
 
 ### CLI
 
-- **Presets** — copy the encoded string from the design-system builder on [Valar Svelte.com](http://127.0.0.1:5186) and pass it to `npx @valar/svelte-cli init --preset <code>`.
+- **Presets** — copy the encoded string from the design-system builder on [Valar 文档站](http://127.0.0.1:5186) and pass it to `pnpm exec valar-svelte init --preset <code>`.
 
 ## Key Patterns
 
@@ -142,21 +156,7 @@ These are the most common patterns that differentiate correct Valar Svelte code.
 
 ## Component Selection
 
-| Need                       | Use                                                                                                 |
-| -------------------------- | --------------------------------------------------------------------------------------------------- |
-| Button/action              | `Button` with appropriate variant (`import { Button }`)                                             |
-| Form inputs                | `Input`, `Select`, `Combobox`, `Switch`, `Checkbox`, `RadioGroup`, `Textarea`, `InputOTP`, `Slider` |
-| Toggle between 2–5 options | `ToggleGroup.Root` + `ToggleGroup.Item`                                                             |
-| Data display               | `Table`, `Card`, `Badge`, `Avatar`                                                                  |
-| Navigation                 | `Sidebar`, `NavigationMenu`, `Breadcrumb`, `Tabs`, `Pagination`                                     |
-| Overlays                   | `Dialog` (modal), `Sheet` (side panel), `Drawer` (bottom sheet), `AlertDialog` (confirmation)       |
-| Feedback                   | `svelte-sonner` (toast), `Alert`, `Progress`, `Skeleton`, `Spinner`                                 |
-| Command palette            | `Command` inside `Dialog`                                                                           |
-| Charts                     | `Chart` (LayerChart)                                                                                |
-| Layout                     | `Card`, `Separator`, `Resizable`, `ScrollArea`, `Accordion`, `Collapsible`                          |
-| Empty states               | `Empty`                                                                                             |
-| Menus                      | `DropdownMenu`, `ContextMenu`, `Menubar`                                                            |
-| Tooltips/info              | `Tooltip`, `HoverCard`, `Popover`                                                                   |
+选组件的依据只在组件说明卡里（`ui/<name>/meta.json`，汇总为 `catalog.json`、`llms-small.txt`）。按卡片里的“何时用／何时不用→改用”判断；没有说明卡的组件见 `catalog.json` 的 `missingCards`，查阅其文档页后谨慎使用。
 
 ## Key Fields
 
@@ -166,31 +166,17 @@ Use `components.json` and the filesystem — not a separate `info` command:
 - **`tailwind.css`** → the global CSS file where theme variables live. Edit this file for theme tweaks; don't add a second globals file unless the user already uses one.
 - **`style`** → visual treatment (e.g. `nova`, `vega`, …) and registry style path.
 - **`iconLibrary`** → determines icon packages (`@lucide/svelte`, `@tabler/icons-svelte`, etc.). Never assume `@lucide/svelte`.
-- **`registry`** → where the CLI fetches components; default official registry at `Valar Svelte.com`.
+- **`registry`** → where the CLI fetches components; default official registry at `http://127.0.0.1:5186/registry`.
 - **`resolvedPaths`** (conceptual) → the CLI resolves `aliases` to absolute paths; list `aliases.ui` on disk to see installed components.
 
 See [cli.md](./cli.md) for commands and flags.
-
-## Component Docs, Examples, and Usage
-
-Open `http://127.0.0.1:5186/docs/components/<name>.md` for docs and examples. **When creating, fixing, debugging, or using a component, read the official page first** so you follow the documented APIs.
-
-## Workflow
-
-1. **Get project context** — read `components.json` and list the UI components directory when needed.
-2. **Check installed components first** — before running `add`, list files under the resolved `ui` path. Don't import components that haven't been added, and don't re-add ones already present unless updating.
-3. **Discover components** — `npx @valar/svelte-cli add` with no arguments (interactive list), or the docs site.
-4. **Install or update** — `npx @valar/svelte-cli add <name>` or a registry **URL**. To refresh existing files from the registry, use `npx @valar/svelte-cli update` (see [cli.md](./cli.md)).
-5. **Fix imports in third-party / URL-added items** — After adding from a custom registry URL, check for hardcoded paths that don't match the project's `aliases`. Rewrite imports to use the project's `ui` / `lib` aliases from `components.json`.
-6. **Review added components** — After adding, **read the added files** and verify composition (groups, titles, validation attrs). Align icon imports with `iconLibrary`.
-7. **Remote registry items** — Adding by URL is explicit; if the user wants a component from an unknown source, confirm the registry URL or item before running `add`.
 
 ## Updating Components
 
 Use the **`update`** command to pull the latest registry versions of components already in the project. Review changes with `git diff` after `update`.
 
 1. Commit or stash local work.
-2. Run `npx @valar/svelte-cli update [component]` or `--all`.
+2. Run `pnpm exec valar-svelte update [component]` or `--all`.
 3. Resolve merge conflicts if you had customized files.
 4. **Never use `--overwrite` on `add` without the user's explicit approval** when it would destroy intentional edits.
 
@@ -198,28 +184,36 @@ Use the **`update`** command to pull the latest registry versions of components 
 
 ```bash
 # Initialize Valar Svelte in your project.
-npx @valar/svelte-cli init
+pnpm exec valar-svelte init
 
 # Initialize with a preset string from the docs site builder.
-npx @valar/svelte-cli init --preset <code>
+pnpm exec valar-svelte init --preset <code>
 
 # Add components (interactive when run with no names).
-npx @valar/svelte-cli add
-npx @valar/svelte-cli add button card dialog
-npx @valar/svelte-cli add --all
+pnpm exec valar-svelte add
+pnpm exec valar-svelte add button card dialog
+pnpm exec valar-svelte add --all
 
 # Update components already installed.
-npx @valar/svelte-cli update button
-npx @valar/svelte-cli update --all --yes
+pnpm exec valar-svelte update button
+pnpm exec valar-svelte update --all --yes
+
+# Check app code against Valar design rules (fix every error).
+pnpm exec valar-svelte lint
+
+# Start the local, read-only Valar MCP server (stdio).
+pnpm exec valar-svelte mcp
 
 # Build a custom registry (registry authors).
-npx @valar/svelte-cli registry build
+pnpm exec valar-svelte registry build
 ```
 
 **Registry:** default `http://127.0.0.1:5186/registry` — override in `components.json` if needed.  
-**Docs:** [Valar Svelte.com](http://127.0.0.1:5186)
+**Docs:** [Valar 文档站](http://127.0.0.1:5186)
 
 ## Detailed References
+
+- [guides/](./guides/) — 页面组合、文案、动效（维护者编写）
 
 - [rules/forms.md](./rules/forms.md) — Field.FieldGroup, Field.Field, InputGroup, ToggleGroup, Field.FieldSet, validation states
 - [rules/composition.md](./rules/composition.md) — Groups, overlays, Card, Tabs, Avatar, Alert, Empty, Toast, Separator, Skeleton, Badge, Button loading

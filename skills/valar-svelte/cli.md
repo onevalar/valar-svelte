@@ -2,13 +2,13 @@
 
 Configuration is read from `components.json`. See [components.json](http://127.0.0.1:5186/docs/components-json) on the docs site for the full schema.
 
-> **IMPORTANT:** Always run commands using the project's package runner: `npx @valar/svelte-cli`, `pnpm dlx @valar/svelte-cli`, or `bunx --bun @valar/svelte-cli`. Check `packageManager` from the project (or lockfile) to choose the right one. Examples below use `npx @valar/svelte-cli` but substitute the correct runner for the project.
+> **IMPORTANT:** The CLI is installed into the project from the Valar repository (local tarball, not published to npm), so run it with the project's package runner, e.g. `pnpm exec valar-svelte` (or `npx valar-svelte`). Examples below use `pnpm exec valar-svelte`.
 
 > **IMPORTANT:** Only use the flags documented below. Do not invent or guess flags — if a flag isn't listed here, it doesn't exist. The CLI auto-detects the package manager; there is no `--package-manager` flag.
 
 ## Contents
 
-- Commands: `init`, `add`, `apply`, `update`, `registry build`
+- Commands: `init`, `add`, `apply`, `update`, `lint`, `mcp`, `registry build`
 - Proxy / outgoing requests
 - Presets (via `init` and `apply`)
 
@@ -19,7 +19,7 @@ Configuration is read from `components.json`. See [components.json](http://127.0
 ### `init` — Initialize an existing project
 
 ```bash
-npx @valar/svelte-cli init [options]
+pnpm exec valar-svelte init [options]
 ```
 
 Installs dependencies, adds the `cn` util, creates `components.json`, and sets up CSS variables. Run `init` from the root of your project.
@@ -47,7 +47,7 @@ Installs dependencies, adds the `cn` util, creates `components.json`, and sets u
 ### `add` — Add components
 
 ```bash
-npx @valar/svelte-cli add [options] [components...]
+pnpm exec valar-svelte add [options] [components...]
 ```
 
 Adds components from the configured registry. Arguments are component names from the registry index, or a **URL** to a registry JSON item. With **no** component names, the CLI prompts you to pick components interactively.
@@ -68,7 +68,7 @@ Adds components from the configured registry. Arguments are component names from
 ### `apply` — Apply a preset to an existing project
 
 ```bash
-npx @valar/svelte-cli apply [options]
+pnpm exec valar-svelte apply [options]
 ```
 
 Applies a design-system preset to a project that has already been initialized. Updates `components.json` with the preset settings, reinstalls existing components (except `utils`) with the new styles, and installs any required dependencies.
@@ -95,7 +95,7 @@ Requires an existing `components.json`. Run `init` first if the project is not y
 ### `update` — Update installed components
 
 ```bash
-npx @valar/svelte-cli update [options] [components...]
+pnpm exec valar-svelte update [options] [components...]
 ```
 
 Re-fetches and applies registry content for components **already present** in the project. Run `Valar Svelte update --help` for options.
@@ -114,10 +114,35 @@ Commit your work before updating; overwrites are destructive.
 
 ---
 
+### `lint` — Check design rules
+
+```bash
+pnpm exec valar-svelte lint [paths...]
+```
+
+Checks app code (default `src`, skipping the installed UI folder) against the machine-checkable Valar rules. Errors make the command fail.
+
+| Flag               | Short | Description       | Default |
+| ------------------ | ----- | ----------------- | ------- |
+| `-c, --cwd <path>` | `-c`  | Working directory | current |
+
+### `mcp` — Local MCP server
+
+```bash
+pnpm exec valar-svelte mcp
+```
+
+Read-only MCP server over stdio with `list_components`, `search_components`, `get_component`, `get_install_command` and `get_skill`. Data comes from the registry's `catalog.json` (registry URL from `components.json`, or the local docs site).
+
+| Flag               | Short | Description       | Default                         |
+| ------------------ | ----- | ----------------- | ------------------------------- |
+| `-c, --cwd <path>` | `-c`  | Working directory | current                         |
+| `--registry <url>` | —     | Registry base URL | `components.json` or local site |
+
 ### `registry build` — Build a custom registry
 
 ```bash
-npx @valar/svelte-cli registry build [options] [registry]
+pnpm exec valar-svelte registry build [options] [registry]
 ```
 
 Reads a `registry.json` and writes registry JSON files for distribution. Default input: `./registry.json`, default output: `./static/r`.
@@ -137,7 +162,7 @@ Reads a `registry.json` and writes registry JSON files for distribution. Default
 The CLI can fetch the registry through a proxy. If `HTTP_PROXY` or `http_proxy` is set, requests respect it. You can also pass `--proxy` on `init`, `add`, `apply`, or `update`.
 
 ```bash
-HTTP_PROXY="<proxy-url>" npx @valar/svelte-cli init
+HTTP_PROXY="<proxy-url>" pnpm exec valar-svelte init
 ```
 
 ---
@@ -158,7 +183,7 @@ Design-system options (style, theme, icons, fonts, etc.) can be captured as an e
 | `tailwind.css`       | Global CSS file path (Tailwind entry / theme variables)          |
 | `tailwind.baseColor` | Base palette (cannot change after init)                          |
 | `aliases.*`          | Import aliases; must match `svelte.config.js` / `tsconfig` paths |
-| `registry`           | Base registry URL (default `http://127.0.0.1:5186/registry`) |
+| `registry`           | Base registry URL (default `http://127.0.0.1:5186/registry`)     |
 | `style`              | Registered style name (e.g. `nova`, `vega`, …)                   |
 | `iconLibrary`        | Icon set key (`lucide`, `tabler`, …) — drives generated imports  |
 | `typescript`         | Whether TS and optional custom config path                       |

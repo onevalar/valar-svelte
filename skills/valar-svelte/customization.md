@@ -65,10 +65,10 @@ Class-based toggle via `.dark` on the root element. In SvelteKit, use [mode-watc
 
 ## Changing the Theme
 
-Use a **preset** from the design-system builder on [Valar Svelte.com](http://127.0.0.1:5186) and pass it to `init`:
+Use a **preset** from the design-system builder on [Valar 文档站](http://127.0.0.1:5186) and pass it to `init`:
 
 ```bash
-npx @valar/svelte-cli init --preset <code>
+pnpm exec valar-svelte init --preset <code>
 ```
 
 Or edit CSS variables directly in the file set in `components.json` as `tailwind.css` (for example `src/app.css`).
@@ -101,7 +101,7 @@ Add variables to the global CSS file path in `components.json` (`tailwind.css`).
 }
 ```
 
-On Tailwind v3, register in `tailwind.config.js` (see the [Tailwind v3 docs](https://tw3.Valar Svelte.com) if you maintain a legacy setup):
+On Tailwind v3, register in `tailwind.config.js` (see the [Tailwind v3 docs](https://tw3.shadcn-svelte.com) if you maintain a legacy setup):
 
 ```js
 // 2b. Register with Tailwind v3 (tailwind.config.js).
@@ -206,8 +206,8 @@ Compose Valar Svelte primitives into higher-level `.svelte` files:
 ## Checking for Updates
 
 ```bash
-npx @valar/svelte-cli update button
-npx @valar/svelte-cli update --all
+pnpm exec valar-svelte update button
+pnpm exec valar-svelte update --all
 ```
 
 See [Updating Components in SKILL.md](./SKILL.md#updating-components). Review `git diff` after `update` to see what changed.
