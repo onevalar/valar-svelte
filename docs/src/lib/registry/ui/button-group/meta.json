@@ -1,0 +1,29 @@
+{
+	"name": "button-group",
+	"type": "registry:ui",
+	"title": "Button Group 按钮组",
+	"description": "把相关的操作按钮组合在一起，样式连贯。",
+	"categories": ["操作"],
+	"meta": {
+		"valar": {
+			"keywords": ["按钮组", "button group", "分段按钮", "split button", "工具栏"],
+			"whenToUse": ["把相关操作的按钮组合在一起，如按钮加下拉菜单"],
+			"whenNotToUse": [
+				{
+					"case": "切换状态而不是执行操作",
+					"use": "toggle-group"
+				},
+				{
+					"case": "输入框旁边的按钮",
+					"use": "input-group"
+				}
+			],
+			"accessibility": [
+				"根元素 role=group，用 aria-label 或 aria-labelledby 命名",
+				"用 Tab 在按钮间移动"
+			],
+			"responsive": ["窄屏可改 orientation=vertical", "嵌套 ButtonGroup 形成带间距的分组"],
+			"related": ["button", "toggle-group", "input-group"]
+		}
+	}
+}

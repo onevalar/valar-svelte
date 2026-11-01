@@ -1,0 +1,37 @@
+{
+	"name": "questionnaire",
+	"type": "registry:ui",
+	"title": "Questionnaire 问卷",
+	"description": "逐题作答的多步问卷，支持单选、多选、自由回答和跳过。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["问卷", "questionnaire", "调查", "survey", "多步", "答题"],
+			"whenToUse": [
+				"逐题作答的问卷：单选、多选、自由回答、可跳过",
+				"需要条件题、校验、进度、恢复作答"
+			],
+			"whenNotToUse": [
+				{
+					"case": "一般的多步表单流程",
+					"use": "stepper"
+				},
+				{
+					"case": "单页表单",
+					"use": "field"
+				},
+				{
+					"case": "只有一个选择题",
+					"use": "radio-group"
+				}
+			],
+			"accessibility": [
+				"Questionnaire.Item 是 fieldset，Title 是 legend；错误与 aria-invalid 关联到当前题",
+				"切换后焦点到新题，校验失败聚焦答案控件",
+				"Questionnaire.Input 必须有可访问名称，placeholder 不算标签"
+			],
+			"responsive": ["可放进 card 或 dialog 中使用"],
+			"related": ["stepper", "radio-group", "progress"]
+		}
+	}
+}

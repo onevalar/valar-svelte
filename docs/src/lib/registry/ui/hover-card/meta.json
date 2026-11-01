@@ -1,0 +1,36 @@
+{
+	"name": "hover-card",
+	"type": "registry:ui",
+	"title": "Hover Card 悬停卡片",
+	"description": "鼠标悬停在链接上时浮出的预览卡片，展示链接背后的内容摘要。",
+	"categories": ["弹层"],
+	"meta": {
+		"valar": {
+			"keywords": ["悬停卡片", "hover card", "链接预览", "link preview", "资料卡"],
+			"whenToUse": ["悬停链接时预览其指向的内容，如用户资料、页面摘要"],
+			"whenNotToUse": [
+				{
+					"case": "简短的文字提示",
+					"use": "tooltip"
+				},
+				{
+					"case": "点击打开，或卡片内有需要操作的控件",
+					"use": "popover"
+				},
+				{
+					"case": "触屏为主的场景中唯一的信息入口",
+					"use": "popover"
+				}
+			],
+			"accessibility": [
+				"只是给能看见、用鼠标的用户的补充预览，链接本身必须可访问，卡片内容不能是获取信息的唯一途径",
+				"用 openDelay、closeDelay 控制开合延迟，避免划过时误触发"
+			],
+			"responsive": [
+				"触屏设备没有悬停，卡片不会出现，需保证点击链接仍能到达完整内容",
+				"默认显示在下方（side=bottom），空间不足时自动翻转"
+			],
+			"related": ["tooltip", "popover", "avatar"]
+		}
+	}
+}

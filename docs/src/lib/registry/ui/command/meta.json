@@ -1,0 +1,45 @@
+{
+	"name": "command",
+	"type": "registry:ui",
+	"title": "Command 命令菜单",
+	"description": "可输入筛选的命令列表，用于命令面板（⌘K）和快速搜索选择。",
+	"categories": ["操作"],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"命令面板",
+				"command",
+				"command palette",
+				"cmdk",
+				"搜索",
+				"快速操作",
+				"combobox"
+			],
+			"whenToUse": [
+				"命令面板：搜索并执行操作或跳转页面（Command.Dialog）",
+				"在大量选项中按关键字筛选，可放进 popover 组成可搜索的选择框"
+			],
+			"whenNotToUse": [
+				{
+					"case": "选项不多、不需要搜索的选择",
+					"use": "select"
+				},
+				{
+					"case": "少量固定操作",
+					"use": "dropdown-menu"
+				},
+				{
+					"case": "页面主导航",
+					"use": "navigation-menu"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（上下键移动、回车选择）和输入过滤",
+				"Command.Dialog 自带视觉隐藏的标题和描述，默认中文，可传入 title、description 改",
+				"用 Command.Empty 告知没有匹配结果"
+			],
+			"responsive": ["列表在固定高度内滚动", "⌘K 快捷键在触屏设备上不可用，要提供可见的打开按钮"],
+			"related": ["dialog", "popover", "select"]
+		}
+	}
+}

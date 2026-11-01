@@ -1,0 +1,36 @@
+{
+	"name": "stepper",
+	"type": "registry:ui",
+	"title": "Stepper 步骤条",
+	"description": "带校验门禁、可取消异步校验的分步流程。",
+	"categories": ["导航"],
+	"meta": {
+		"valar": {
+			"keywords": ["步骤条", "stepper", "向导", "wizard", "多步表单", "流程"],
+			"whenToUse": [
+				"有先后顺序的多步流程，如多步表单、配置向导",
+				"前进前需要校验（beforeChange），可异步并可取消"
+			],
+			"whenNotToUse": [
+				{
+					"case": "多题型、可跳过的问卷",
+					"use": "questionnaire"
+				},
+				{
+					"case": "并列视图切换",
+					"use": "tabs"
+				},
+				{
+					"case": "显示页面层级",
+					"use": "breadcrumb"
+				}
+			],
+			"accessibility": [
+				"步骤为原生按钮列表，当前步骤 aria-current=step，切换后聚焦内容区",
+				"方向键移动焦点，Enter／Space 激活，Home／End 到首尾"
+			],
+			"responsive": ["横向步骤在窄屏折为竖排，键盘方向仍以 orientation 为准"],
+			"related": ["tabs", "questionnaire", "progress"]
+		}
+	}
+}

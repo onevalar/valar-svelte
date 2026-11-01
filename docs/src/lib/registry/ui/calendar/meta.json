@@ -1,0 +1,36 @@
+{
+	"name": "calendar",
+	"type": "registry:ui",
+	"title": "Calendar 日历",
+	"description": "在页面上展示月历并选择日期。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["日历", "calendar", "日期选择", "date picker", "选择日期"],
+			"whenToUse": [
+				"直接在页面上选择一个或多个日期",
+				"与 popover 组合成日期选择器",
+				"captionLayout=dropdown 用下拉选择月份和年份"
+			],
+			"whenNotToUse": [
+				{
+					"case": "选择开始和结束日期",
+					"use": "range-calendar"
+				},
+				{
+					"case": "页面空间有限，点击后再弹出日历",
+					"use": "popover"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（方向键移动日期、回车选择）",
+				"locale 默认 zh-CN，其他语言要设置 locale，日期使用 @internationalized/date"
+			],
+			"responsive": [
+				"用 --cell-size 控制格子大小，可按断点设置不同值",
+				"显示多个月份时窄屏应减少月数"
+			],
+			"related": ["range-calendar", "popover", "input"]
+		}
+	}
+}

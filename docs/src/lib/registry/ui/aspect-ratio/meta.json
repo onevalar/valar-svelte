@@ -1,0 +1,26 @@
+{
+	"name": "aspect-ratio",
+	"type": "registry:ui",
+	"title": "Aspect Ratio 宽高比",
+	"description": "让内容按固定宽高比显示。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["宽高比", "aspect ratio", "比例", "图片容器", "16:9"],
+			"whenToUse": ["图片、视频、地图按固定比例占位，避免加载时布局跳动"],
+			"whenNotToUse": [
+				{
+					"case": "用户头像",
+					"use": "avatar"
+				},
+				{
+					"case": "一组可滑动浏览的图片",
+					"use": "carousel"
+				}
+			],
+			"accessibility": ["内部图片要写 alt 文字"],
+			"responsive": ["宽度随容器变化，高度按 ratio 计算"],
+			"related": ["avatar", "carousel", "card"]
+		}
+	}
+}

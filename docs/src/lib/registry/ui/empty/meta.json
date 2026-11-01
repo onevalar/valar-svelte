@@ -1,0 +1,26 @@
+{
+	"name": "empty",
+	"type": "registry:ui",
+	"title": "Empty 空状态",
+	"description": "列表或页面没有数据时显示的说明与下一步操作。",
+	"categories": ["反馈"],
+	"meta": {
+		"valar": {
+			"keywords": ["空状态", "empty", "无数据", "暂无内容", "empty state"],
+			"whenToUse": ["列表、搜索结果或页面没有数据时，说明原因并给出下一步操作"],
+			"whenNotToUse": [
+				{
+					"case": "内容正在加载",
+					"use": "skeleton"
+				},
+				{
+					"case": "出错或需要警告",
+					"use": "alert"
+				}
+			],
+			"accessibility": ["标题和说明用文字讲清原因和下一步；图标是装饰"],
+			"responsive": ["内容居中，窄屏下自动收窄"],
+			"related": ["skeleton", "alert", "button"]
+		}
+	}
+}

@@ -1,0 +1,26 @@
+{
+	"name": "table",
+	"type": "registry:ui",
+	"title": "Table 表格",
+	"description": "展示行列结构化数据的表格。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["表格", "table", "数据表", "data table", "列表"],
+			"whenToUse": ["行列结构化数据", "结合 @tanstack/table 做排序、筛选、分页"],
+			"whenNotToUse": [
+				{
+					"case": "数据的趋势或对比",
+					"use": "chart"
+				},
+				{
+					"case": "少量内容项",
+					"use": "item"
+				}
+			],
+			"accessibility": ["使用语义化 table、表头单元格，用 Table.Caption 说明表格内容"],
+			"responsive": ["外层容器横向滚动，窄屏不压缩列"],
+			"related": ["pagination", "chart", "item"]
+		}
+	}
+}

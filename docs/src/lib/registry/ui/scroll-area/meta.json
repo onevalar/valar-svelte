@@ -1,0 +1,32 @@
+{
+	"name": "scroll-area",
+	"type": "registry:ui",
+	"title": "Scroll Area 滚动区域",
+	"description": "固定尺寸区域内的滚动，各浏览器滚动条样式一致。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["滚动区域", "scroll area", "滚动条", "scrollbar", "溢出"],
+			"whenToUse": [
+				"固定高度或宽度的区域内滚动，需要统一的滚动条外观",
+				"orientation=horizontal 横向滚动"
+			],
+			"whenNotToUse": [
+				{
+					"case": "聊天记录",
+					"use": "message-scroller"
+				},
+				{
+					"case": "逐项滑动浏览的内容",
+					"use": "carousel"
+				}
+			],
+			"accessibility": [
+				"保留原生滚动和键盘滚动",
+				"区域内没有可聚焦元素时，确保键盘用户仍能滚动查看内容"
+			],
+			"responsive": ["必须给出高度或宽度，否则不会滚动"],
+			"related": ["message-scroller", "carousel", "table"]
+		}
+	}
+}

@@ -1,0 +1,32 @@
+{
+	"name": "accordion",
+	"type": "registry:ui",
+	"title": "Accordion 手风琴",
+	"description": "一组可展开的标题，每项展开后显示对应内容。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["手风琴", "accordion", "折叠面板", "FAQ", "展开收起"],
+			"whenToUse": [
+				"把多段内容收成标题列表，如常见问题、设置分组",
+				"type=multiple 允许同时展开多项"
+			],
+			"whenNotToUse": [
+				{
+					"case": "只有一个区域需要展开收起",
+					"use": "collapsible"
+				},
+				{
+					"case": "并列视图切换且一次只看一个",
+					"use": "tabs"
+				}
+			],
+			"accessibility": [
+				"标题是按钮，Bits UI 提供 aria-expanded 和键盘操作",
+				"不要把必须看到的信息或关键操作藏在折叠内容里"
+			],
+			"responsive": ["窄屏下比 tabs 更适合较长的标题", "内容展开后随页面滚动"],
+			"related": ["collapsible", "tabs", "card"]
+		}
+	}
+}

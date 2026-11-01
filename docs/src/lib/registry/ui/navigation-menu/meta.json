@@ -1,0 +1,36 @@
+{
+	"name": "navigation-menu",
+	"type": "registry:ui",
+	"title": "Navigation Menu 导航菜单",
+	"description": "网站顶部的导航链接，可展开为带说明的分组面板。",
+	"categories": ["导航"],
+	"meta": {
+		"valar": {
+			"keywords": ["导航菜单", "navigation menu", "顶部导航", "mega menu", "站点导航"],
+			"whenToUse": ["网站顶部导航，部分入口展开为分组链接面板"],
+			"whenNotToUse": [
+				{
+					"case": "应用内的侧边导航",
+					"use": "sidebar"
+				},
+				{
+					"case": "执行命令的菜单",
+					"use": "menubar"
+				},
+				{
+					"case": "同一页面内切换视图",
+					"use": "tabs"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（方向键、回车、Esc）",
+				"用 NavigationMenu.Link 的 href 渲染真实链接；普通链接可用 navigationMenuTriggerStyle() 统一外观"
+			],
+			"responsive": [
+				"内容面板在 md 及以上绝对定位，窄屏占满宽度",
+				"移动端通常改用 sheet 或 drawer 承载导航"
+			],
+			"related": ["sidebar", "breadcrumb", "menubar"]
+		}
+	}
+}

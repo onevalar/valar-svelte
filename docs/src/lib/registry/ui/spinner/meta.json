@@ -1,0 +1,26 @@
+{
+	"name": "spinner",
+	"type": "registry:ui",
+	"title": "Spinner 加载指示",
+	"description": "表示正在加载的旋转图标。",
+	"categories": ["反馈"],
+	"meta": {
+		"valar": {
+			"keywords": ["加载", "spinner", "loading", "转圈", "等待"],
+			"whenToUse": ["时长不定的加载状态，可放在按钮、徽标、输入组中"],
+			"whenNotToUse": [
+				{
+					"case": "可度量的进度",
+					"use": "progress"
+				},
+				{
+					"case": "整块内容加载",
+					"use": "skeleton"
+				}
+			],
+			"accessibility": ["默认 role=status、aria-label=加载中，能更具体时改 aria-label"],
+			"responsive": ["用 size-* 调整大小"],
+			"related": ["progress", "skeleton", "button"]
+		}
+	}
+}

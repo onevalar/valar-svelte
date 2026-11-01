@@ -1,0 +1,34 @@
+{
+	"name": "tags-input",
+	"type": "registry:ui",
+	"title": "Tags Input 标签输入",
+	"description": "输入并管理一组自由文本标签，支持输入法、校验和原生表单。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["标签输入", "tags input", "多值输入", "关键词", "chips", "tag"],
+			"whenToUse": ["输入任意数量的自由文本标签，如话题、关键词、邮箱列表"],
+			"whenNotToUse": [
+				{
+					"case": "从固定选项中多选",
+					"use": "checkbox"
+				},
+				{
+					"case": "只有一个文本值",
+					"use": "input"
+				},
+				{
+					"case": "需要搜索建议后选择",
+					"use": "command"
+				}
+			],
+			"accessibility": [
+				"中文输入法组合输入期间不会误添加标签",
+				"Backspace、方向键选择和删除标签；删除按钮可 Tab 操作，名称用 removeLabel 本地化",
+				"required 与校验错误通过原生约束阻止提交，并关联错误文字"
+			],
+			"responsive": ["标签自动换行，长文本可换行", "不做虚拟化，适合合理数量的标签"],
+			"related": ["input", "badge", "field"]
+		}
+	}
+}

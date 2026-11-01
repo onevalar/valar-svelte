@@ -1,0 +1,36 @@
+{
+	"name": "native-select",
+	"type": "registry:ui",
+	"title": "Native Select 原生下拉选择",
+	"description": "带统一样式的原生 HTML select，使用浏览器自带的下拉行为。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["原生下拉", "native select", "select", "下拉框", "optgroup"],
+			"whenToUse": [
+				"需要浏览器原生行为：移动端系统选择器、更好的性能",
+				"选项可用 NativeSelect.OptGroup 分组"
+			],
+			"whenNotToUse": [
+				{
+					"case": "需要自定义选项外观、动画或复杂交互",
+					"use": "select"
+				},
+				{
+					"case": "选项 2–5 个且需要一眼看全",
+					"use": "radio-group"
+				},
+				{
+					"case": "需要搜索大量选项",
+					"use": "command"
+				}
+			],
+			"accessibility": [
+				"原生 select 自带键盘和读屏支持",
+				"用 Field 提供可见标签；校验错误用 aria-invalid"
+			],
+			"responsive": ["移动端使用系统原生选择器", "窄屏下占满容器宽度"],
+			"related": ["select", "field", "radio-group"]
+		}
+	}
+}

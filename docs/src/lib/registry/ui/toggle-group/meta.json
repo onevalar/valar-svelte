@@ -1,0 +1,30 @@
+{
+	"name": "toggle-group",
+	"type": "registry:ui",
+	"title": "Toggle Group 切换按钮组",
+	"description": "一组切换按钮，可单选（如对齐方式）或多选（如文字样式）。",
+	"categories": ["操作"],
+	"meta": {
+		"valar": {
+			"keywords": ["切换按钮组", "toggle group", "分段控制", "segmented control", "对齐方式"],
+			"whenToUse": ["一组相关的状态按钮，type=single 单选或 type=multiple 多选"],
+			"whenNotToUse": [
+				{
+					"case": "执行操作的按钮组",
+					"use": "button-group"
+				},
+				{
+					"case": "表单中的单选项",
+					"use": "radio-group"
+				},
+				{
+					"case": "切换页面内的内容面板",
+					"use": "tabs"
+				}
+			],
+			"accessibility": ["保留 Bits UI 的方向键移动焦点", "用 aria-label 命名整组和只有图标的项"],
+			"responsive": ["项较多时窄屏可改 orientation=vertical", "spacing 控制项之间的间距"],
+			"related": ["toggle", "button-group", "tabs"]
+		}
+	}
+}

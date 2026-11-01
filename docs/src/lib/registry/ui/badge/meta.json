@@ -1,0 +1,30 @@
+{
+	"name": "badge",
+	"type": "registry:ui",
+	"title": "Badge 徽标",
+	"description": "简短的状态、分类或计数标签。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["徽标", "badge", "标签", "状态", "tag"],
+			"whenToUse": ["显示状态、分类或数量", "用 href 渲染为链接"],
+			"whenNotToUse": [
+				{
+					"case": "用户输入、可删除的多个标签",
+					"use": "tags-input"
+				},
+				{
+					"case": "需要说明的提示信息",
+					"use": "alert"
+				},
+				{
+					"case": "可点击的操作",
+					"use": "button"
+				}
+			],
+			"accessibility": ["含义要用文字表达，不能只靠颜色", "作为链接时文字要说明去向"],
+			"responsive": ["文字保持简短，避免换行"],
+			"related": ["button", "tags-input", "avatar"]
+		}
+	}
+}

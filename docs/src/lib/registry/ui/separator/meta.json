@@ -1,0 +1,22 @@
+{
+	"name": "separator",
+	"type": "registry:ui",
+	"title": "Separator 分隔线",
+	"description": "在视觉或语义上分隔内容。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["分隔线", "separator", "divider", "分割线"],
+			"whenToUse": ["分隔内容组或菜单项", "orientation=vertical 纵向分隔"],
+			"whenNotToUse": [
+				{
+					"case": "对话中带文字的分隔，如日期",
+					"use": "marker"
+				}
+			],
+			"accessibility": ["纯装饰时设 decorative，读屏忽略"],
+			"responsive": ["纵向分隔线在父元素中自动拉伸高度"],
+			"related": ["marker", "card", "item"]
+		}
+	}
+}

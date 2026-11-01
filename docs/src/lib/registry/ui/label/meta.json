@@ -1,0 +1,22 @@
+{
+	"name": "label",
+	"type": "registry:ui",
+	"title": "Label 标签",
+	"description": "与控件关联的无障碍文字标签。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["标签", "label", "表单标签", "字段名"],
+			"whenToUse": ["为单个控件提供可见、可点击的标签"],
+			"whenNotToUse": [
+				{
+					"case": "完整的表单字段（标签、说明、错误）",
+					"use": "field"
+				}
+			],
+			"accessibility": ["用 for 关联控件的 id", "不要用 placeholder 代替标签"],
+			"responsive": ["窄屏下放在控件上方"],
+			"related": ["field", "input", "checkbox"]
+		}
+	}
+}

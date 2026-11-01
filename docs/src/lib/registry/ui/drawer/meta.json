@@ -1,0 +1,40 @@
+{
+	"name": "drawer",
+	"type": "registry:ui",
+	"title": "Drawer 抽屉",
+	"description": "从屏幕边缘拉出、可拖动关闭的面板，适合移动端。",
+	"categories": ["弹层"],
+	"meta": {
+		"valar": {
+			"keywords": ["抽屉", "drawer", "底部弹出", "bottom sheet", "拖动关闭"],
+			"whenToUse": [
+				"移动端从底部弹出的选项、简短表单或详情，支持手势拖动关闭",
+				"需要在面板内再打开一层（Drawer.NestedRoot）"
+			],
+			"whenNotToUse": [
+				{
+					"case": "桌面端从侧边滑出的辅助面板",
+					"use": "sheet"
+				},
+				{
+					"case": "桌面端需要专注完成的对话框",
+					"use": "dialog"
+				},
+				{
+					"case": "确认危险操作",
+					"use": "alert-dialog"
+				}
+			],
+			"accessibility": [
+				"必须有标题（Drawer.Title）；Esc 关闭并把焦点还给触发按钮",
+				"除拖动外提供可见的关闭按钮（Drawer.Close），不能只靠手势"
+			],
+			"responsive": [
+				"常与 dialog 搭配：窄屏用 drawer、宽屏用 dialog",
+				"direction 可选 top、right、bottom、left；内容超出时在面板内部滚动",
+				"modal={false} 时可与页面交互，点击外部不会关闭"
+			],
+			"related": ["dialog", "sheet", "alert-dialog"]
+		}
+	}
+}

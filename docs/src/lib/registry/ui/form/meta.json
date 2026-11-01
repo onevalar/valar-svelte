@@ -1,0 +1,33 @@
+{
+	"name": "form",
+	"type": "registry:ui",
+	"title": "Form 表单（Formsnap）",
+	"description": "基于 Formsnap 与 sveltekit-superforms 的表单组件，按字段管理状态与校验错误。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["表单", "form", "formsnap", "superforms", "zod", "表单校验"],
+			"whenToUse": ["SvelteKit 中用 sveltekit-superforms 与 Zod 等做客户端和服务端校验的表单"],
+			"whenNotToUse": [
+				{
+					"case": "不使用 superforms，只需字段布局与错误展示",
+					"use": "field"
+				},
+				{
+					"case": "分步骤填写的流程",
+					"use": "stepper"
+				},
+				{
+					"case": "多题型问卷",
+					"use": "questionnaire"
+				}
+			],
+			"accessibility": [
+				"Form.Control 根据字段状态为控件设置 id、aria-describedby、aria-invalid",
+				"错误用 Form.FieldErrors 显示，说明用 Form.Description"
+			],
+			"responsive": ["布局由内部控件决定，窄屏下单列排列"],
+			"related": ["field", "input", "label"]
+		}
+	}
+}

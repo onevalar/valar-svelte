@@ -1,0 +1,33 @@
+{
+	"name": "progress",
+	"type": "registry:ui",
+	"title": "Progress 进度条",
+	"description": "显示任务的完成进度。",
+	"categories": ["反馈"],
+	"meta": {
+		"valar": {
+			"keywords": ["进度条", "progress", "进度", "完成度", "上传进度"],
+			"whenToUse": ["显示可度量的任务完成度，如上传、导入"],
+			"whenNotToUse": [
+				{
+					"case": "无法估计进度的等待",
+					"use": "spinner"
+				},
+				{
+					"case": "内容加载占位",
+					"use": "skeleton"
+				},
+				{
+					"case": "用户调整数值",
+					"use": "slider"
+				}
+			],
+			"accessibility": [
+				"用 Field 提供标签或加 aria-label，让进度条有名称",
+				"完成度要能用文字读到，如“已上传 60%”"
+			],
+			"responsive": ["占满容器宽度"],
+			"related": ["spinner", "skeleton", "slider"]
+		}
+	}
+}

@@ -59,6 +59,102 @@ describe("lintSource", () => {
 		// Markup rules only apply to Svelte components.
 		expect(rules('const x = "<button>";', "x.ts")).toEqual([]);
 	});
+
+	it("extends size and label checks to components built on Button", () => {
+		const source = [
+			'<AlertDialog.Action variant="destructive" class="h-11">删除</AlertDialog.Action>',
+			"<Attachment.Action><X /></Attachment.Action>",
+			'<Attachment.Action size="sm">重试</Attachment.Action>',
+			'<Attachment.Action aria-label="移除 a.pdf"><X /></Attachment.Action>',
+			'<InputGroup.Button size="icon-xs"><X /></InputGroup.Button>',
+			'<InputGroup.Button size="xs">搜索</InputGroup.Button>',
+			"<Attachment.Trigger />",
+		].join("\n");
+		expect(rules(source)).toEqual([
+			"1:valar/button-size-via-prop",
+			"2:valar/icon-button-label",
+			"5:valar/icon-button-label",
+			"7:valar/icon-button-label",
+		]);
+	});
+
+	it("checks form control labels, error styling and native form elements", () => {
+		const source = [
+			'<Checkbox id="terms" /><Checkbox />',
+			'<Slider id="volume" /><Slider aria-label="音量" /><SliderField label="音量" />',
+			'<NativeSelect.Root><NativeSelect.Option value="a">A</NativeSelect.Option></NativeSelect.Root>',
+			'<Select.Trigger id="s" class="w-full aria-invalid:border-destructive">',
+			'<Input id="email" class="border-destructive" />',
+			'<input type="hidden" name="token" /><input type="checkbox" />',
+			"<textarea></textarea><select></select>",
+		].join("\n");
+		expect(rules(source)).toEqual([
+			"1:valar/input-label",
+			"2:valar/input-label",
+			"3:valar/input-label",
+			"5:valar/invalid-via-aria",
+			"6:valar/use-form-component",
+			"7:valar/use-form-component",
+			"7:valar/use-form-component",
+		]);
+	});
+
+	it("checks overlay titles, alert dialog cancel and triggers", () => {
+		const titled = [
+			"<Dialog.Root>",
+			"<Dialog.Trigger>",
+			"{#snippet child({ props })}<Button {...props}>打开</Button>{/snippet}",
+			"</Dialog.Trigger>",
+			"<Dialog.Content><Dialog.Title>编辑</Dialog.Title></Dialog.Content>",
+			"</Dialog.Root>",
+		].join("\n");
+		expect(rules(titled)).toEqual([]);
+
+		const source = [
+			"<Dialog.Content>",
+			"<AlertDialog.Title>只有警告框的标题</AlertDialog.Title>",
+			"</Dialog.Content>",
+			'<AlertDialog.Content aria-label="删除"><AlertDialog.Action>删除</AlertDialog.Action></AlertDialog.Content>',
+			"<SheetContent>",
+			"<DialogTrigger><a href='/x'>链接</a></DialogTrigger>",
+			"<Popover.Trigger>",
+			"  <Button>嵌套</Button>",
+			"</Popover.Trigger>",
+			'<ContextMenu.Trigger><Button>右键区域</Button></ContextMenu.Trigger><Tooltip.Trigger class="x">文字</Tooltip.Trigger>',
+		].join("\n");
+		expect(rules(source)).toEqual([
+			"1:valar/overlay-title",
+			"4:valar/alert-dialog-cancel",
+			"5:valar/overlay-title",
+			"6:valar/trigger-child-snippet",
+			"7:valar/trigger-child-snippet",
+		]);
+	});
+
+	it("checks tooltip content, image alt text and chart colors", () => {
+		const source = [
+			"<Tooltip.Content><p>保存草稿</p></Tooltip.Content>",
+			"<Tooltip.Content>",
+			"  <a href='/help'>帮助</a>",
+			"</Tooltip.Content>",
+			'<img src="/a.png" /><img src="/b.png" alt="" /><Avatar.Image src={url} {alt} />',
+			"<AvatarImage src={url} />",
+		].join("\n");
+		expect(rules(source)).toEqual([
+			"2:valar/tooltip-no-interactive",
+			"5:valar/image-alt",
+			"6:valar/image-alt",
+		]);
+
+		const chart = [
+			"const config = {",
+			'  desktop: { label: "桌面", color: "var(--chart-1)" },',
+			'  mobile: { label: "移动", color: "#60a5fa" },',
+			"} satisfies ChartConfig;",
+		].join("\n");
+		expect(rules(chart, "chart.ts")).toEqual(["3:valar/chart-color-token"]);
+		expect(rules('const brand = { color: "#60a5fa" };', "brand.ts")).toEqual([]);
+	});
 });
 
 describe("project files", () => {

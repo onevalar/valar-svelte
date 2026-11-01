@@ -1,0 +1,33 @@
+{
+	"name": "input-otp",
+	"type": "registry:ui",
+	"title": "Input OTP 验证码输入",
+	"description": "按位输入固定长度的验证码或一次性密码，支持整串粘贴。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["验证码", "otp", "一次性密码", "pin", "pin input", "短信验证码"],
+			"whenToUse": ["输入固定位数的短信验证码、一次性密码或 PIN"],
+			"whenNotToUse": [
+				{
+					"case": "长度不固定的文本",
+					"use": "input"
+				},
+				{
+					"case": "可步进的数值",
+					"use": "number-field"
+				}
+			],
+			"accessibility": [
+				"基于 Bits UI PinInput，保留粘贴和键盘删除行为",
+				"用 Field 的可见标签说明位数和用途",
+				"用 pattern 限制可输入字符（如仅数字）"
+			],
+			"responsive": [
+				"默认 inputmode=numeric，移动端弹出数字键盘",
+				"格子多时窄屏注意总宽度，可用 InputOTP.Separator 分组"
+			],
+			"related": ["input", "field", "number-field"]
+		}
+	}
+}

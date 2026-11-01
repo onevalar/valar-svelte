@@ -1,0 +1,33 @@
+{
+	"name": "trace",
+	"type": "registry:ui",
+	"title": "Trace 执行轨迹",
+	"description": "展示 agent 推理、工具调用、来源等步骤的行列表。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["执行轨迹", "trace", "工具调用", "推理", "agent", "步骤"],
+			"whenToUse": [
+				"展示 agent 的推理、工具调用、子任务、来源",
+				"步骤可展开详情、链接，或打开 dialog、sheet"
+			],
+			"whenNotToUse": [
+				{
+					"case": "agent 的回复内容",
+					"use": "message"
+				},
+				{
+					"case": "回合之间的提示和分隔",
+					"use": "marker"
+				}
+			],
+			"accessibility": [
+				"本身不加角色，语义来自包裹它的触发器（如 Trace.CollapsibleTrigger 带 aria-expanded）",
+				"Trace.Title 是可访问名称，要写成完整的一句话，状态也写进标题",
+				"运行中的闪烁效果在“减少动态效果”时停止"
+			],
+			"responsive": ["支持嵌套，摘要可展开为步骤"],
+			"related": ["message", "marker", "collapsible"]
+		}
+	}
+}

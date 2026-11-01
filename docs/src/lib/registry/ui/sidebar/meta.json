@@ -1,0 +1,34 @@
+{
+	"name": "sidebar",
+	"type": "registry:ui",
+	"title": "Sidebar 侧边栏",
+	"description": "可折叠、可定制的应用侧边导航。",
+	"categories": ["导航"],
+	"meta": {
+		"valar": {
+			"keywords": ["侧边栏", "sidebar", "侧边导航", "导航栏", "菜单"],
+			"whenToUse": ["应用的主侧边导航，可折叠为图标或完全隐藏"],
+			"whenNotToUse": [
+				{
+					"case": "网站顶部导航",
+					"use": "navigation-menu"
+				},
+				{
+					"case": "临时的辅助面板",
+					"use": "sheet"
+				},
+				{
+					"case": "用户可拖动调整的分栏",
+					"use": "resizable"
+				}
+			],
+			"accessibility": [
+				"Ctrl／⌘+B 切换侧边栏",
+				"Sidebar.Trigger 和 Rail 的读屏名称默认“切换侧边栏”，其他语言需改",
+				"菜单项用真实链接"
+			],
+			"responsive": ["移动端以 sheet 形式显示", "collapsible 可选 offcanvas、icon、none"],
+			"related": ["sheet", "navigation-menu", "breadcrumb"]
+		}
+	}
+}

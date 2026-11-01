@@ -1,0 +1,26 @@
+{
+	"name": "resizable",
+	"type": "registry:ui",
+	"title": "Resizable 可调分栏",
+	"description": "可拖动调整大小的面板分栏，基于 PaneForge。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["可调分栏", "resizable", "分栏", "split pane", "拖动调整"],
+			"whenToUse": ["用户可拖动调整大小的分栏，如编辑器、三栏邮件"],
+			"whenNotToUse": [
+				{
+					"case": "应用的侧边导航",
+					"use": "sidebar"
+				},
+				{
+					"case": "固定比例的内容",
+					"use": "aspect-ratio"
+				}
+			],
+			"accessibility": ["分隔把手可键盘聚焦并用方向键调整", "withHandle 显示可见把手，便于发现"],
+			"responsive": ["窄屏不适合多栏拖动，改为单栏或 direction=vertical"],
+			"related": ["sidebar", "scroll-area", "separator"]
+		}
+	}
+}

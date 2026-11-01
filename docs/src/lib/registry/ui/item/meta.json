@@ -1,0 +1,33 @@
+{
+	"name": "item",
+	"type": "registry:ui",
+	"title": "Item 内容项",
+	"description": "显示媒体、标题、说明和操作的内容行。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["内容项", "item", "列表项", "list item", "行"],
+			"whenToUse": ["显示带图标或头像、标题、说明和操作的内容行", "用 Item.Group 组成列表"],
+			"whenNotToUse": [
+				{
+					"case": "表单控件",
+					"use": "field"
+				},
+				{
+					"case": "大块的分组内容",
+					"use": "card"
+				},
+				{
+					"case": "行列结构化数据",
+					"use": "table"
+				}
+			],
+			"accessibility": [
+				"整行可点击时用 child 渲染为真实链接或按钮",
+				"只有图标的操作要加 aria-label"
+			],
+			"responsive": ["size（default、sm、xs）适应紧凑空间", "窄屏下操作区可换行"],
+			"related": ["card", "field", "avatar"]
+		}
+	}
+}

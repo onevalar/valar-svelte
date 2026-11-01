@@ -1,0 +1,40 @@
+{
+	"name": "input-group",
+	"type": "registry:ui",
+	"title": "Input Group 输入组",
+	"description": "给输入框或多行文本框加上图标、文字、按钮等前后缀内容。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["输入组", "input group", "前缀", "后缀", "addon", "搜索框"],
+			"whenToUse": [
+				"输入框带前后缀图标、单位、按钮或快捷键提示，如搜索框、复制链接",
+				"多行文本框带底部操作栏（InputGroup.Textarea）"
+			],
+			"whenNotToUse": [
+				{
+					"case": "没有附加内容的普通输入",
+					"use": "input"
+				},
+				{
+					"case": "几个按钮拼在一起",
+					"use": "button-group"
+				},
+				{
+					"case": "标签、说明和错误信息",
+					"use": "field"
+				}
+			],
+			"accessibility": [
+				"InputGroup.Addon 在 DOM 中放在 Input／Textarea 之后，用 align 调整视觉位置，保证焦点顺序",
+				"只有图标的 InputGroup.Button 要加 aria-label",
+				"仍需用 Field 提供可见标签"
+			],
+			"responsive": [
+				"整组占满容器宽度，附加内容过多会在窄屏挤压输入区",
+				"align=block-start／block-end 把附加内容放到输入区上方或下方"
+			],
+			"related": ["input", "textarea", "button-group"]
+		}
+	}
+}

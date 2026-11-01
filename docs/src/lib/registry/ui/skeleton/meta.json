@@ -1,0 +1,30 @@
+{
+	"name": "skeleton",
+	"type": "registry:ui",
+	"title": "Skeleton 骨架屏",
+	"description": "内容加载时按最终布局显示的占位。",
+	"categories": ["反馈"],
+	"meta": {
+		"valar": {
+			"keywords": ["骨架屏", "skeleton", "加载占位", "loading", "占位"],
+			"whenToUse": ["内容加载时按最终布局显示占位，减少布局跳动"],
+			"whenNotToUse": [
+				{
+					"case": "按钮或小区域的短暂加载",
+					"use": "spinner"
+				},
+				{
+					"case": "可度量的进度",
+					"use": "progress"
+				},
+				{
+					"case": "加载完但没有数据",
+					"use": "empty"
+				}
+			],
+			"accessibility": ["占位是装饰，在容器上用 aria-busy 或提供读屏可读的加载文字"],
+			"responsive": ["占位尺寸与真实内容一致，各断点都要对应"],
+			"related": ["spinner", "progress", "empty"]
+		}
+	}
+}

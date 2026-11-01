@@ -43,7 +43,7 @@ pnpm exec valar-svelte add number-field tags-input stepper
 
 ## AI 与设计规范
 
-组件自带设计规范：带规范的组件（目前是 Button 和 Field）会把 `RULES.md` 一起装进组件目录，每次 `add` 后 CLI 会把全部已装组件的规范，连同通用的颜色、圆角规则，写进项目根目录 `AGENTS.md` 中的托管区块。大多数 AI 编程工具开始工作时会自动读取 `AGENTS.md`，因此不需要另找设计文档。区块外的内容保持不变；区块内容会在下次安装时重写，请勿手改。
+组件自带设计规范：每个组件都会把 `RULES.md` 一起装进组件目录，每次 `add` 后 CLI 会把全部已装组件的规范，连同通用的颜色、圆角规则，写进项目根目录 `AGENTS.md` 中的托管区块。大多数 AI 编程工具开始工作时会自动读取 `AGENTS.md`，因此不需要另找设计文档。区块外的内容保持不变；区块内容会在下次安装时重写，请勿手改。
 
 写完界面后运行检查，发现 error 时命令失败，可直接加入 CI：
 
@@ -51,7 +51,27 @@ pnpm exec valar-svelte add number-field tags-input stepper
 pnpm exec valar-svelte lint        # 默认检查 src，跳过已安装的组件源码
 ```
 
-目前检查：非语义颜色（`valar/semantic-color`）、像素任意值（`valar/no-arbitrary-px`）、Button 用 class 改尺寸（`valar/button-size-via-prop`）、图标按钮缺少名称（`valar/icon-button-label`）、原生 `<button>`（`valar/use-button-component`）缺少标签的输入框（`valar/input-label`）和写死的动效时长、曲线（`valar/motion-token`）。规则基于文本匹配，可能有漏报或误报；警告不会使命令失败。
+目前检查（error 使命令失败，warning 只提示）：
+
+| 规则                           | 级别    | 检查内容                                                                                                                                                                                                                       |
+| ------------------------------ | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `valar/semantic-color`         | error   | 调色板色值、黑白、十六进制颜色类                                                                                                                                                                                               |
+| `valar/no-arbitrary-px`        | warning | `h-[37px]` 这类像素任意值                                                                                                                                                                                                      |
+| `valar/motion-token`           | warning | 写死的动效时长、曲线                                                                                                                                                                                                           |
+| `valar/button-size-via-prop`   | error   | 用 class 改 Button、AlertDialog.Action／Cancel、InputGroup.Button、Attachment.Action 的尺寸或圆角                                                                                                                              |
+| `valar/icon-button-label`      | error   | 只有图标的 Button、InputGroup.Button、Attachment.Action，以及 Attachment.Trigger 缺少 `aria-label`                                                                                                                             |
+| `valar/use-button-component`   | warning | 原生 `<button>`                                                                                                                                                                                                                |
+| `valar/use-form-component`     | warning | 原生 `<input>`（`type="hidden"` 除外）、`<textarea>`、`<select>`                                                                                                                                                               |
+| `valar/input-label`            | warning | Input、Textarea、InputGroup.Input／Textarea、NumberField、TagsInput、Select.Trigger、NativeSelect、Checkbox、Switch、RadioGroup.Item 既无 `id` 也无 `aria-label`；Slider 缺少 `aria-label`、`aria-labelledby` 或 `thumbLabels` |
+| `valar/invalid-via-aria`       | warning | 在上述表单控件上直接写 `border-destructive` 等错误样式，而不是设 `aria-invalid`                                                                                                                                                |
+| `valar/overlay-title`          | error   | Dialog、AlertDialog、Sheet、Drawer 的 Content 所在文件没有对应的 Title（Content 自带 `aria-label` 时除外）                                                                                                                     |
+| `valar/alert-dialog-cancel`    | warning | AlertDialog 没有 AlertDialog.Cancel                                                                                                                                                                                            |
+| `valar/trigger-child-snippet`  | error   | Dialog、Popover、Tooltip、Dropdown Menu 等会渲染 `<button>` 的 Trigger 里直接放 Button 或链接，而没有用 `child` snippet                                                                                                        |
+| `valar/tooltip-no-interactive` | warning | Tooltip.Content 中有按钮、链接或输入框                                                                                                                                                                                         |
+| `valar/image-alt`              | error   | `<img>`、Avatar.Image 缺少 `alt`                                                                                                                                                                                               |
+| `valar/chart-color-token`      | warning | 图表配置（含 `ChartConfig` 的文件）中的固定色值                                                                                                                                                                                |
+
+规则基于单个文件的文本匹配，可能有漏报或误报：例如标题放在另一个组件文件里时，`valar/overlay-title` 会误报；用 Label 包住 Checkbox 时，`valar/input-label` 会误报。
 
 ### 给 AI 的组件资料与 MCP
 

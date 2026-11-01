@@ -1,0 +1,26 @@
+{
+	"name": "kbd",
+	"type": "registry:ui",
+	"title": "Kbd 按键",
+	"description": "显示键盘按键或快捷键。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["按键", "kbd", "快捷键", "keyboard", "shortcut"],
+			"whenToUse": ["在按钮、提示、输入组中显示快捷键，如 ⌘K"],
+			"whenNotToUse": [
+				{
+					"case": "代码片段",
+					"use": "code-block"
+				},
+				{
+					"case": "状态标签",
+					"use": "badge"
+				}
+			],
+			"accessibility": ["渲染为 kbd 元素；⌘ 等符号读屏可能读不出，需配合文字说明"],
+			"responsive": ["触屏设备上快捷键无意义，窄屏可隐藏"],
+			"related": ["button", "tooltip", "command"]
+		}
+	}
+}

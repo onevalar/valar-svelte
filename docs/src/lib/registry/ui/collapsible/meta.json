@@ -1,0 +1,26 @@
+{
+	"name": "collapsible",
+	"type": "registry:ui",
+	"title": "Collapsible 折叠区",
+	"description": "展开或收起单个内容区域。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["折叠", "collapsible", "展开收起", "显示更多"],
+			"whenToUse": ["展开或收起单个区域，如高级设置、文件树"],
+			"whenNotToUse": [
+				{
+					"case": "多段同类内容",
+					"use": "accordion"
+				},
+				{
+					"case": "在浮层中显示内容",
+					"use": "popover"
+				}
+			],
+			"accessibility": ["触发器是按钮，带 aria-expanded"],
+			"responsive": ["窄屏下可收起次要内容"],
+			"related": ["accordion", "trace", "sidebar"]
+		}
+	}
+}

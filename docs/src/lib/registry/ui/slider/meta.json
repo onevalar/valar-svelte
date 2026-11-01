@@ -1,0 +1,37 @@
+{
+	"name": "slider",
+	"type": "registry:ui",
+	"title": "Slider 滑块",
+	"description": "在给定范围内拖动选择一个值或一个区间。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["滑块", "slider", "范围", "range", "拖动"],
+			"whenToUse": ["在已知范围内粗略选择数值，如音量", "用 type=multiple 选择区间或多个值"],
+			"whenNotToUse": [
+				{
+					"case": "需要精确输入数值",
+					"use": "slider-field"
+				},
+				{
+					"case": "没有明确范围的数字",
+					"use": "number-field"
+				},
+				{
+					"case": "只展示完成度、不可调整",
+					"use": "progress"
+				}
+			],
+			"accessibility": [
+				"用 aria-label 或 aria-labelledby 命名可聚焦的滑块把手；指向根元素 id 的 HTML label 不能命名内部把手",
+				"多个把手用 thumbLabels 按值的顺序分别命名",
+				"方向键调整数值"
+			],
+			"responsive": [
+				"支持触摸拖动，窄屏下占满容器宽度",
+				"orientation=vertical 纵向显示，需要给出高度"
+			],
+			"related": ["slider-field", "number-field", "progress"]
+		}
+	}
+}

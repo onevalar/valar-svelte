@@ -1,0 +1,30 @@
+{
+	"name": "toggle",
+	"type": "registry:ui",
+	"title": "Toggle 切换按钮",
+	"description": "按下／弹起两种状态的按钮，如工具栏中的加粗。",
+	"categories": ["操作"],
+	"meta": {
+		"valar": {
+			"keywords": ["切换按钮", "toggle", "开关按钮", "按下状态", "pressed"],
+			"whenToUse": ["工具栏中可开关的单个状态，如加粗、静音"],
+			"whenNotToUse": [
+				{
+					"case": "设置项的开启／关闭",
+					"use": "switch"
+				},
+				{
+					"case": "一组单选或多选的状态",
+					"use": "toggle-group"
+				},
+				{
+					"case": "执行一次性操作",
+					"use": "button"
+				}
+			],
+			"accessibility": ["Bits UI 用 aria-pressed 表达按下状态", "只有图标时要加 aria-label"],
+			"responsive": ["窄屏下保证触摸目标足够大（size）"],
+			"related": ["toggle-group", "switch", "button"]
+		}
+	}
+}

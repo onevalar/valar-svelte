@@ -1,0 +1,32 @@
+{
+	"name": "avatar",
+	"type": "registry:ui",
+	"title": "Avatar 头像",
+	"description": "表示用户的图片，加载失败时显示缩写等后备内容。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["头像", "avatar", "用户头像", "头像组"],
+			"whenToUse": [
+				"显示用户或团队头像，图片失败时显示 Avatar.Fallback",
+				"用 Avatar.Group 叠放多个头像，Avatar.GroupCount 显示剩余数量"
+			],
+			"whenNotToUse": [
+				{
+					"case": "普通图片或封面",
+					"use": "aspect-ratio"
+				},
+				{
+					"case": "状态或分类标签",
+					"use": "badge"
+				}
+			],
+			"accessibility": [
+				"图片 alt 写人名；与名字并排时可视为装饰",
+				"Avatar.Badge 表示的在线等状态不能只靠颜色"
+			],
+			"responsive": ["头像过多时用 Avatar.GroupCount 收起"],
+			"related": ["badge", "item", "message"]
+		}
+	}
+}

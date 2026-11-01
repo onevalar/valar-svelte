@@ -1,0 +1,36 @@
+{
+	"name": "message",
+	"type": "registry:ui",
+	"title": "Message 消息",
+	"description": "对话中的一条消息行，负责头像、对齐、头部和底部。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["消息", "message", "聊天", "chat", "对话", "AI 回复"],
+			"whenToUse": [
+				"对话中的一条消息，带头像、发送者、时间和操作",
+				"Message.Group 叠放同一发送者的连续消息"
+			],
+			"whenNotToUse": [
+				{
+					"case": "只需要气泡外观",
+					"use": "bubble"
+				},
+				{
+					"case": "agent 的推理与工具调用步骤",
+					"use": "trace"
+				},
+				{
+					"case": "系统提示与分隔",
+					"use": "marker"
+				}
+			],
+			"accessibility": [
+				"Message.Footer 中只有图标的操作按钮要加 aria-label",
+				"进行中的状态用 marker 并设 role=status"
+			],
+			"responsive": ["align=end 让自己的消息排在另一侧，头像随之移动"],
+			"related": ["bubble", "message-scroller", "marker"]
+		}
+	}
+}

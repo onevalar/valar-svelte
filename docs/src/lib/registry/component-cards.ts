@@ -9,7 +9,10 @@ import { z } from "zod";
  */
 export const CARD_CATEGORIES = ["表单", "操作", "弹层", "导航", "反馈", "展示"] as const;
 
-/** Components that must have a card. Others are listed as missing in the catalog output. */
+/**
+ * Components that must have a card: every registry UI component. A new component without a
+ * card is still listed as missing in the catalog output; add its card and its name here.
+ */
 export const REQUIRED_CARDS = [
 	"button",
 	"input",
@@ -31,6 +34,56 @@ export const REQUIRED_CARDS = [
 	"card",
 	"alert",
 	"sonner",
+	// B1: overlays and form controls
+	"hover-card",
+	"context-menu",
+	"drawer",
+	"menubar",
+	"command",
+	"navigation-menu",
+	"input-group",
+	"input-otp",
+	"native-select",
+	"number-field",
+	"tags-input",
+	"slider",
+	"toggle",
+	"toggle-group",
+	"form",
+	"label",
+	"calendar",
+	"range-calendar",
+	// B3: everything else
+	"accordion",
+	"aspect-ratio",
+	"attachment",
+	"avatar",
+	"badge",
+	"breadcrumb",
+	"bubble",
+	"button-group",
+	"carousel",
+	"chart",
+	"collapsible",
+	"empty",
+	"item",
+	"kbd",
+	"marker",
+	"message",
+	"message-scroller",
+	"pagination",
+	"progress",
+	"questionnaire",
+	"resizable",
+	"scroll-area",
+	"separator",
+	"sidebar",
+	"skeleton",
+	"spinner",
+	"stepper",
+	"table",
+	"trace",
+	"code-block",
 ] as const;
 
 const line = z.string().min(2).max(200);

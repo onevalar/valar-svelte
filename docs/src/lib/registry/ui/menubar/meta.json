@@ -1,0 +1,39 @@
+{
+	"name": "menubar",
+	"type": "registry:ui",
+	"title": "Menubar 菜单栏",
+	"description": "桌面应用风格的常驻菜单栏，集中提供文件、编辑、视图等命令。",
+	"categories": ["导航"],
+	"meta": {
+		"valar": {
+			"keywords": ["菜单栏", "menubar", "顶部菜单", "应用菜单", "文件菜单"],
+			"whenToUse": [
+				"编辑器、工具类应用顶部常驻的一组命令菜单",
+				"命令带复选项、单选项、子菜单或快捷键提示"
+			],
+			"whenNotToUse": [
+				{
+					"case": "网站页面之间的导航链接",
+					"use": "navigation-menu"
+				},
+				{
+					"case": "单个按钮触发的少量操作",
+					"use": "dropdown-menu"
+				},
+				{
+					"case": "以移动端为主的界面",
+					"use": "dropdown-menu"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作：左右键在菜单间切换，上下键选择，Esc 关闭",
+				"Menubar.Shortcut 只显示快捷键，快捷键本身需另行实现"
+			],
+			"responsive": [
+				"菜单横向排列，窄屏空间有限，菜单数量要少，否则改用 dropdown-menu",
+				"菜单内容靠近边缘时自动调整位置"
+			],
+			"related": ["dropdown-menu", "context-menu", "navigation-menu"]
+		}
+	}
+}

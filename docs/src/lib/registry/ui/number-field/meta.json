@@ -1,0 +1,43 @@
+{
+	"name": "number-field",
+	"type": "registry:ui",
+	"title": "Number Field 数字输入",
+	"description": "可编辑、可步进的本地化数值输入，支持原生表单提交。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["数字输入", "number field", "数量", "步进", "stepper input", "金额", "百分比"],
+			"whenToUse": [
+				"输入数量、金额、百分比等可步进的数值",
+				"需要按地区格式化显示（formatOptions），提交时仍是纯数值"
+			],
+			"whenNotToUse": [
+				{
+					"case": "已知范围、希望拖动调整",
+					"use": "slider-field"
+				},
+				{
+					"case": "验证码等逐位输入的数字",
+					"use": "input-otp"
+				},
+				{
+					"case": "电话号码、编号等不做运算的数字串",
+					"use": "input"
+				},
+				{
+					"case": "任意精度的金融运算（组件使用 JavaScript number）"
+				}
+			],
+			"accessibility": [
+				"上下键步进，PageUp／PageDown 十格，Home／End 到最小／最大值",
+				"加减按钮名称用 decrementLabel、incrementLabel 本地化",
+				"无效输入设置 aria-invalid 并阻止提交，不静默恢复旧值"
+			],
+			"responsive": [
+				"不响应滚轮和长按自动重复，避免滚动页面时误改数值",
+				"加减按钮是原生按钮，支持触摸点击"
+			],
+			"related": ["slider-field", "input", "field"]
+		}
+	}
+}

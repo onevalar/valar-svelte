@@ -1,0 +1,29 @@
+{
+	"name": "chart",
+	"type": "registry:ui",
+	"title": "Chart 图表",
+	"description": "基于 LayerChart 的图表容器与提示框，统一配色和样式。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["图表", "chart", "柱状图", "折线图", "数据可视化", "layerchart"],
+			"whenToUse": ["展示数据的趋势、对比或分布"],
+			"whenNotToUse": [
+				{
+					"case": "需要逐项查看精确数值",
+					"use": "table"
+				},
+				{
+					"case": "只显示一项完成度",
+					"use": "progress"
+				}
+			],
+			"accessibility": ["颜色之外提供图例或数据标签", "在图表旁提供文字摘要或数据表"],
+			"responsive": [
+				"Chart.Container 默认 aspect-video，可改为固定最小高度",
+				"窄屏减少刻度和图例项"
+			],
+			"related": ["table", "card", "progress"]
+		}
+	}
+}

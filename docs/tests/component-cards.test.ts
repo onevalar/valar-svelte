@@ -10,6 +10,10 @@ describe("component cards", () => {
 	it("cover every required component", () => {
 		const missing = REQUIRED_CARDS.filter((name) => !cards.some((card) => card.name === name));
 		expect(missing).toEqual([]);
+		const unlisted = components.filter(
+			(name) => !(REQUIRED_CARDS as readonly string[]).includes(name)
+		);
+		expect(unlisted).toEqual([]);
 	});
 
 	it("only point to components that exist", () => {
@@ -25,9 +29,13 @@ describe("component cards", () => {
 	});
 
 	it("list components without a card instead of dropping them", () => {
-		const catalog = buildCatalog(cards, components, "http://site");
+		const catalog = buildCatalog(
+			cards.filter((card) => card.name !== "accordion"),
+			components,
+			"http://site"
+		);
 		expect(catalog.components.length + catalog.missingCards.length).toBe(components.length);
-		expect(catalog.missingCards).toContain("accordion");
+		expect(catalog.missingCards).toEqual(["accordion"]);
 		const button = catalog.components.find((c) => c.name === "button")!;
 		expect(button.install).toBe("pnpm exec valar-svelte add button");
 		expect(button.docs).toBe("http://site/docs/components/button");

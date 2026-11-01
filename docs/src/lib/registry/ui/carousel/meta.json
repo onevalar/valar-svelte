@@ -1,0 +1,33 @@
+{
+	"name": "carousel",
+	"type": "registry:ui",
+	"title": "Carousel 轮播",
+	"description": "可滑动浏览一组内容的轮播，基于 Embla。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["轮播", "carousel", "幻灯片", "slider", "滑动浏览"],
+			"whenToUse": ["横向或纵向滑动浏览一组同类内容，如图片、卡片"],
+			"whenNotToUse": [
+				{
+					"case": "只需在区域内滚动",
+					"use": "scroll-area"
+				},
+				{
+					"case": "并列视图切换",
+					"use": "tabs"
+				},
+				{
+					"case": "每项都必须被看到的重要内容",
+					"use": "card"
+				}
+			],
+			"accessibility": [
+				"根元素 role=region、aria-roledescription=carousel，每项为 slide",
+				"上一项／下一项按钮支持方向键；不要无暂停地自动播放"
+			],
+			"responsive": ["用 basis-* 控制每屏显示几项，可按断点设置", "支持触摸滑动"],
+			"related": ["scroll-area", "card", "aspect-ratio"]
+		}
+	}
+}

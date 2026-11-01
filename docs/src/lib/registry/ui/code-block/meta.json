@@ -1,5 +1,37 @@
 {
 	"name": "code-block",
 	"type": "registry:ui",
-	"registryDependencies": ["use-highlighted-code"]
+	"title": "Code Block 代码块",
+	"description": "展示代码、终端输出和 diff，可带标题栏、行号和复制按钮。",
+	"categories": ["展示"],
+	"registryDependencies": ["use-highlighted-code"],
+	"meta": {
+		"valar": {
+			"keywords": ["代码块", "code block", "代码", "终端输出", "diff", "语法高亮"],
+			"whenToUse": [
+				"展示代码片段、终端输出、日志或 diff",
+				"在消息或 trace 中显示工具输出（流式追加时只高亮新行）"
+			],
+			"whenNotToUse": [
+				{
+					"case": "显示键盘按键或快捷键",
+					"use": "kbd"
+				},
+				{
+					"case": "行列结构化数据",
+					"use": "table"
+				}
+			],
+			"accessibility": [
+				"内容区可聚焦，键盘可滚动；浮动操作在获得焦点时也会显示",
+				"复制按钮默认名称“复制”／“已复制”，其他语言用 copyLabel、copiedLabel 改",
+				"diff 行带 +／− 标记，不只靠颜色；换行切换按钮要设 aria-pressed"
+			],
+			"responsive": [
+				"默认不换行、横向滚动；窄屏可开启 wrap",
+				"内容始终从左到右显示，标题栏跟随页面方向"
+			],
+			"related": ["trace", "message", "kbd"]
+		}
+	}
 }

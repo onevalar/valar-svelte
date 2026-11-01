@@ -1,0 +1,29 @@
+{
+	"name": "message-scroller",
+	"type": "registry:ui",
+	"title": "Message Scroller 消息滚动区",
+	"description": "聊天记录滚动容器：跟随流式回复、加载历史不跳动、可跳转到任意消息。",
+	"categories": ["展示"],
+	"meta": {
+		"valar": {
+			"keywords": ["消息滚动", "message scroller", "聊天记录", "chat scroll", "流式", "transcript"],
+			"whenToUse": [
+				"聊天记录：新回合锚定、跟随流式回复、加载更早消息时保持位置",
+				"打开保存的会话时定位到合适位置"
+			],
+			"whenNotToUse": [
+				{
+					"case": "普通内容的滚动区域",
+					"use": "scroll-area"
+				}
+			],
+			"accessibility": [
+				"Viewport 默认 role=region、aria-label=消息、可聚焦；其他语言要改 aria-label",
+				"Content 为 role=log，新行会被朗读；流式输出时可传 aria-busy",
+				"MessageScroller.Button 无内容可滚时设为 inert，不占焦点"
+			],
+			"responsive": ["填满父元素，必须放在有确定高度的容器内"],
+			"related": ["message", "scroll-area", "marker"]
+		}
+	}
+}

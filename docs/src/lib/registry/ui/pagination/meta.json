@@ -1,0 +1,33 @@
+{
+	"name": "pagination",
+	"type": "registry:ui",
+	"title": "Pagination 分页",
+	"description": "页码与上一页、下一页导航。",
+	"categories": ["导航"],
+	"meta": {
+		"valar": {
+			"keywords": ["分页", "pagination", "页码", "上一页", "下一页"],
+			"whenToUse": ["把长列表或表格分成多页浏览"],
+			"whenNotToUse": [
+				{
+					"case": "显示层级位置",
+					"use": "breadcrumb"
+				},
+				{
+					"case": "有顺序的流程步骤",
+					"use": "stepper"
+				},
+				{
+					"case": "少量内容的轮换浏览",
+					"use": "carousel"
+				}
+			],
+			"accessibility": [
+				"当前页带 aria-current=page",
+				"上一页／下一页默认中文文字和 aria-label，其他语言传 label 和 aria-label 覆盖"
+			],
+			"responsive": ["上一页／下一页的文字在 sm 以下隐藏，只留图标", "窄屏减少显示的页码数"],
+			"related": ["table", "breadcrumb", "button"]
+		}
+	}
+}

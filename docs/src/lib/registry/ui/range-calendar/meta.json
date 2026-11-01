@@ -1,0 +1,32 @@
+{
+	"name": "range-calendar",
+	"type": "registry:ui",
+	"title": "Range Calendar 日期范围",
+	"description": "在月历上选择开始和结束日期。",
+	"categories": ["表单"],
+	"meta": {
+		"valar": {
+			"keywords": ["日期范围", "range calendar", "起止日期", "date range", "时间段"],
+			"whenToUse": ["选择预订、报表等的起止日期"],
+			"whenNotToUse": [
+				{
+					"case": "只选一个日期",
+					"use": "calendar"
+				},
+				{
+					"case": "页面空间有限，点击后再弹出",
+					"use": "popover"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（方向键移动日期、回车选择起止）",
+				"locale 默认 zh-CN，其他语言要设置 locale"
+			],
+			"responsive": [
+				"显示多个月份时窄屏应减少月数",
+				"用 --cell-size 控制格子大小，可按断点设置不同值"
+			],
+			"related": ["calendar", "popover", "input"]
+		}
+	}
+}

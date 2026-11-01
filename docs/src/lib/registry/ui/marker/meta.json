@@ -1,0 +1,34 @@
+{
+	"name": "marker",
+	"type": "registry:ui",
+	"title": "Marker 对话标记",
+	"description": "对话中的状态提示、系统说明、带边框的行或带文字的分隔线。",
+	"categories": ["反馈"],
+	"meta": {
+		"valar": {
+			"keywords": ["对话标记", "marker", "系统消息", "状态", "日期分隔", "思考中"],
+			"whenToUse": ["对话中的进行中状态（如“思考中…”）、系统说明、日期分隔"],
+			"whenNotToUse": [
+				{
+					"case": "用户或助手的消息内容",
+					"use": "message"
+				},
+				{
+					"case": "agent 的工具调用等步骤",
+					"use": "trace"
+				},
+				{
+					"case": "没有文字的普通分隔线",
+					"use": "separator"
+				}
+			],
+			"accessibility": [
+				"进行中的状态设 role=status，并配合 spinner",
+				"带文字的分隔不要加 role=separator，否则文字不会被朗读",
+				"Marker.Icon 对读屏隐藏，含义写在 Marker.Content"
+			],
+			"responsive": ["宽度随对话列表"],
+			"related": ["message", "trace", "separator"]
+		}
+	}
+}

@@ -1,0 +1,33 @@
+{
+	"name": "breadcrumb",
+	"type": "registry:ui",
+	"title": "Breadcrumb 面包屑",
+	"description": "按层级显示当前页面的路径。",
+	"categories": ["导航"],
+	"meta": {
+		"valar": {
+			"keywords": ["面包屑", "breadcrumb", "路径", "层级导航"],
+			"whenToUse": ["层级较深的页面显示当前位置，并能返回上级"],
+			"whenNotToUse": [
+				{
+					"case": "列表分页",
+					"use": "pagination"
+				},
+				{
+					"case": "站点主导航",
+					"use": "navigation-menu"
+				},
+				{
+					"case": "有先后顺序的流程步骤",
+					"use": "stepper"
+				}
+			],
+			"accessibility": [
+				"根元素带 aria-label，当前页 Breadcrumb.Page 设置 aria-current=page",
+				"分隔符和省略号对读屏隐藏"
+			],
+			"responsive": ["层级过长时用 Breadcrumb.Ellipsis 折叠中间层，可配合 dropdown-menu 展开"],
+			"related": ["navigation-menu", "dropdown-menu", "sidebar"]
+		}
+	}
+}
