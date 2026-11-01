@@ -7,13 +7,63 @@ on:
 
 permissions:
   contents: read
+  pull-requests: read
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  # Each main commit gets its own group, including while runs are pending.
+  group: ci-${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  verify:
+  changes:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      run-ci: ${{ steps.paths.outputs.run-ci }}
+    steps:
+      - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        id: paths
+        with:
+          script: |
+            // Never skip main, and fail closed if GitHub's file list is incomplete.
+            let runCI = true;
+            if (context.eventName === 'pull_request') {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                ...context.repo,
+                pull_number: context.issue.number,
+                per_page: 100,
+              });
+              const proseOnly = (path) =>
+                ['README.md', 'UPSTREAM_README.md', 'LICENSE.md', 'CONTRIBUTING.md'].includes(path) ||
+                (path.startsWith('standards/') && path.endsWith('.md'));
+              runCI = files.length === 0 ||
+                files.length !== context.payload.pull_request.changed_files ||
+                files.some(file => !proseOnly(file.filename) ||
+                  (file.previous_filename && !proseOnly(file.previous_filename)));
+            }
+            core.setOutput('run-ci', String(runCI));
+
+  checks:
+    needs: changes
+    if: needs.changes.outputs.run-ci == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: pnpm/action-setup@f40ffcd9367d9f12939873eb1018b921a783ffaa # v4
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm test
+      - run: pnpm check
+
+  build-e2e:
+    needs: changes
+    if: needs.changes.outputs.run-ci == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     env:
@@ -27,7 +77,27 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm --filter docs exec playwright install --with-deps chromium
-      - run: pnpm test
-      - run: pnpm check
       - run: pnpm build
-      - run: pnpm --filter docs test:e2e
+      - run: pnpm --filter docs test:e2e --reporter=list
+
+  # Keep the original required check name. Never use workflow-level paths-ignore:
+  # prose-only PRs must finish this check successfully rather than leave it pending.
+  verify:
+    needs: [changes, checks, build-e2e]
+    if: always()
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Require every applicable job to pass
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          node --input-type=module <<'JS'
+          const needs = JSON.parse(process.env.NEEDS_JSON);
+          const expected = needs.changes.outputs['run-ci'] === 'false' ? 'skipped' : 'success';
+          if (needs.changes.result !== 'success' ||
+              needs.checks.result !== expected || needs['build-e2e'].result !== expected) {
+            console.error(needs);
+            process.exit(1);
+          }
+          JS

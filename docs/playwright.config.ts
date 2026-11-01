@@ -4,7 +4,10 @@ const baseURL = process.env.E2E_BASE_URL ?? "http://127.0.0.1:5187";
 
 export default defineConfig({
 	testDir: "./e2e",
-	workers: 1,
+	// Tests use isolated browser contexts; allow the long contracts/workbench files
+	// to share both CI workers instead of serializing every test within each file.
+	fullyParallel: !!process.env.CI,
+	workers: process.env.CI ? 2 : 1,
 	forbidOnly: !!process.env.CI,
 	retries: 0,
 	use: {
