@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "$lib/i18n/index.js";
 	import CheckIcon from "@tabler/icons-svelte/icons/check";
 	import CopyIcon from "@tabler/icons-svelte/icons/copy";
 	import * as Tooltip from "$lib/registry/ui/tooltip/index.js";
@@ -29,7 +30,7 @@
 				}}
 				{...restProps}
 			>
-				<span class="sr-only" data-llm-ignore>Copy</span>
+				<span class="sr-only" data-llm-ignore>{t("docs.copy")}</span>
 				{#if clipboard.copied}
 					<CheckIcon />
 				{:else}
@@ -38,5 +39,5 @@
 			</Button>
 		{/snippet}
 	</Tooltip.Trigger>
-	<Tooltip.Content class="bg-black text-white" arrowClasses="bg-black">Copy code</Tooltip.Content>
+	<Tooltip.Content class="bg-black text-white" arrowClasses="bg-black">{t("docs.copyCode")}</Tooltip.Content>
 </Tooltip.Root>

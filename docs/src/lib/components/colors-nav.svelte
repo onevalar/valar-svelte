@@ -2,10 +2,13 @@
 	import { page } from "$app/state";
 	import { getColors } from "$lib/colors.js";
 	import { ScrollArea } from "$lib/registry/ui/scroll-area/index.js";
+	import { localizeHref, type Locale } from "$lib/i18n/config.js";
 	import { cn } from "$lib/utils.js";
 	import type { HTMLAttributes } from "svelte/elements";
 
 	const colors = getColors();
+	const locale = $derived((page.data.locale ?? "en") as Locale);
+	const link = (path: string) => localizeHref(path, locale);
 
 	let { class: className, ...restProps }: HTMLAttributes<HTMLElement> = $props();
 </script>
@@ -15,9 +18,9 @@
 		<div class="flex items-center">
 			{#each colors as colorPalette, index (colorPalette.name)}
 				<a
-					href="/colors#{colorPalette.name}"
-					data-active={page.url.pathname?.startsWith(colorPalette.name) ||
-						(index === 0 && page.url.pathname === "/colors")}
+					href="{link("/colors")}#{colorPalette.name}"
+					data-active={page.url.pathname?.startsWith(link("/colors")) &&
+						(index === 0 || page.url.pathname.includes(colorPalette.name))}
 					class={cn(
 						"flex h-7 items-center justify-center px-4 text-center text-base font-medium text-muted-foreground capitalize transition-colors hover:text-primary data-[active=true]:text-primary"
 					)}

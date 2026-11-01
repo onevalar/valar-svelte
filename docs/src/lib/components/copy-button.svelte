@@ -4,6 +4,7 @@
 	import * as Tooltip from "$lib/registry/ui/tooltip/index.js";
 	import { UseClipboard } from "$lib/hooks/use-clipboard.svelte.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
+	import { t } from "$lib/i18n/index.js";
 	import { cn } from "$lib/utils.js";
 	import type { ComponentProps } from "svelte";
 
@@ -33,7 +34,7 @@
 	>
 		{#snippet child({ props })}
 			<Button {...props} data-slot="copy-button" size="icon" {variant}>
-				<span class="sr-only" data-llm-ignore>Copy</span>
+				<span class="sr-only" data-llm-ignore>{t("docs.copy")}</span>
 				{#if clipboard.copied}
 					<CheckIcon />
 				{:else}
@@ -43,6 +44,6 @@
 		{/snippet}
 	</Tooltip.Trigger>
 	<Tooltip.Content>
-		{clipboard.copied ? "Copied" : "Copy to Clipboard"}
+		{clipboard.copied ? t("docs.copied") : t("docs.copyToClipboard")}
 	</Tooltip.Content>
 </Tooltip.Root>

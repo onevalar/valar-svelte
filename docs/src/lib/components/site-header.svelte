@@ -3,19 +3,25 @@
 	import SquareTerminal from "@lucide/svelte/icons/square-terminal";
 	import Separator from "$lib/registry/ui/separator/separator.svelte";
 	import { getColors } from "$lib/colors.js";
-	import { mainNavItems } from "$lib/navigation.js";
+	import { getMainNavItems } from "$lib/navigation.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
+	import type { Locale } from "$lib/i18n/config.js";
+	import { t } from "$lib/i18n/index.js";
 	import CommandMenu from "./command-menu/command-menu.svelte";
 	import GithubLink from "./github-link.svelte";
+	import LanguageSwitcher from "./language-switcher.svelte";
 	import LayoutToggle from "./layout-toggle.svelte";
 	import MainNav from "./main-nav.svelte";
 	import MobileNav from "./mobile-nav.svelte";
 	import ModeSwitcher from "./mode-switcher.svelte";
-	import { InitializeProjectCtx } from "../../routes/(app)/(layout)/(create)/components/initialize-project-context.svelte.js";
+	import { InitializeProjectCtx } from "../../routes/[[lang]]/(app)/(layout)/(create)/components/initialize-project-context.svelte.js";
 
 	const initializeProjectCtx = InitializeProjectCtx.getOr(null);
 
 	const colors = getColors();
+
+	const locale = $derived((page.data.locale ?? "en") as Locale);
+	const mainNavItems = $derived(getMainNavItems(locale));
 
 	let mobileNavRef: { closeMenu: () => void } | undefined;
 
@@ -36,10 +42,10 @@
 			<MobileNav bind:this={mobileNavRef} class="flex lg:hidden" />
 
 			<a
-				href="/"
-				aria-label="Valar Svelte 首页"
+				href={locale === "zh" ? "/zh" : "/"}
+				aria-label={t("header.home")}
 				class="mr-2 ml-3 flex shrink-0 items-baseline gap-2 sm:mr-5 lg:ml-0"
-				><span class="text-lg font-semibold tracking-tight">Valar</span><span
+			><span class="text-lg font-semibold tracking-tight">Valar</span><span
 					class="text-xs text-muted-foreground">Svelte</span
 				></a
 			>
@@ -49,11 +55,12 @@
 					<CommandMenu {colors} {closeMobileMenu} />
 				</div>
 				<Separator orientation="vertical" class="ml-2 hidden lg:block" />
+				<LanguageSwitcher />
 				<div class="hidden sm:block"><GithubLink /></div>
 				<Separator orientation="vertical" class="hidden 3xl:flex" />
 				<LayoutToggle class="hidden 3xl:flex" />
 				<Separator orientation="vertical" class="hidden sm:block" />
-				{#if page.url.pathname.startsWith("/create")}
+				{#if page.url.pathname.startsWith(locale === "zh" ? "/zh/create" : "/create")}
 					<ModeSwitcher class="md:hidden" />
 					<Separator orientation="vertical" />
 					{#if initializeProjectCtx}
@@ -64,7 +71,7 @@
 							class="hidden md:flex"
 						>
 							<SquareTerminal />
-							Initialize Project
+							{t("header.initializeProject")}
 						</Button>
 					{/if}
 				{:else}

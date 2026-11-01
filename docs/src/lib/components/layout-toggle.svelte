@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "$lib/i18n/index.js";
 	import GalleryHorizontalIcon from "@lucide/svelte/icons/gallery-horizontal";
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { UserConfigContext } from "$lib/user-config.svelte.js";
@@ -17,8 +18,8 @@
 		userConfig.setConfig({ layout: userConfig.current.layout === "full" ? "fixed" : "full" });
 	}}
 	{...restProps}
-	title="Toggle layout"
+	title={t("layout.toggle")}
 >
-	<span class="sr-only"> Toggle layout </span>
+	<span class="sr-only">{t("layout.toggle")}</span>
 	<GalleryHorizontalIcon />
 </Button>

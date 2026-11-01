@@ -9,6 +9,7 @@
 	import TextareaTuner from "$lib/features/workbench/textarea-tuner.svelte";
 	import TooltipTuner from "$lib/features/workbench/tooltip-tuner.svelte";
 	import { Button } from "$lib/registry/ui/button/index.js";
+	import { t } from "$lib/i18n/index.js";
 	import { cn } from "$lib/utils.js";
 	import type { PresetConfig } from "@valar/svelte-cli/preset";
 	import type { Component, Snippet } from "svelte";
@@ -46,11 +47,7 @@
 		<Component />
 	{:else}
 		<p class="text-sm text-muted-foreground">
-			Component
-			<code class="relative rounded bg-muted px-[0.3rem] py-[0.2rem] font-mono text-sm">
-				{name}
-			</code>
-			not found in registry.
+			{t("docs.componentNotFound", { name })}
 		</p>
 	{/if}
 {/snippet}
@@ -130,7 +127,7 @@
 							codeVisible = true;
 						}}
 					>
-						View Code
+						{t("docs.viewCode")}
 					</Button>
 				</div>
 			{/if}

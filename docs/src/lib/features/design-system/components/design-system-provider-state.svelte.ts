@@ -25,7 +25,7 @@ import {
 	applyBias,
 	RANDOMIZE_BIASES,
 	type RandomizeContext,
-} from "../../../../routes/(app)/(layout)/(create)/lib/randomize-biases.js";
+} from "../../../../routes/[[lang]]/(app)/(layout)/(create)/lib/randomize-biases.js";
 
 type ChartColorName = (typeof PRESET_CHART_COLORS)[number];
 import { FONTS } from "$lib/fonts.js";

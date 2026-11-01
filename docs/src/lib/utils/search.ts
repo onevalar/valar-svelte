@@ -9,6 +9,7 @@ export type SearchContent = {
 	category: string;
 	type: "page" | "heading" | "text";
 	pageTitle: string;
+	locale?: "en" | "zh";
 };
 
 export type SearchResult = SearchContent & {
@@ -111,13 +112,13 @@ function substringMatch(text: string, query: string): boolean {
 	return text.toLowerCase().includes(query.toLowerCase());
 }
 
-export function searchContentIndex(query: string): SearchResult[] {
+export function searchContentIndex(query: string, locale?: "en" | "zh"): SearchResult[] {
 	const normalizedQuery = query.trim();
 	if (!normalizedQuery) return [];
 	if (!titleIndex || !contentIndex) return [];
 
-	const titleResults = titleIndex.search(normalizedQuery, { limit: 20 });
-	const contentResults = contentIndex.search(normalizedQuery, { limit: 20 });
+	const titleResults = titleIndex.search(normalizedQuery, { limit: 40 });
+	const contentResults = contentIndex.search(normalizedQuery, { limit: 40 });
 
 	const resultMap = new Map<Id, { score: number; source: string }>();
 
@@ -149,6 +150,10 @@ export function searchContentIndex(query: string): SearchResult[] {
 
 	const sortedResults = Array.from(resultMap.entries())
 		.sort(([, a], [, b]) => b.score - a.score)
+		.filter(([idx]) => {
+			if (!locale) return true;
+			return (content[idx as number]?.locale ?? "en") === locale;
+		})
 		.slice(0, 10);
 
 	return sortedResults.map(([idx]) => {

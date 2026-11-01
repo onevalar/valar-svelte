@@ -218,7 +218,7 @@ async function toMarkdown(rawHtml: string) {
 function findVeliteData(veliteData: Record<string, VeliteData[]>, path: string): VeliteData | null {
 	// search through all velite data arrays for matching path
 	for (const dataArray of Object.values(veliteData)) {
-		const found = dataArray.find((item) => item.path === path);
+		const found = dataArray.find((item) => item.path === path && item.locale === "en");
 		if (found) return found;
 	}
 	return null;

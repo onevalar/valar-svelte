@@ -13,6 +13,7 @@
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { Separator } from "$lib/registry/ui/separator/index.js";
 	import { UserConfigContext } from "$lib/user-config.svelte.js";
+	import { t } from "$lib/i18n/index.js";
 	import { BlockViewerContext } from "./block-viewer.svelte";
 
 	const ctx = BlockViewerContext.get();
@@ -36,8 +37,8 @@
 		<Tabs.List
 			class="grid !h-8 grid-cols-2 items-center rounded-lg p-1 *:data-[slot=tabs-trigger]:h-6 *:data-[slot=tabs-trigger]:rounded-sm *:data-[slot=tabs-trigger]:px-2 *:data-[slot=tabs-trigger]:text-xs"
 		>
-			<Tabs.Trigger value="preview">Preview</Tabs.Trigger>
-			<Tabs.Trigger value="code">Code</Tabs.Trigger>
+			<Tabs.Trigger value="preview">{t("docs.preview")}</Tabs.Trigger>
+			<Tabs.Trigger value="code">{t("docs.code")}</Tabs.Trigger>
 		</Tabs.List>
 	</Tabs.Root>
 	<Separator orientation="vertical" class="mx-2 data-vertical:h-4 data-vertical:self-auto" />
@@ -59,13 +60,13 @@
 				}}
 				class="gap-1 *:data-[slot=toggle-group-item]:!size-6 *:data-[slot=toggle-group-item]:!rounded-sm"
 			>
-				<ToggleGroup.Item value="100" title="Desktop">
+				<ToggleGroup.Item value="100" title={t("docs.desktop")}>
 					<MonitorIcon />
 				</ToggleGroup.Item>
-				<ToggleGroup.Item value="60" title="Tablet">
+				<ToggleGroup.Item value="60" title={t("docs.tablet")}>
 					<TabletIcon />
 				</ToggleGroup.Item>
-				<ToggleGroup.Item value="30" title="Mobile">
+				<ToggleGroup.Item value="30" title={t("docs.mobile")}>
 					<SmartphoneIcon />
 				</ToggleGroup.Item>
 				<Separator orientation="vertical" class="data-vertical:h-4 data-vertical:self-auto" />
@@ -73,11 +74,11 @@
 					size="icon"
 					variant="ghost"
 					class="size-6 rounded-sm p-0"
-					title="Open in New Tab"
+					title={t("common.openInNewTab")}
 					href="/view/{ctx.item.name}"
 					target="_blank"
 				>
-					<span class="sr-only">Open in New Tab</span>
+					<span class="sr-only">{t("common.openInNewTab")}</span>
 					<FullscreenIcon />
 				</Button>
 				<Separator orientation="vertical" class="data-vertical:h-4 data-vertical:self-auto" />
@@ -85,13 +86,13 @@
 					size="icon"
 					variant="ghost"
 					class="size-6 rounded-sm p-0"
-					title="Refresh Preview"
+					title={t("docs.refreshPreview")}
 					onclick={() => {
 						ctx.iframeKey = ctx.iframeKey + 1;
 					}}
 				>
 					<RotateCcwIcon />
-					<span class="sr-only">Refresh Preview</span>
+					<span class="sr-only">{t("docs.refreshPreview")}</span>
 				</Button>
 			</ToggleGroup.Root>
 		</div>

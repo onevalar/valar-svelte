@@ -28,7 +28,7 @@ function getDate(value: string | undefined): Date {
 export function GET({ url }: { url: URL }) {
 	const siteUrl = url.origin;
 	const items = changelog
-		.filter((item) => item.path !== "changelog")
+		.filter((item) => item.locale === "en" && item.path !== "changelog")
 		.sort((a, b) => getDate(b.date).getTime() - getDate(a.date).getTime())
 		.map((item) => {
 			const url = `${siteUrl}/docs/${item.path}`;

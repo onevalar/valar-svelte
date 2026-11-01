@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from "$app/navigation";
+	import { page } from "$app/state";
 	import ArrowRightIcon from "@lucide/svelte/icons/arrow-right";
 	import CornerDownLeftIcon from "@lucide/svelte/icons/corner-down-left";
 	import SearchIcon from "@lucide/svelte/icons/search";
@@ -10,7 +11,9 @@
 	import * as Kbd from "$lib/registry/ui/kbd/index.js";
 	import type { ColorPalette } from "$lib/colors.js";
 	import { UseClipboard } from "$lib/hooks/use-clipboard.svelte.js";
-	import { mainNavItems, sidebarNavItems } from "$lib/navigation.js";
+	import { getMainNavItems, getSidebarNavItems } from "$lib/navigation.js";
+	import type { Locale } from "$lib/i18n/config.js";
+	import { t } from "$lib/i18n/index.js";
 	import { getCommand } from "$lib/package-manager.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { Separator } from "$lib/registry/ui/separator/index.js";
@@ -37,32 +40,36 @@
 	const userConfig = UserConfigContext.get();
 	const clipboard = new UseClipboard();
 
+	const locale = $derived((page.data.locale ?? "en") as Locale);
+	const mainNavItems = $derived(getMainNavItems(locale));
+	const sidebarNavItems = $derived(getSidebarNavItems(locale));
+
 	const COMMAND_MENU_GROUP_ORDER = [
-		"Components",
-		"AI Elements",
-		"Get Started",
-		"Changelog",
-		"Utilities",
-		"Installation",
-		"Dark Mode",
-		"Registry",
-		"Forms",
-		"Migration",
+		"components",
+		"ai-elements",
+		"get-started",
+		"changelog",
+		"utilities",
+		"installation",
+		"dark-mode",
+		"registry",
+		"forms",
+		"migration",
 	] as const;
 
-	const orderedSidebarGroups = COMMAND_MENU_GROUP_ORDER.map((title) =>
-		sidebarNavItems.find((group) => group.title === title)
-	)
-		.filter((group): group is (typeof sidebarNavItems)[number] => group !== undefined)
-		.map((group) => ({
-			...group,
-			items:
-				group.items.length > 0
-					? group.items
-					: group.href
-						? [{ title: group.title, href: group.href, items: [] }]
-						: [],
-		}));
+	const orderedSidebarGroups = $derived(
+		COMMAND_MENU_GROUP_ORDER.map((key) => sidebarNavItems.find((group) => group.key === key))
+			.filter((group): group is (typeof sidebarNavItems)[number] => group !== undefined)
+			.map((group) => ({
+				...group,
+				items:
+					group.items.length > 0
+						? group.items
+						: group.href
+							? [{ title: group.title, href: group.href, items: [] }]
+							: [],
+			}))
+	);
 
 	type SelectedType = "color" | "page" | "component" | "block" | "search";
 
@@ -80,7 +87,7 @@
 		const pm = userConfig.current.packageManager;
 		const map: Record<string, { type: SelectedType; payload: string }> = {};
 		for (const item of mainNavItems) {
-			map[pageValue("Pages", item.title)] = { type: "page", payload: "" };
+			map[pageValue(t("command.pages"), item.title)] = { type: "page", payload: "" };
 		}
 		for (const group of orderedSidebarGroups) {
 			for (const item of group.items) {
@@ -142,7 +149,9 @@
 	}
 
 	const pageResults = $derived(
-		mainNavItems.filter((item) => matches(`pages ${item.title} page`.toLowerCase()))
+		mainNavItems.filter((item) =>
+			matches(`${t("command.pages")} ${item.title} page`.toLowerCase())
+		)
 	);
 
 	const groupResults = $derived(
@@ -205,7 +214,7 @@
 			groupResults.flatMap((group) => group.items.map((item) => item.href))
 		);
 		const seen = new SvelteSet<string>();
-		return searchContentIndex(search).filter((result) => {
+		return searchContentIndex(search, locale).filter((result) => {
 			if (pageHrefs.has(result.href.split("#")[0]) || seen.has(result.href)) return false;
 			seen.add(result.href);
 			return true;
@@ -284,15 +293,15 @@
 			<Button
 				{...props}
 				variant="outline"
-				aria-label="Search documentation"
+				aria-label={t("command.label")}
 				class={cn(
 					"relative size-8 justify-center rounded-lg border-none bg-muted text-foreground shadow-none transition-colors hover:bg-muted/50 md:w-48 md:justify-start md:pl-3 lg:w-40 xl:w-64 dark:bg-card"
 				)}
 				onclick={() => openCommandMenu()}
 			>
 				<SearchIcon class="md:hidden" />
-				<span class="hidden xl:inline-flex">Search documentation...</span>
-				<span class="hidden md:inline-flex xl:hidden">Search...</span>
+				<span class="hidden xl:inline-flex">{t("command.placeholder")}</span>
+				<span class="hidden md:inline-flex xl:hidden">{t("header.search")}</span>
 			</Button>
 		{/snippet}
 	</Dialog.Trigger>
@@ -300,29 +309,29 @@
 		class="top-4 flex max-h-[calc(100dvh-2rem)] max-w-[calc(100%-2rem)] translate-y-0 flex-col overflow-hidden rounded-xl border-none bg-clip-padding p-2 pb-11 shadow-2xl ring-4 ring-neutral-200/80 sm:top-1/2 sm:max-w-lg sm:-translate-y-1/2 dark:bg-neutral-900 dark:ring-neutral-800"
 	>
 		<Dialog.Header class="sr-only">
-			<Dialog.Title>Search documentation...</Dialog.Title>
-			<Dialog.Description>Search for a command to run...</Dialog.Description>
+			<Dialog.Title>{t("command.placeholder")}</Dialog.Title>
+			<Dialog.Description>{t("command.searchDescription")}</Dialog.Description>
 		</Dialog.Header>
 		<Command.Root class="min-h-0 rounded-none bg-transparent" bind:value shouldFilter={false}>
-			<Command.Input bind:value={search} placeholder="Search documentation..." />
+			<Command.Input bind:value={search} placeholder={t("command.placeholder")} />
 			<Command.List tabindex={-1} class="no-scrollbar min-h-0 scroll-pt-2 scroll-pb-1.5">
 				{#if !hasResults}
 					<div role="status" class="px-3 py-12 text-center text-sm text-muted-foreground">
 						{searchFailed
-							? "Full-text search unavailable. Close and reopen to retry."
+							? t("command.failed")
 							: !searchReady
-								? "Loading documentation search…"
-								: "No results found."}
+								? t("command.loading")
+								: t("command.noResults")}
 					</div>
 				{/if}
 				{#if pageResults.length}
 					<Command.Group
-						heading="Pages"
+						heading={t("command.pages")}
 						class="!p-0 [&_[data-command-group-heading]]:scroll-mt-16 [&_[data-command-group-heading]]:!p-3 [&_[data-command-group-heading]]:!pb-1"
 					>
 						{#each pageResults as item (item.href)}
 							<CommandMenuItem
-								value={pageValue("Pages", item.title)}
+								value={pageValue(t("command.pages"), item.title)}
 								keywords={["page", item.title.toLowerCase()]}
 								onSelect={() => {
 									runCommand(() => {
@@ -371,14 +380,19 @@
 						</Command.Group>
 					{/each}
 					{#if blockResults.length}
-						<Command.Group heading="Blocks" class="!p-0 [&_[data-command-group-heading]]:!p-3">
+						<Command.Group
+							heading={t("nav.blocks")}
+							class="!p-0 [&_[data-command-group-heading]]:!p-3"
+						>
 							{#each blockResults as block (block.name)}
 								<CommandMenuItem
 									value={block.name}
 									keywords={["block", block.name, block.description, ...block.categories]}
 									onSelect={() => {
 										runCommand(() => {
-											goto(`/blocks/${block.categories[0]}#${block.name}`);
+											goto(
+												`${locale === "zh" ? "/zh" : ""}/blocks/${block.categories[0]}#${block.name}`
+											);
 										});
 									}}
 								>
@@ -396,7 +410,7 @@
 				{/if}
 				{#if contentResults.length}
 					<Command.Group
-						heading="Search Results"
+						heading={t("command.searchResults")}
 						class="!p-0 [&_[data-command-group-heading]]:scroll-mt-16 [&_[data-command-group-heading]]:!p-3 [&_[data-command-group-heading]]:!pb-1"
 					>
 						{#each contentResults as result (result.href)}
@@ -444,10 +458,10 @@
 			<div class="flex items-center gap-2">
 				<Kbd.Root class="border bg-background"><CornerDownLeftIcon /></Kbd.Root>
 				{#if selectedType === "page" || selectedType === "component" || selectedType === "search"}
-					Go to Page
+					{t("command.goToPage")}
 				{/if}
 				{#if selectedType === "color"}
-					Copy OKLCH
+					{t("command.copyOklch")}
 				{/if}
 			</div>
 			{#if copyPayload}

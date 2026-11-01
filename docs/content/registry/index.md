@@ -1,22 +1,22 @@
 ---
 title: Registry
-description: Valar Svelte 的源码分发服务。
+description: The source distribution service for Valar Svelte.
 ---
 
-Valar 的 registry 提供组件、区块、工具与主题的源码。CLI 将这些文件安装到目标项目，方便继续定制。
+The Valar registry serves the source for components, blocks, utilities, and themes. The CLI installs these files into your project so you can keep customizing them.
 
-## 本地入口
+## Local endpoint
 
-当前入口为 `http://127.0.0.1:5186/registry`，每套样式位于 `styles/<style>`。例如：`/registry/styles/vega/button.json`。
+The current endpoint is `http://127.0.0.1:5186/registry`, and each style lives under `styles/<style>`. For example: `/registry/styles/vega/button.json`.
 
-## 构建
+## Build
 
 ```sh
 pnpm --filter docs build:registry
 ```
 
-## 使用与扩展
+## Usage and extension
 
-按[安装指南](/docs/installation)使用仓库内的 CLI。扩展模板源码位于 `sv-addons/registry`，尚未作为公开 npm 插件发布。
+Use the CLI from this repository as described in the [installation guide](/docs/installation). The source for extension templates lives in `sv-addons/registry` and is not published as a public npm plugin yet.
 
-自定义条目应符合[registry item schema](/docs/registry/registry-item-json)。当前没有公开 registry 域名，也不会自动回退到上游服务。
+Custom items should follow the [registry item schema](/docs/registry/registry-item-json). There is no public registry domain yet, and there is no automatic fallback to the upstream service.

@@ -22,6 +22,7 @@ export type SearchEntry = {
 	category: string;
 	type: "page" | "heading" | "text";
 	pageTitle: string;
+	locale: "en" | "zh";
 };
 
 function parseFrontmatter(raw: string): { title: string; description: string; body: string } {
@@ -78,21 +79,25 @@ function relativeContentPath(filePath: string): string {
 	return path.relative(CONTENT_DIR, filePath).split(path.sep).join("/");
 }
 
-function deriveHref(filePath: string): string {
-	let rel = relativeContentPath(filePath);
-	rel = rel.replace(/\.md$/, "");
-	rel = rel.replace(/\/index$/, "");
-	if (rel === "index") return "/docs";
-	return `/docs/${rel}`;
+/** Splits a content path into the locale and the locale-less document path. */
+function splitLocale(filePath: string): { locale: "en" | "zh"; path: string } {
+	const rel = relativeContentPath(filePath).replace(/\.md$/, "");
+	const isChinese = rel === "zh" || rel.startsWith("zh/");
+	return {
+		locale: isChinese ? "zh" : "en",
+		path: isChinese ? rel.slice(3) : rel,
+	};
 }
 
-function deriveCategory(filePath: string): string {
-	const rel = relativeContentPath(filePath);
-	const firstSegment = rel.split("/")[0];
+function deriveHref(filePath: string): string {
+	const { locale, path: docPath } = splitLocale(filePath);
+	const rel = docPath.replace(/\/index$/, "");
+	const base = rel === "index" || rel === "" ? "/docs" : `/docs/${rel}`;
+	return locale === "zh" ? `/zh${base}` : base;
+}
 
-	if (!firstSegment) return "Getting Started";
-
-	const categories: Record<string, string> = {
+const CATEGORIES = {
+	en: {
 		components: "Components",
 		forms: "Forms",
 		utils: "Utilities",
@@ -101,13 +106,33 @@ function deriveCategory(filePath: string): string {
 		"dark-mode": "Dark Mode",
 		registry: "Registry",
 		changelog: "Changelog",
-	};
+	},
+	zh: {
+		components: "组件",
+		forms: "表单",
+		utils: "工具",
+		installation: "安装",
+		migration: "迁移",
+		"dark-mode": "深色模式",
+		registry: "注册表",
+		changelog: "更新日志",
+	},
+};
 
-	if (!rel.includes("/") || firstSegment.endsWith(".md")) {
-		return "Getting Started";
+function deriveCategory(filePath: string): string {
+	const { locale, path: docPath } = splitLocale(filePath);
+	const firstSegment = docPath.split("/")[0];
+	const fallback = locale === "zh" ? "快速开始" : "Getting Started";
+
+	if (!firstSegment) return fallback;
+
+	const categories: Record<string, string> = CATEGORIES[locale];
+
+	if (!docPath.includes("/") || firstSegment.endsWith(".md")) {
+		return fallback;
 	}
 
-	return categories[firstSegment] ?? "Getting Started";
+	return categories[firstSegment] ?? fallback;
 }
 
 function parseIntoSections(
@@ -115,7 +140,8 @@ function parseIntoSections(
 	pageTitle: string,
 	pageHref: string,
 	category: string,
-	description: string
+	description: string,
+	locale: "en" | "zh"
 ): SearchEntry[] {
 	const entries: SearchEntry[] = [];
 
@@ -156,6 +182,7 @@ function parseIntoSections(
 					category,
 					type: "page",
 					pageTitle,
+					locale,
 				});
 			}
 			continue;
@@ -177,6 +204,7 @@ function parseIntoSections(
 			category,
 			type: "heading",
 			pageTitle,
+			locale,
 		});
 
 		// Add text entries for paragraphs under this heading
@@ -192,6 +220,7 @@ function parseIntoSections(
 				category,
 				type: "text",
 				pageTitle,
+				locale,
 			});
 		}
 	}
@@ -204,7 +233,7 @@ export async function buildSearchData(): Promise<SearchEntry[]> {
 		cwd: CONTENT_DIR,
 		absolute: true,
 		// The changelog route renders content/changelog/*, not the legacy overview.
-		ignore: ["changelog.md"],
+		ignore: ["changelog.md", "zh/changelog.md"],
 	});
 
 	const entries: SearchEntry[] = [];
@@ -217,8 +246,9 @@ export async function buildSearchData(): Promise<SearchEntry[]> {
 
 		const href = deriveHref(file);
 		const category = deriveCategory(file);
+		const { locale } = splitLocale(file);
 
-		const sections = parseIntoSections(body, title, href, category, description);
+		const sections = parseIntoSections(body, title, href, category, description, locale);
 		entries.push(...sections);
 	}
 

@@ -3,6 +3,8 @@
 	import { onMount, tick } from "svelte";
 	import * as Sidebar from "$lib/registry/ui/sidebar/index.js";
 	import { PAGES_NEW, type SidebarNavItem } from "$lib/navigation.js";
+	import { localizeHref, type Locale } from "$lib/i18n/config.js";
+	import { t } from "$lib/i18n/index.js";
 	import type { ComponentProps } from "svelte";
 
 	let {
@@ -14,29 +16,26 @@
 	const SCROLL_STORAGE_KEY = "docs-sidebar-scroll";
 
 	const pathname = $derived(page.url.pathname.toString());
+	const locale = $derived((page.data.locale ?? "en") as Locale);
+	const link = (href: string) => localizeHref(href, locale);
 
-	const TOP_LEVEL_SECTIONS = [
-		{ title: "Introduction", href: "/docs", items: [] },
-		{ title: "Components", href: "/docs/components", items: [] },
-		{ title: "Installation", href: "/docs/installation", items: [] },
-		{ title: "Theming", href: "/docs/theming", items: [] },
-		{ title: "CLI", href: "/docs/cli", items: [] },
-		{ title: "Registry", href: "/docs/registry", items: [] },
-		{ title: "Forms", href: "/docs/forms", items: [] },
-		{ title: "Changelog", href: "/docs/changelog", items: [] },
-	] satisfies SidebarNavItem[];
+	const TOP_LEVEL_SECTIONS = $derived([
+		{ title: t("nav.introduction"), href: link("/docs"), items: [] },
+		{ title: t("nav.components"), href: link("/docs/components"), items: [] },
+		{ title: t("nav.installation"), href: link("/docs/installation"), items: [] },
+		{ title: t("nav.theming"), href: link("/docs/theming"), items: [] },
+		{ title: t("nav.cli"), href: link("/docs/cli"), items: [] },
+		{ title: t("nav.registry"), href: link("/docs/registry"), items: [] },
+		{ title: t("nav.forms"), href: link("/docs/forms"), items: [] },
+		{ title: t("nav.changelog"), href: link("/docs/changelog"), items: [] },
+	] satisfies SidebarNavItem[]);
 
-	const EXCLUDED_SECTIONS = new Set([
-		"Sections",
-		"Installation",
-		"Dark Mode",
-		"Changelog",
-		"Forms",
-		"Migration",
-	]);
-	const EXCLUDED_PAGES = new Set(["/docs", "/docs/changelog"]);
+	const EXCLUDED_SECTIONS = new Set(["sections", "installation", "dark-mode", "changelog", "forms", "migration"]);
+	const EXCLUDED_PAGES = $derived(new Set([link("/docs"), link("/docs/changelog")]));
 	const renderedNavItems = $derived(
-		navItems.filter((item) => !EXCLUDED_SECTIONS.has(item.title) && item.items.length > 0)
+		navItems.filter(
+			(item) => item.items.length > 0 && !(item.key && EXCLUDED_SECTIONS.has(item.key))
+		)
 	);
 
 	function normalizePath(path: string): string {
@@ -142,13 +141,13 @@
 		class="w-(--sidebar-menu-width) scroll-fade scrollbar-none overflow-x-hidden pl-2.5"
 	>
 		<Sidebar.Group class="pt-12">
-			<Sidebar.GroupLabel class="font-medium text-muted-foreground">Sections</Sidebar.GroupLabel>
+			<Sidebar.GroupLabel class="font-medium text-muted-foreground">{t("nav.sections")}</Sidebar.GroupLabel>
 			<Sidebar.GroupContent>
 				<Sidebar.Menu>
 					{#each TOP_LEVEL_SECTIONS as item (item.href)}
 						<Sidebar.MenuItem>
 							<Sidebar.MenuButton
-								isActive={item.href === "/docs"
+								isActive={item.href === link("/docs")
 									? pathname === item.href
 									: pathname.startsWith(item.href)}
 								class="relative h-[30px] w-fit overflow-visible border border-transparent text-[0.8rem] font-medium after:absolute after:inset-x-0 after:-inset-y-1 after:z-0 after:rounded-md data-[active=true]:border-accent data-[active=true]:bg-accent 3xl:fixed:w-full 3xl:fixed:max-w-48"
@@ -159,7 +158,7 @@
 										></span>
 										{item.title}
 										{#if item.href && PAGES_NEW.includes(item.href)}
-											<span class="flex size-2 rounded-full bg-svelte-orange" title="New"></span>
+											<span class="flex size-2 rounded-full bg-svelte-orange" title={t("nav.new")}></span>
 										{/if}
 									</a>
 								{/snippet}
@@ -191,7 +190,7 @@
 													></span>
 													{subItem.title}
 													{#if subItem.href && PAGES_NEW.includes(subItem.href)}
-														<span class="flex size-2 rounded-full bg-svelte-orange" title="New"
+														<span class="flex size-2 rounded-full bg-svelte-orange" title={t("nav.new")}
 														></span>
 													{/if}
 												</a>

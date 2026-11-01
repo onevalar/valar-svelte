@@ -1,6 +1,6 @@
 ---
 title: Figma
-description: Valar Svelte 的支持范围。
+description: What Valar Svelte supports.
 ---
 
-Valar 当前提供 Svelte 5 与 Tailwind CSS 4 的源码实现。此扩展尚未提供；请从[组件文档](/docs/components)和[安装指南](/docs/installation)开始。
+Valar currently ships source implementations for Svelte 5 and Tailwind CSS 4. This extension is not available yet. Start with the [component docs](/docs/components) and the [installation guide](/docs/installation).

@@ -1,9 +1,19 @@
 <script lang="ts">
+	import { page } from "$app/state";
 	import PMExecute from "./pm-execute.svelte";
+	import { localizeHref, type Locale } from "$lib/i18n/config.js";
+	import { t } from "$lib/i18n/index.js";
 
 	let { name }: { name: string } = $props();
+
+	const locale = $derived((page.data.locale ?? "en") as Locale);
 </script>
 
 <PMExecute command={`@valar/svelte-cli add ${name} --cwd /absolute/path/to/your-app`} />
 
-<p class="text-sm text-muted-foreground">本地开发版本：在 Valar 仓库运行，替换目标项目路径。CLI 尚未发布到 npm。<a href="/docs/installation" class="underline">安装说明</a></p>
+<p class="text-sm text-muted-foreground">
+	{t("pm.localNote")}
+	<a href={localizeHref("/docs/installation", locale)} class="underline">
+		{t("pm.installationGuide")}
+	</a>
+</p>

@@ -139,14 +139,14 @@ test.describe("phone layout and touch navigation", () => {
 			}
 		}
 		await page.setViewportSize({ width: 390, height: 844 });
-		await page.getByRole("button", { name: "Toggle Menu Menu", exact: true }).tap();
+		await page.getByRole("button", { name: "Toggle menu Menu", exact: true }).tap();
 		const link = page.getByRole("link", { name: "Formsnap", exact: true });
 		const href = await link.getAttribute("href");
 		await link.scrollIntoViewIfNeeded();
 		await link.tap();
 		await page.waitForURL(`**${href}`);
 		await expect(
-			page.getByRole("button", { name: "Toggle Menu Menu", exact: true })
+			page.getByRole("button", { name: "Toggle menu Menu", exact: true })
 		).toHaveAttribute("aria-expanded", "false");
 		await page.getByRole("button", { name: "Search documentation", exact: true }).tap();
 		await page.getByRole("combobox").fill("Stepper");
@@ -177,7 +177,7 @@ test("homepage promotes only components, tokens and docs and fits one desktop sc
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto("/", { waitUntil: "networkidle" });
 	const nav = page.locator("header nav").first();
-	await expect(nav.getByRole("link")).toHaveText(["组件", "设计 token", "文档"]);
+	await expect(nav.getByRole("link")).toHaveText(["Components", "Design tokens", "Docs"]);
 	await expect(page.getByRole("link", { name: "New" })).toHaveCount(0);
 	for (const name of ["全局 token", "组件", "调参"])
 		await expect(page.getByRole("heading", { level: 2, name, exact: true })).toBeVisible();

@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as DocTabs from "./doc-tabs/index.js";
 	import CodeTabs from "./code-tabs.svelte";
+	import { t } from "$lib/i18n/index.js";
 	import type { Snippet } from "svelte";
 
 	let {
@@ -14,8 +15,8 @@
 
 <CodeTabs>
 	<DocTabs.List>
-		<DocTabs.Trigger value="cli">Command</DocTabs.Trigger>
-		<DocTabs.Trigger value="manual">Manual</DocTabs.Trigger>
+		<DocTabs.Trigger value="cli">{t("install.command")}</DocTabs.Trigger>
+		<DocTabs.Trigger value="manual">{t("install.manual")}</DocTabs.Trigger>
 	</DocTabs.List>
 	<DocTabs.Content value="cli">
 		{@render cli?.()}

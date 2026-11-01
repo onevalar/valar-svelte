@@ -25,6 +25,7 @@
 </script>
 
 <script lang="ts">
+	import { t } from "$lib/i18n/index.js";
 	let {
 		item,
 		allowSidebar = false,
@@ -122,6 +123,6 @@
 		>
 			<ComponentCodeViewerCode />
 		</div>
-		<Dialog.Close class="sr-only">Close</Dialog.Close>
+		<Dialog.Close class="sr-only">{t("common.close")}</Dialog.Close>
 	</Dialog.Content>
 </Dialog.Root>

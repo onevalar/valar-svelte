@@ -1,14 +1,19 @@
 <script lang="ts">
 	import LinkedCard from "./linked-card.svelte";
+	import { page } from "$app/state";
 	import SvelteWhite from "./svelte-white.svelte";
+	import { localizeHref, type Locale } from "$lib/i18n/config.js";
+	import { t } from "$lib/i18n/index.js";
+
+	const locale = $derived((page.data.locale ?? "en") as Locale);
 </script>
 
 <div class="mt-8 grid gap-4 sm:grid-cols-2 sm:gap-6">
-	<LinkedCard href="/docs/installation/sveltekit">
+	<LinkedCard href={localizeHref("/docs/installation/sveltekit", locale)}>
 		<SvelteWhite />
 		<p class="mt-2 font-medium">SvelteKit</p>
 	</LinkedCard>
-	<LinkedCard href="/docs/installation/astro">
+	<LinkedCard href={localizeHref("/docs/installation/astro", locale)}>
 		<svg
 			role="img"
 			viewBox="0 0 24 24"
@@ -22,7 +27,7 @@
 		>
 		<p class="mt-2 font-medium">Astro</p>
 	</LinkedCard>
-	<LinkedCard href="/docs/installation/vite">
+	<LinkedCard href={localizeHref("/docs/installation/vite", locale)}>
 		<svg
 			role="img"
 			viewBox="0 0 24 24"
@@ -35,8 +40,8 @@
 		>
 		<p class="mt-2 font-medium">Vite</p>
 	</LinkedCard>
-	<LinkedCard href="/docs/installation/manual">
+	<LinkedCard href={localizeHref("/docs/installation/manual", locale)}>
 		<SvelteWhite />
-		<p class="mt-2 font-medium">Manual</p>
+		<p class="mt-2 font-medium">{t("install.manual")}</p>
 	</LinkedCard>
 </div>

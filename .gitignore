@@ -105,10 +105,12 @@ docs/.generated
 docs/src/__registry__
 docs/src/routes/api/search.json/search.json
 docs/static/docs
+docs/static/zh
 docs/static/llms.txt
 docs/static/llms-small.txt
 docs/static/llms-full.txt
 docs/static/docs.md
+docs/static/zh.md
 docs/static/registry/temp
 
 sv-addons/registry/static/r

@@ -1,8 +1,12 @@
 <script lang="ts">
+	import { page } from "$app/state";
 	import * as Popover from "$lib/registry/ui/popover/index.js";
-	import { mainNavItems, PAGES_NEW, sidebarNavItems } from "$lib/navigation.js";
+	import { getMainNavItems, getSidebarNavItems, PAGES_NEW } from "$lib/navigation.js";
 	import { Button, type ButtonProps } from "$lib/registry/ui/button/index.js";
+	import type { Locale } from "$lib/i18n/config.js";
+	import { t } from "$lib/i18n/index.js";
 	import { cn } from "$lib/utils.js";
+	import LanguageSwitcher from "./language-switcher.svelte";
 	import type { HTMLAnchorAttributes } from "svelte/elements";
 
 	type MobileLinkProps = HTMLAnchorAttributes & {
@@ -12,6 +16,10 @@
 	let { class: className, ...restProps }: ButtonProps = $props();
 
 	let open = $state(false);
+
+	const locale = $derived((page.data.locale ?? "en") as Locale);
+	const mainNavItems = $derived(getMainNavItems(locale));
+	const sidebarNavItems = $derived(getSidebarNavItems(locale));
 
 	// Expose a function to close the mobile menu
 	let closeMenu = () => {
@@ -32,7 +40,7 @@
 	>
 		{content}
 		{#if href && PAGES_NEW.includes(href)}
-			<span class="flex size-2 rounded-full bg-svelte-orange" title="New"></span>
+			<span class="flex size-2 rounded-full bg-svelte-orange" title={t("nav.new")}></span>
 		{/if}
 	</a>
 {/snippet}
@@ -64,9 +72,9 @@
 							)}
 						></span>
 					</div>
-					<span class="sr-only">Toggle Menu</span>
+					<span class="sr-only">{t("nav.toggleMenu")}</span>
 				</div>
-				<span class="sr-only">Menu</span>
+				<span class="sr-only">{t("nav.menu")}</span>
 			</Button>
 		{/snippet}
 	</Popover.Trigger>
@@ -79,8 +87,11 @@
 		preventScroll
 	>
 		<div class="flex flex-col gap-12 overflow-auto px-6 py-6">
+			<div class="flex items-center justify-between">
+				<div class="text-sm font-medium text-muted-foreground">{t("nav.menu")}</div>
+				<LanguageSwitcher class="-mr-2" />
+			</div>
 			<div class="flex flex-col gap-4">
-				<div class="text-sm font-medium text-muted-foreground">导航</div>
 				<div class="flex flex-col gap-3">
 					{#each mainNavItems as item, i (i)}
 						{@render MobileLink({ href: item.href, content: item.title })}

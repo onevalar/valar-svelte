@@ -6,6 +6,7 @@
 	import * as DropdownMenu from "$lib/registry/ui/dropdown-menu/index.js";
 	import * as Popover from "$lib/registry/ui/popover/index.js";
 	import { UseClipboard } from "$lib/hooks/use-clipboard.svelte.js";
+	import { getLocale, t, translate } from "$lib/i18n/index.js";
 	import { Button, buttonVariants } from "$lib/registry/ui/button/index.js";
 	import { Separator } from "$lib/registry/ui/separator/index.js";
 	import { cn } from "$lib/utils.js";
@@ -13,11 +14,8 @@
 	const pageUrl = $derived(page.url.origin + page.url.pathname);
 
 	function getPromptUrl(baseURL: string) {
-		return `${baseURL}?q=${encodeURIComponent(
-			`I’m looking at this Valar Svelte documentation: ${pageUrl}.
-Help me understand how to use it. Be ready to explain concepts, give examples, or help debug based on it.
-  `
-		)}`;
+		const prompt = translate(getLocale(), "docs.prompt", { url: pageUrl });
+		return `${baseURL}?q=${encodeURIComponent(prompt)}`;
 	}
 
 	const menuItems = {
@@ -61,7 +59,7 @@ Help me understand how to use it. Be ready to explain concepts, give examples, o
 				fill="currentColor"
 			/>
 		</svg>
-		View as Markdown
+		{t("docs.viewAsMarkdown")}
 	</a>
 {/snippet}
 
@@ -73,7 +71,7 @@ Help me understand how to use it. Be ready to explain concepts, give examples, o
 				fill="currentColor"
 			/>
 		</svg>
-		Open in v0
+		{t("docs.openIn", { name: "v0" })}
 	</a>
 {/snippet}
 
@@ -90,7 +88,7 @@ Help me understand how to use it. Be ready to explain concepts, give examples, o
 				fill="currentColor"
 			/>
 		</svg>
-		Open in ChatGPT
+		{t("docs.openIn", { name: "ChatGPT" })}
 	</a>
 {/snippet}
 
@@ -107,7 +105,7 @@ Help me understand how to use it. Be ready to explain concepts, give examples, o
 				fill="currentColor"
 			/>
 		</svg>
-		Open in Claude
+		{t("docs.openIn", { name: "Claude" })}
 	</a>
 {/snippet}
 
@@ -128,7 +126,7 @@ Help me understand how to use it. Be ready to explain concepts, give examples, o
 			{:else}
 				<CopyIcon />
 			{/if}
-			Copy Page
+			{t("docs.copyPage")}
 		</Button>
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger class="hidden sm:flex">

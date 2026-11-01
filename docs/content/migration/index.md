@@ -1,6 +1,6 @@
 ---
 title: Migration
-description: Valar Svelte 的迁移说明。
+description: Migration notes for Valar Svelte.
 ---
 
-当前使用 Svelte 5 与 Tailwind CSS 4。尚未提供旧版本迁移工具；组件样式和交互规范将在 Valar 中独立演进。
+Valar Svelte targets Svelte 5 and Tailwind CSS 4. There is no migration tooling for earlier versions yet; component styling and interaction conventions will evolve independently within Valar.

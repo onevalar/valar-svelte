@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "$lib/i18n/index.js";
 	import { MediaQuery } from "svelte/reactivity";
 	import * as Drawer from "$lib/registry/ui/drawer/index.js";
 	import * as Sheet from "$lib/registry/ui/sheet/index.js";
@@ -59,7 +60,7 @@
 		{...props}
 		class="h-6 rounded-[6px] border bg-transparent px-2 text-xs text-foreground shadow-none hover:bg-muted dark:text-foreground"
 	>
-		View Code
+		{t("docs.viewCode")}
 	</Button>
 {/snippet}
 
@@ -74,7 +75,7 @@
 			class={cn("flex max-h-[80vh] flex-col sm:max-h-[90vh] [&>div.bg-muted]:shrink-0", className)}
 		>
 			<Drawer.Header class="sr-only">
-				<Drawer.Title>Code</Drawer.Title>
+				<Drawer.Title>{t("docs.code")}</Drawer.Title>
 				<Drawer.Description>View the code for the chart.</Drawer.Description>
 			</Drawer.Header>
 
@@ -98,7 +99,7 @@
 			)}
 		>
 			<Sheet.Header class="sr-only">
-				<Sheet.Title>Code</Sheet.Title>
+				<Sheet.Title>{t("docs.code")}</Sheet.Title>
 				<Sheet.Description>View the code for the chart.</Sheet.Description>
 			</Sheet.Header>
 			{@render Content()}

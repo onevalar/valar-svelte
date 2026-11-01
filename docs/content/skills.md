@@ -1,6 +1,6 @@
 ---
 title: Skills
-description: Valar Svelte 的支持范围。
+description: The support scope for Valar Svelte.
 ---
 
-Valar 当前提供 Svelte 5 与 Tailwind CSS 4 的源码实现。此扩展尚未提供；请从[组件文档](/docs/components)和[安装指南](/docs/installation)开始。
+Valar currently provides Svelte 5 and Tailwind CSS 4 source implementations. This extension is not available yet; start with the [component docs](/docs/components) and the [installation guide](/docs/installation).

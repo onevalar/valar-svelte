@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "$lib/i18n/index.js";
 	import * as Select from "$lib/registry/ui/select/index.js";
 	import Label from "$lib/registry/ui/label/label.svelte";
 	import { THEMES } from "$lib/registry/themes.js";
@@ -22,7 +23,7 @@
 </script>
 
 <div class={cn("flex items-center gap-2", className)} {...restProps}>
-	<Label for="theme-selector" class="sr-only">Theme</Label>
+	<Label for="theme-selector" class="sr-only">{t("create.theme")}</Label>
 
 	<Select.Root
 		type="single"

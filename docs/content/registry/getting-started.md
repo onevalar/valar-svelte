@@ -1,11 +1,11 @@
 ---
 title: Getting Started
-description: 构建 Valar Svelte 的本地 registry。
+description: Build a local registry for Valar Svelte.
 ---
 
-## 构建和预览
+## Build and preview
 
-在 Valar 仓库中运行：
+Run the following in the Valar repository:
 
 ```sh
 pnpm build:cli
@@ -13,12 +13,12 @@ pnpm --filter docs build:registry
 pnpm --filter docs exec vite dev --host 127.0.0.1 --port 5186
 ```
 
-默认样式的组件入口是 `http://127.0.0.1:5186/registry/styles/vega/button.json`。
+The component endpoint for the default style is `http://127.0.0.1:5186/registry/styles/vega/button.json`.
 
-## 使用组件
+## Using components
 
-CLI 为仓库内的 `@valar/svelte-cli`，尚未发布。请按[安装指南](/docs/installation)准备目标项目，使用本地 CLI 安装组件。
+The CLI ships in this repository as `@valar/svelte-cli` and has not been published. Prepare your project as described in the [installation guide](/docs/installation), then install components with the local CLI.
 
-## 部署状态
+## Deployment status
 
-尚未设置正式 registry 域名。部署后应同时更新目标项目 components.json 与 CLI 默认地址；不要使用上游 registry 作为回退。
+No production registry domain is set up yet. Once you deploy, update both `components.json` in your project and the CLI's default URL; do not use the upstream registry as a fallback.

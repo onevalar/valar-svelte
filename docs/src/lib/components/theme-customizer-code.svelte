@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "$lib/i18n/index.js";
 	import CheckIcon from "@tabler/icons-svelte/icons/check";
 	import CopyIcon from "@tabler/icons-svelte/icons/copy";
 	import * as Tabs from "$lib/registry/ui/tabs/index.js";
@@ -57,7 +58,7 @@
 					onclick={() => {
 						copyToClipboard(getThemeCodeOKLCH(activeThemeOKLCH, 0.65));
 					}}>
-					<span class="sr-only">Copy</span>
+					<span class="sr-only">{t("docs.copy")}</span>
 					{#if hasCopied}
 						<CheckIcon />
 					{:else}
@@ -107,7 +108,7 @@
 					onclick={() => {
 						copyToClipboard(getThemeCodeHSLV4(activeTheme, 0.65));
 					}}>
-					<span class="sr-only" data-llm-ignore>Copy</span>
+					<span class="sr-only" data-llm-ignore>{t("docs.copy")}</span>
 					{#if hasCopied}
 						<CheckIcon />
 					{:else}
@@ -161,7 +162,7 @@
 					onclick={() => {
 						copyToClipboard(getThemeCode(activeTheme, 0.5));
 					}}>
-					<span class="sr-only">Copy</span>
+					<span class="sr-only">{t("docs.copy")}</span>
 					{#if hasCopied}
 						<CheckIcon />
 					{:else}

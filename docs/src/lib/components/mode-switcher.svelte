@@ -2,6 +2,7 @@
 	import { toggleMode } from "mode-watcher";
 	import Button from "$lib/registry/ui/button/button.svelte";
 	import { cn } from "$lib/utils.js";
+	import { t } from "$lib/i18n/index.js";
 
 	type Props = {
 		class?: string;
@@ -15,7 +16,7 @@
 	size="icon"
 	class={cn("group/toggle extend-touch-target size-8", className)}
 	onclick={toggleMode}
-	title="Toggle theme"
+	title={t("header.toggleTheme")}
 >
 	<svg
 		xmlns="http://www.w3.org/2000/svg"
@@ -36,5 +37,5 @@
 		<path d="M12 14.3l7.37 -7.37" />
 		<path d="M12 19.6l8.85 -8.85" />
 	</svg>
-	<span class="sr-only">Toggle theme</span>
+	<span class="sr-only">{t("header.toggleTheme")}</span>
 </Button>

@@ -1,9 +1,9 @@
 ---
 title: CLI
-description: Valar Svelte 本地命令行工具。
+description: The Valar Svelte command line tool, run locally.
 ---
 
-## 准备仓库
+## Set up the repository
 
 ```sh
 git clone https://github.com/onevalar/valar-svelte.git
@@ -13,19 +13,19 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-这些命令适用于仓库已同步后的环境。本地源码在当前 valar-svelte 目录中。CLI 包名为 `@valar/svelte-cli`，尚未发布到 npm。
+These commands assume the repository is already synced. The source lives in the local `valar-svelte` directory. The CLI package is named `@valar/svelte-cli` and has not been published to npm.
 
-## 在目标项目安装组件
+## Install components in a target project
 
-目标项目需已安装 Svelte 5 和 Tailwind CSS 4。先启动本地文档站与 registry（当前地址 `http://127.0.0.1:5186`），在 Valar 仓库根目录运行：
+The target project needs Svelte 5 and Tailwind CSS 4. Start the local docs site and registry first (currently at `http://127.0.0.1:5186`), then run the following from the root of the Valar repository:
 
 ```sh
 pnpm --filter @valar/svelte-cli start init --cwd /absolute/path/to/your-app
 pnpm --filter @valar/svelte-cli start add button --cwd /absolute/path/to/your-app
 ```
 
-初始化时可以使用 `--no-deps-install` 先写入配置。CLI 注入的 `@valar/svelte-cli/tailwind.css` 也由本仓库提供；在包正式发布前，先运行 `pnpm --filter @valar/svelte-cli pack` 生成本地 tarball，并在目标项目安装该文件，不能从 npm 下载同名包。
+Pass `--no-deps-install` during init to write the configuration without installing dependencies. The `@valar/svelte-cli/tailwind.css` stylesheet that the CLI injects also ships from this repository. Until the packages are published, build a local tarball with `pnpm --filter @valar/svelte-cli pack` and install that file in the target project. Do not download a package with the same name from npm.
 
 ## Registry
 
-默认只连接本地 Valar registry。其他地址可通过 `REGISTRY_URL` 环境变量设置，或在目标项目 components.json 的 registry 字段配置。请勿填写上游 registry，否则会安装上游版本。
+By default, the CLI connects only to the local Valar registry. To point it elsewhere, set the `REGISTRY_URL` environment variable or the `registry` field in the target project's `components.json`. Do not point it at an upstream registry: that installs the upstream versions instead.

@@ -44,70 +44,85 @@ const docSchema = s
 		toc: s.toc(),
 	})
 	.transform((data) => {
+		// Chinese documents live under `content/zh` with the same relative structure as the
+		// English originals, so a single collection can serve both locales.
+		const isChinese = data.path === "zh" || data.path.startsWith("zh/");
+		let path = isChinese ? data.path.slice(3) : data.path;
+		// Velite normalizes `zh/index.md` to `zh`, so the Chinese home doc needs its path back.
+		if (path === "") path = "index";
+
 		return {
 			...data,
-			slug: data.path.split("/").slice(1).join("/"),
-			slugFull: `/${data.path}`,
+			/** @type {"en" | "zh"} */
+			locale: isChinese ? "zh" : "en",
+			path,
+			slug: path.split("/").slice(1).join("/"),
+			slugFull: `/${path}`,
 		};
 	});
 
+/** @param {string} dir */
+function patterns(dir) {
+	return [`./${dir}/**/*.md`, `./zh/${dir}/**/*.md`];
+}
+
 const gettingStarted = defineCollection({
 	name: "gettingStarted",
-	pattern: "./*.md",
+	pattern: ["./*.md", "./zh/*.md"],
 	schema: docSchema,
 });
 
 const migration = defineCollection({
 	name: "migration",
-	pattern: "./migration/**/*.md",
+	pattern: patterns("migration"),
 	schema: docSchema,
 });
 
 const components = defineCollection({
 	name: "components",
-	pattern: "./components/**/*.md",
+	pattern: patterns("components"),
 	schema: docSchema,
 });
 
 const installation = defineCollection({
 	name: "installation",
-	pattern: "./installation/**/*.md",
+	pattern: patterns("installation"),
 	schema: docSchema,
 });
 
 const darkMode = defineCollection({
 	name: "darkMode",
-	pattern: "./dark-mode/**/*.md",
+	pattern: patterns("dark-mode"),
 	schema: docSchema,
 });
 
 const registry = defineCollection({
 	name: "registry",
-	pattern: "./registry/**/*.md",
+	pattern: patterns("registry"),
 	schema: docSchema,
 });
 
 const forms = defineCollection({
 	name: "forms",
-	pattern: "./forms/**/*.md",
+	pattern: patterns("forms"),
 	schema: docSchema,
 });
 
 const utils = defineCollection({
 	name: "utils",
-	pattern: "./utils/**/*.md",
+	pattern: patterns("utils"),
 	schema: docSchema,
 });
 
 const aiElements = defineCollection({
 	name: "aiElements",
-	pattern: "./ai-elements/**/*.md",
+	pattern: patterns("ai-elements"),
 	schema: docSchema,
 });
 
 const changelog = defineCollection({
 	name: "changelog",
-	pattern: "./changelog/**/*.md",
+	pattern: patterns("changelog"),
 	schema: docSchema,
 });
 
@@ -125,5 +140,7 @@ export default defineConfig({
 		aiElements,
 		changelog,
 	},
+	// `velite --clean` removes this output.assets directory, which is the whole `static` folder.
+	// Always run plain `velite` (as `pnpm build:content` does); never add `--clean` here.
 	output: { assets: "static" },
 });

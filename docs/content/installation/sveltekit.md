@@ -1,9 +1,9 @@
 ---
 title: SvelteKit
-description: 安装和使用 Valar Svelte 的本地源码。
+description: Install and use the local Valar Svelte source.
 ---
 
-## 准备仓库
+## Prepare the repository
 
 ```sh
 git clone https://github.com/onevalar/valar-svelte.git
@@ -13,11 +13,11 @@ pnpm install --frozen-lockfile
 pnpm dev
 ```
 
-这些命令适用于仓库已同步后的环境。本地源码在当前 valar-svelte 目录中。CLI 包名为 `@valar/svelte-cli`，尚未发布到 npm。
+These commands assume your checkout is already in sync. The local source lives in the current `valar-svelte` directory. The CLI package is called `@valar/svelte-cli` and has not been published to npm.
 
-## 在目标项目安装组件
+## Install components in your project
 
-目标项目需已安装 Svelte 5 和 Tailwind CSS 4。先启动本地文档站与 registry（当前地址 `http://127.0.0.1:5186`），在 Valar 仓库根目录运行：
+Your project needs Svelte 5 and Tailwind CSS 4. Start the local docs site and registry (currently at `http://127.0.0.1:5186`), then run the following from the root of the Valar repository:
 
 ```sh
 pnpm --filter @valar/svelte-cli start init --cwd /absolute/path/to/your-app
@@ -99,4 +99,4 @@ pnpm exec valar-svelte lint        # 默认检查 src，跳过已安装的组件
 
 ## Registry
 
-默认只连接本地 Valar registry。其他地址可通过 `REGISTRY_URL` 环境变量设置，或在目标项目 components.json 的 registry 字段配置。请勿填写上游 registry，否则会安装上游版本。
+By default the CLI only connects to the local Valar registry. To use a different address, set the `REGISTRY_URL` environment variable or the `registry` field in your project's `components.json`. Don't point it at the upstream registry, or you'll end up installing upstream versions.

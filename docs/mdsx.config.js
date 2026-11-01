@@ -75,8 +75,9 @@ const prettyCodeOptions = {
 
 export const mdsxConfig = defineConfig({
 	extensions: [".md"],
-	remarkPlugins: [remarkGfm, codeImport, remarkRemovePrettierIgnore],
+	remarkPlugins: [remarkGfm, remarkLocalizeLinks, codeImport, remarkRemovePrettierIgnore],
 	rehypePlugins: [
+		rehypeLocalizeLinks,
 		rehypeSlug,
 		rehypeComponentExample,
 		rehypePreData,
@@ -112,6 +113,57 @@ function remarkRemovePrettierIgnore() {
 			node.value = node.value
 				.replaceAll("<!-- prettier-ignore -->\n", "")
 				.replaceAll("// prettier-ignore\n", "");
+		});
+	};
+}
+
+/**
+ * Chinese documents keep the same root-relative links as the English originals. Prefix them
+ * with `/zh` at compile time so the Markdown stays identical in structure across locales.
+ *
+ * Runs on the Markdown AST so links survive paragraphs that mdsx later serializes to raw HTML.
+ *
+ * @returns {MdastTransformer} - Unified Transformer
+ */
+function remarkLocalizeLinks() {
+	return (tree, file) => {
+		const path = String(file?.path ?? "").replaceAll("\\", "/");
+		if (!path.includes("/content/zh/")) return;
+
+		visit(tree, "link", (node) => {
+			const href = node.url;
+			if (!href.startsWith("/") || href.startsWith("//") || href.startsWith("/zh")) return;
+			if (/^\/(llms\.txt|rss\.xml|api|registry|og|view|preview|schema|img|avatars|fonts)\b/.test(href))
+				return;
+			if (/\.[a-z0-9]+$/i.test(href)) return;
+
+			node.url = href === "/" ? "/zh" : `/zh${href}`;
+		});
+	};
+}
+
+/**
+ * Localizes literal `<a>` tags written inside Markdown, which the remark pass cannot see.
+ *
+ * @returns {HastTransformer} - Unified Transformer
+ */
+function rehypeLocalizeLinks() {
+	return (tree, file) => {
+		const path = String(file?.path ?? "").replaceAll("\\", "/");
+		if (!path.includes("/content/zh/")) return;
+
+		visit(tree, "element", (node) => {
+			if (node.tagName !== "a") return;
+
+			const href = node.properties?.href;
+			if (typeof href !== "string") return;
+			if (!href.startsWith("/") || href.startsWith("//") || href.startsWith("/zh")) return;
+			// Endpoints and static assets that only exist once for the whole site.
+			if (/^\/(llms\.txt|rss\.xml|api|registry|og|view|preview|schema|img|avatars|fonts)\b/.test(href))
+				return;
+			if (/\.[a-z0-9]+$/i.test(href)) return;
+
+			node.properties.href = href === "/" ? "/zh" : `/zh${href}`;
 		});
 	};
 }

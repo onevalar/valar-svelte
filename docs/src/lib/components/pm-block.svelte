@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { t } from "$lib/i18n/index.js";
 	import TerminalIcon from "@lucide/svelte/icons/terminal";
 	import CheckIcon from "@tabler/icons-svelte/icons/check";
 	import CopyIcon from "@tabler/icons-svelte/icons/copy";
@@ -86,7 +87,7 @@
 						variant="ghost"
 						class="absolute end-2 top-2 z-10 size-7 opacity-70 hover:opacity-100 focus-visible:opacity-100"
 					>
-						<span class="sr-only" data-llm-ignore>Copy</span>
+						<span class="sr-only" data-llm-ignore>{t("docs.copy")}</span>
 						{#if clipboard.copied}
 							<CheckIcon />
 						{:else}

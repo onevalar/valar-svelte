@@ -154,6 +154,7 @@
 </script>
 
 <script lang="ts">
+	import { t } from "$lib/i18n/index.js";
 	import IconCopy from "@tabler/icons-svelte/icons/copy";
 	import { setTheme } from "mode-watcher";
 	import * as Dialog from "$lib/registry/ui/dialog/index.js";
@@ -221,7 +222,7 @@
 						setTheme(theme.name);
 					}}
 				>
-					{theme.name === "neutral" ? "Default" : theme.name}
+					{theme.name === "neutral" ? t("common.default") : theme.name}
 				</Button>
 			{/each}
 		</div>
@@ -229,7 +230,7 @@
 
 	<!-- Theme selector for mobile -->
 	<div class="flex items-center gap-2 lg:hidden">
-		<Label for="theme-selector" class="sr-only">Theme</Label>
+		<Label for="theme-selector" class="sr-only">{t("create.theme")}</Label>
 		<Select.Root
 			type="single"
 			allowDeselect={false}
@@ -247,7 +248,7 @@
 				class="justify-start capitalize shadow-none *:data-[slot=select-value]:w-12 *:data-[slot=select-value]:capitalize"
 			>
 				<span class="font-medium">Theme:</span>
-				<span data-slot="select-value">{coercedActiveTheme ?? "Select a theme"}</span>
+				<span data-slot="select-value">{coercedActiveTheme ?? t("docs.selectTheme")}</span>
 			</Select.Trigger>
 			<Select.Content align="end">
 				<Select.Group>
@@ -265,7 +266,7 @@
 	<Drawer.Root>
 		<Drawer.Trigger class={cn("sm:hidden!", "ms-auto")}>
 			{#snippet child({ props })}
-				<Button size="sm" variant="secondary" {...props}>Copy Code</Button>
+				<Button size="sm" variant="secondary" {...props}>{t("docs.copyCode")}</Button>
 			{/snippet}
 		</Drawer.Trigger>
 		<Drawer.Content class="h-auto rounded-t-2xl">
@@ -293,7 +294,7 @@
 			{#snippet child({ props })}
 				<Button size="sm" class="ms-auto" variant="secondary" {...props}>
 					<IconCopy />
-					<span class="group-data-[size=icon-sm]/button:sr-only">Copy Code</span>
+					<span class="group-data-[size=icon-sm]/button:sr-only">{t("docs.copyCode")}</span>
 				</Button>
 			{/snippet}
 		</Dialog.Trigger>

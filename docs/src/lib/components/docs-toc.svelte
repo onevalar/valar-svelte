@@ -72,6 +72,7 @@
 	import Menu3Icon from "@tabler/icons-svelte/icons/menu-3";
 	import * as DropdownMenu from "$lib/registry/ui/dropdown-menu/index.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
+	import { t } from "$lib/i18n/index.js";
 	import { cn } from "$lib/utils.js";
 
 	let {
@@ -92,7 +93,7 @@
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
 					<Button {...props} variant="outline" size="sm" class={cn("h-8 md:h-7", className)}>
-						<Menu3Icon /> On This Page
+						<Menu3Icon /> {t("docs.onThisPage")}
 					</Button>
 				{/snippet}
 			</DropdownMenu.Trigger>
@@ -112,7 +113,7 @@
 		</DropdownMenu.Root>
 	{:else}
 		<div class={cn("flex flex-col gap-2 p-4 pt-0 text-sm", className)}>
-			<p class="sticky top-0 h-6 bg-background text-xs text-muted-foreground">On This Page</p>
+			<p class="sticky top-0 h-6 bg-background text-xs text-muted-foreground">{t("docs.onThisPage")}</p>
 			{#each flattenedToc as item (item.url)}
 				<a
 					href={item.url}

@@ -1,35 +1,38 @@
 <script lang="ts">
 	import { page } from "$app/state";
 	import ScrollArea from "$lib/registry/ui/scroll-area/scroll-area.svelte";
+	import { localizeHref, type Locale } from "$lib/i18n/config.js";
+	import { t } from "$lib/i18n/index.js";
 	import { cn } from "$lib/utils.js";
 	import type { HTMLAttributes } from "svelte/elements";
 
-	const examples = [
+	const locale = $derived((page.data.locale ?? "en") as Locale);
+	const examples = $derived([
 		{
-			name: "Dashboard",
-			href: "/examples/dashboard",
-			code: "https://github.com/onevalar/valar-svelte/tree/main/docs/src/routes/(app)/(layout)/examples/dashboard",
+			name: t("examples.dashboard"),
+			href: localizeHref("/examples/dashboard", locale),
+			code: "https://github.com/onevalar/valar-svelte/tree/main/docs/src/routes/[[lang]]/(app)/(layout)/examples/dashboard",
 			hidden: false,
 		},
 		{
-			name: "Tasks",
-			href: "/examples/tasks",
-			code: "https://github.com/onevalar/valar-svelte/tree/main/docs/src/routes/(app)/(layout)/examples/tasks",
+			name: t("examples.tasks"),
+			href: localizeHref("/examples/tasks", locale),
+			code: "https://github.com/onevalar/valar-svelte/tree/main/docs/src/routes/[[lang]]/(app)/(layout)/examples/tasks",
 			hidden: false,
 		},
 		{
-			name: "Playground",
-			href: "/examples/playground",
-			code: "https://github.com/onevalar/valar-svelte/tree/main/docs/src/routes/(app)/(layout)/examples/playground",
+			name: t("examples.playground"),
+			href: localizeHref("/examples/playground", locale),
+			code: "https://github.com/onevalar/valar-svelte/tree/main/docs/src/routes/[[lang]]/(app)/(layout)/examples/playground",
 			hidden: false,
 		},
 		{
-			name: "Authentication",
-			href: "/examples/authentication",
-			code: "https://github.com/onevalar/valar-svelte/tree/main/docs/src/routes/(app)/(layout)/examples/authentication",
+			name: t("examples.authentication"),
+			href: localizeHref("/examples/authentication", locale),
+			code: "https://github.com/onevalar/valar-svelte/tree/main/docs/src/routes/[[lang]]/(app)/(layout)/examples/authentication",
 			hidden: false,
 		},
-	];
+	]);
 
 	let { class: className, ...restProps }: HTMLAttributes<HTMLElement> = $props();
 </script>
@@ -38,8 +41,13 @@
 	<ScrollArea class="max-w-[96%] md:max-w-[600px] lg:max-w-none" orientation="both">
 		<div class="flex items-center">
 			{@render ExampleLink({
-				example: { name: "Examples", href: "/", code: "", hidden: false },
-				isActive: page.url.pathname === "/",
+				example: {
+					name: t("examples.title"),
+					href: localizeHref("/examples", locale),
+					code: "",
+					hidden: false,
+				},
+				isActive: page.url.pathname === localizeHref("/examples", locale),
 			})}
 			{#each examples as example (example.href)}
 				{@render ExampleLink({
