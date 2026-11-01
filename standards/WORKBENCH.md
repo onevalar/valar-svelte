@@ -36,12 +36,12 @@
 
 | 编号 | 任务                                 | 状态 | 说明                                                                                                                          |
 | ---- | ------------------------------------ | ---- | ----------------------------------------------------------------------------------------------------------------------------- |
-| A1   | 组件编辑器接入 Popover、Sheet        | 待办 | 与 Dialog 同类（遮罩、动效档位、出现时缩放／滑入距离），照 `dialog-tuning.ts` 做；Sheet 的滑入距离属于组件参数                |
-| A2   | 接入 Dropdown Menu、Tooltip          | 待办 | 弹层类收尾；Tooltip 的显示延迟属于组件参数                                                                                    |
-| A3   | 接入 Input、Select、Textarea         | 待办 | 高度、圆角档位应与 Button 同一套档位，避免组件之间割裂；当前值量取方式参照 Button                                             |
-| B1   | 给弹层与表单组件补说明卡 `meta.json` | 待办 | 可与 A 并行；目前 21 个组件有卡，缺卡清单见构建日志或 `catalog.json` 的 `missingCards`；做法见“第 9–12 步的做法”              |
-| B2   | 给弹层与表单组件补 `RULES.md`        | 待办 | 目前只有 Button、Field；做法见“第 8 步的做法”                                                                                 |
-| B3   | 其余组件补说明卡和 `RULES.md`        | 待办 | B1、B2 之后                                                                                                                   |
+| A1   | 组件编辑器接入 Popover、Sheet        | 完成 | 与 Dialog 同类（遮罩、动效档位、出现时缩放／滑入距离），照 `dialog-tuning.ts` 做；Sheet 的滑入距离属于组件参数                |
+| A2   | 接入 Dropdown Menu、Tooltip          | 完成 | 弹层类收尾；Tooltip 的显示延迟属于组件参数                                                                                    |
+| A3   | 接入 Input、Select、Textarea         | 完成 | 高度、圆角档位应与 Button 同一套档位，避免组件之间割裂；当前值量取方式参照 Button                                             |
+| B1   | 给弹层与表单组件补说明卡 `meta.json` | 完成 | 68 个组件全部有卡（新增 48 个，含 code-block 补卡），`REQUIRED_CARDS` 覆盖全部组件，`missingCards` 为空                       |
+| B2   | 给弹层与表单组件补 `RULES.md`        | 完成 | 2026-11-01：弹层 12 个、表单 18 个；新增 lint 规则见安装文档“AI 与设计规范”                                                   |
+| B3   | 其余组件补说明卡和 `RULES.md`        | 完成 | 2026-11-01：说明卡随 B1 完成；68 个组件全部有 `RULES.md`                                                                      |
 | C1   | 用户编写 `guides/` 三份方法          | 用户 | 页面组合、文案、动效；AI 不代写                                                                                               |
 | C2   | 线上版 MCP（HTTP）                   | 用户 | 等用户准备好服务器并授权部署后再做                                                                                            |
 | C3   | 决定 `/workbench` Studio 去留        | 用户 | 已知问题：Studio 的 `global.motionDuration`（默认 180ms）会覆盖全局动效 token；保留则需改为跟随 token，撤掉则删入口与回归测试 |
@@ -78,6 +78,16 @@
 - **写回白名单**：`style-overrides.ts` 的 `OVERRIDE_RULES` 按每个 `cn-*` 类规定允许的工具类；颜色、任意值、未登记的类一律拒绝。合并用 `packages/parity` 的 `mergeClasses`，补足 tailwind-merge 识别不了的 `zoom-in-*`、`duration-*`、`ease-*`。
 - **注意**：开发站的写回校验规则在 vite 配置中加载，改了 `style-overrides.ts` 后要重启开发服务（`amp orb service restart docs`），否则新组件写回会提示“参数无效”。
 - 测试：`docs/tests/workbench.test.ts`（Dialog 当前值读取、写回后的安装源码、白名单）、`docs/e2e/workbench.spec.ts`（Dialog 编辑器）、`packages/parity/test/inject-style-classes.test.ts`（`mergeClasses`）。
+- **A1：Popover、Sheet（2026-11-01）**：`popover-tuning.ts`＋`popover-tuner.svelte`、`sheet-tuning.ts`＋`sheet-tuner.svelte`，当前值同 Dialog 读 registry 源码（`parsePopoverSource`、`parseSheetSource`）。画布内联渲染真实组件，可切换弹出／滑出方向（仅预览，不是参数）并“重播进入与退出”。
+  - **Popover 参数**：内边距、内容间距、圆角档位（含“样式自带”）、动效档位、出现时缩放、出现时滑入距离（0–16px）。宽度（`w-72`）与 `sideOffset` 是调用处的属性，不作为样式参数。
+  - **Sheet 参数**：左右侧宽度档（≥640px）、页眉页脚内边距、内容间距、遮罩不透明度、动效档位（面板与遮罩同档）、滑入距离（16–96px 或整个面板，组件自己的动效参数）。Sheet 没有圆角。
+  - **注意**：上游把 Sheet 的滑入距离（`slide-in-from-right-10`）和遮罩时长（`duration-100`）写死在组件源码里，同类工具类写在样式层无法稳定胜出，所以这两项写回时带 Tailwind 的 `!`（如 `data-[side=right]:data-open:slide-in-from-right-16!`、`duration-slow!`），白名单也只接受带 `!` 的写法；调用方要覆盖它们同样需要 `!`。预览中滑入距离写在 `@layer base` 的 important 规则里，才能盖过已写回的值。`mergeClasses` 增加了按方向轴分组的 slide 分组，连续写回会替换而不是叠加。
+  - 测试：`workbench.test.ts`“Popover and Sheet write-back”（当前值读取 nova／vega／lyra／luma／sera、写回后安装源码与回读、连续写回替换、白名单拒绝）、`workbench.spec.ts` 的 Popover／Sheet 编辑器用例、`inject-style-classes.test.ts` 的 slide 分组。
+- **Input、Select、Textarea（A3，2026-11-01）**：`input-tuning.ts`、`select-tuning.ts`、`textarea-tuning.ts`＋同名 `-tuner.svelte`，共用的档位在 `control-tiers.ts`。高度只能选 **Button 的尺寸档位**（特小／小／默认／大）：编辑器在探针里渲染四个尺寸的真实 Button 量取高度，控件当前高度等于哪一档就显示哪一档（同高时优先同名尺寸），都不等则显示“样式自带”且不写回；写回时把所选档位换算成当时 Button 的像素高度（`h-*`），Button 以后再改高度时需重新选择。圆角使用 Button 的 `RADIUS_LEVELS`，量取方式与 Button 相同（`readRadiusLevel`），不在档位中的显示“样式自带”。Input：高度档位、圆角档位、横向内边距（`cn-input`）。Select：默认／小两个尺寸的高度档位（默认对应 Button 同名尺寸）、一个圆角档位同时作用于两个尺寸（替换 nova 等小尺寸自带的圆角）、文字侧内边距 `pl-*`（下拉箭头一侧保留上游）（`cn-select-trigger`）。Textarea：圆角档位、横向／纵向内边距（`cn-textarea`）；高度随内容增长，`min-h-16` 写在组件源码中、样式类覆盖不了，所以不提供高度参数。Input、Textarea 文档首个示例的 `max-w-xs` 改为只约束示例本身（`[&_[data-tuning-current]>*]`），否则会把编辑器外壳压窄。
+- 测试（A3）：`docs/tests/workbench.test.ts`（nova、vega 的高度档位读取与 Button 写回后的“样式自带”、三个组件写回后的安装源码、白名单拒绝）、`docs/e2e/workbench.spec.ts`（Input 编辑器；Select 与 Textarea 编辑器）。
+- **Dropdown Menu**（A2，2026-11-01）：`dropdown-menu-tuning.ts`＋`dropdown-menu-tuner.svelte`（内联渲染真实菜单，含勾选项、缩进项、子菜单）。参数：面板内边距、最小宽度、面板圆角档位、菜单项横向／纵向内边距、图文间距、菜单项圆角档位、动效档位、出现时缩放；面板参数同时作用于子菜单。当前值读 registry 源码（`parseDropdownMenuSource`）。联动：缩进项 `data-inset:pl-*`、勾选／单选项的 `pl-*` 与纵向内边距按样式原有差值随之移动；分隔线在“贴边”样式（`-mx` 等于面板内边距，如 nova）中跟随面板内边距，lyra 等不贴边的样式不动。
+- **Tooltip**（A2，2026-11-01）：`tooltip-tuning.ts`＋`tooltip-tuner.svelte`（一个固定展开的提示看样式，一个“悬停试试”看真实延迟，各用独立 Provider）。参数：横向／纵向内边距、圆角档位、显示延迟（ms）、动效档位（含“样式自带 150ms”，上游未设时长）、出现时缩放。**显示延迟**是 Provider 属性而非样式：写回为 `.cn-tooltip-provider { @apply delay-<ms>; }`，`tooltip-provider.svelte` 中的 `"cn-tooltip-provider"` 字符串在安装展开后变成 `"delay-<ms>"` 并作为 `delayDuration` 默认值；未写回时为空串、默认 0（与上游一致），调用方显式传值仍优先。文档页“使用版本”只预览样式，不改页面上提示的延迟。Studio 导出（`export.ts`）的替换锚点相应改为 `delayDuration = styleDelay`。
+- 测试补充：`workbench.test.ts` 的 Dropdown Menu／Tooltip 当前值读取（nova、vega、lyra、luma、maia、mira）、写回后的安装源码（含延迟默认值与调用方覆盖）、白名单拒绝；`workbench.spec.ts` 的两个编辑器用例（打开、调参生效、真实延迟、并排对比、保存版本、Esc 归还焦点）。
 
 第 6 步的做法（2026-11-01 完成）：
 
@@ -136,7 +146,9 @@ DialKit 原生缩略图遵循默认的本次会话语义；页面中的命名保
 实现入口：`button-tuning.ts`（参数与类名映射）、`button-tuner.svelte`（画布）、共用外壳 `component-tuner.svelte` 与按需加载的 `parameter-dials.svelte`、`style-overrides.ts`（写入校验与序列化），写入接口在 `docs/vite.config.ts` 的开发服务器中。
 单元测试 `docs/tests/workbench.test.ts` 覆盖写回后的安装源码、连续写回保留和非法输入拒绝；浏览器回归 `docs/e2e/workbench.spec.ts` 覆盖实际初值、跨变体影响范围、圆角档位跟随全局基数、只读 token、生产站无写回入口、版本对比恢复与存储失败。
 
-## 当前交付边界
+## Studio（`/workbench`）的交付边界
+
+以下各节描述 2026-10-31 之前的 Studio，Studio 已暂停扩展（见文首）；组件页编辑器的进度以“路线图与下一步”为准。
 
 入口：路径 `/workbench`（2026-10-31 起已不在主导航中）。
 
