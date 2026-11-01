@@ -1,12 +1,61 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "menubar",
+	"title": "Menubar 菜单栏",
 	"type": "registry:ui",
+	"description": "桌面应用风格的常驻菜单栏，集中提供文件、编辑、视图等命令。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"菜单栏",
+				"menubar",
+				"顶部菜单",
+				"应用菜单",
+				"文件菜单"
+			],
+			"whenToUse": [
+				"编辑器、工具类应用顶部常驻的一组命令菜单",
+				"命令带复选项、单选项、子菜单或快捷键提示"
+			],
+			"whenNotToUse": [
+				{
+					"case": "网站页面之间的导航链接",
+					"use": "navigation-menu"
+				},
+				{
+					"case": "单个按钮触发的少量操作",
+					"use": "dropdown-menu"
+				},
+				{
+					"case": "以移动端为主的界面",
+					"use": "dropdown-menu"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作：左右键在菜单间切换，上下键选择，Esc 关闭",
+				"Menubar.Shortcut 只显示快捷键，快捷键本身需另行实现"
+			],
+			"responsive": [
+				"菜单横向排列，窄屏空间有限，菜单数量要少，否则改用 dropdown-menu",
+				"菜单内容靠近边缘时自动调整位置"
+			],
+			"related": [
+				"dropdown-menu",
+				"context-menu",
+				"navigation-menu"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Menubar 设计规范\n\n- 只用于桌面应用式界面（编辑器、设计工具）顶部常驻的“文件／编辑／视图”菜单；网站导航用 Navigation Menu，单个按钮的操作菜单用 Dropdown Menu。\n- 菜单栏在窄屏下不会自动折叠；移动端改用 Dropdown Menu 或 Sheet 提供同样的操作。\n- 菜单项写法与 Dropdown Menu 相同：操作用 `onSelect`，危险项设 `variant=\"destructive\"`，可勾选项用 `CheckboxItem`、`RadioItem`。\n- `Menubar.Shortcut` 显示的快捷键必须真正实现，并与系统和浏览器的常用快捷键不冲突。\n",
+			"type": "registry:file",
+			"target": "menubar/RULES.md"
+		},
 		{
 			"content": "import CheckboxItem from \"./menubar-checkbox-item.svelte\";\nimport Content from \"./menubar-content.svelte\";\nimport GroupHeading from \"./menubar-group-heading.svelte\";\nimport Group from \"./menubar-group.svelte\";\nimport Item from \"./menubar-item.svelte\";\nimport Label from \"./menubar-label.svelte\";\nimport Menu from \"./menubar-menu.svelte\";\nimport Portal from \"./menubar-portal.svelte\";\nimport RadioGroup from \"./menubar-radio-group.svelte\";\nimport RadioItem from \"./menubar-radio-item.svelte\";\nimport Separator from \"./menubar-separator.svelte\";\nimport Shortcut from \"./menubar-shortcut.svelte\";\nimport SubContent from \"./menubar-sub-content.svelte\";\nimport SubTrigger from \"./menubar-sub-trigger.svelte\";\nimport Sub from \"./menubar-sub.svelte\";\nimport Trigger from \"./menubar-trigger.svelte\";\nimport Root from \"./menubar.svelte\";\n\nexport {\n\tRoot,\n\tCheckboxItem,\n\tContent,\n\tItem,\n\tRadioItem,\n\tSeparator,\n\tShortcut,\n\tSubContent,\n\tSubTrigger,\n\tTrigger,\n\tMenu,\n\tGroup,\n\tSub,\n\tRadioGroup,\n\tLabel,\n\tGroupHeading,\n\tPortal,\n\t//\n\tRoot as Menubar,\n\tCheckboxItem as MenubarCheckboxItem,\n\tContent as MenubarContent,\n\tItem as MenubarItem,\n\tRadioItem as MenubarRadioItem,\n\tSeparator as MenubarSeparator,\n\tShortcut as MenubarShortcut,\n\tSubContent as MenubarSubContent,\n\tSubTrigger as MenubarSubTrigger,\n\tTrigger as MenubarTrigger,\n\tMenu as MenubarMenu,\n\tGroup as MenubarGroup,\n\tSub as MenubarSub,\n\tRadioGroup as MenubarRadioGroup,\n\tLabel as MenubarLabel,\n\tGroupHeading as MenubarGroupHeading,\n\tPortal as MenubarPortal,\n};\n",
 			"type": "registry:file",

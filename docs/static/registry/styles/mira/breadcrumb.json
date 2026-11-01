@@ -1,10 +1,56 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "breadcrumb",
+	"title": "Breadcrumb 面包屑",
 	"type": "registry:ui",
+	"description": "按层级显示当前页面的路径。",
+	"meta": {
+		"valar": {
+			"keywords": [
+				"面包屑",
+				"breadcrumb",
+				"路径",
+				"层级导航"
+			],
+			"whenToUse": [
+				"层级较深的页面显示当前位置，并能返回上级"
+			],
+			"whenNotToUse": [
+				{
+					"case": "列表分页",
+					"use": "pagination"
+				},
+				{
+					"case": "站点主导航",
+					"use": "navigation-menu"
+				},
+				{
+					"case": "有先后顺序的流程步骤",
+					"use": "stepper"
+				}
+			],
+			"accessibility": [
+				"根元素带 aria-label，当前页 Breadcrumb.Page 设置 aria-current=page",
+				"分隔符和省略号对读屏隐藏"
+			],
+			"responsive": [
+				"层级过长时用 Breadcrumb.Ellipsis 折叠中间层，可配合 dropdown-menu 展开"
+			],
+			"related": [
+				"navigation-menu",
+				"dropdown-menu",
+				"sidebar"
+			]
+		}
+	},
 	"files": [
 		{
-			"content": "<script lang=\"ts\">\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { cn, type WithElementRef, type WithoutChildren } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\t...restProps\n\t}: WithoutChildren<WithElementRef<HTMLAttributes<HTMLSpanElement>>> = $props();\n</script>\n\n<span\n\tbind:this={ref}\n\tdata-slot=\"breadcrumb-ellipsis\"\n\trole=\"presentation\"\n\taria-hidden=\"true\"\n\tclass={cn(\"size-4 [&>svg]:size-3.5 flex items-center justify-center\", className)}\n\t{...restProps}\n>\n\t<IconPlaceholder\n\t\tlucide=\"MoreHorizontalIcon\"\n\t\ttabler=\"IconDots\"\n\t\thugeicons=\"MoreHorizontalCircle01Icon\"\n\t\tphosphor=\"DotsThreeIcon\"\n\t\tremixicon=\"RiMoreLine\"\n\t/>\n\t<span class=\"sr-only\">More</span>\n</span>\n",
+			"content": "# Breadcrumb 设计规范\n\n- 结构为 `Breadcrumb.Root` > `Breadcrumb.List` > `Breadcrumb.Item`，项之间放 `Breadcrumb.Separator`；不要手写斜杠或箭头。\n- 当前页用 `Breadcrumb.Page`（带 `aria-current=\"page\"`，不可点击），其余层级用带 `href` 的 `Breadcrumb.Link`。\n- 默认的导航名称是“面包屑导航”，省略号 `Breadcrumb.Ellipsis` 的读屏文字是“更多”：需要时给 `Breadcrumb.Root` 传更具体的 `aria-label`（如“当前位置”），省略号用 `label` 改。\n- 层级过多时中间部分折叠为 `Breadcrumb.Ellipsis`，放进 Dropdown Menu 的触发按钮中展开；窄屏下优先保留首项和最后两级。\n",
+			"type": "registry:file",
+			"target": "breadcrumb/RULES.md"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { cn, type WithElementRef, type WithoutChildren } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tlabel = \"更多\",\n\t\t...restProps\n\t}: WithoutChildren<WithElementRef<HTMLAttributes<HTMLSpanElement>>> & {\n\t\t/** Screen reader text. */\n\t\tlabel?: string;\n\t} = $props();\n</script>\n\n<span\n\tbind:this={ref}\n\tdata-slot=\"breadcrumb-ellipsis\"\n\trole=\"presentation\"\n\taria-hidden=\"true\"\n\tclass={cn(\"size-4 [&>svg]:size-3.5 flex items-center justify-center\", className)}\n\t{...restProps}\n>\n\t<IconPlaceholder\n\t\tlucide=\"MoreHorizontalIcon\"\n\t\ttabler=\"IconDots\"\n\t\thugeicons=\"MoreHorizontalCircle01Icon\"\n\t\tphosphor=\"DotsThreeIcon\"\n\t\tremixicon=\"RiMoreLine\"\n\t/>\n\t<span class=\"sr-only\">{label}</span>\n</span>\n",
 			"type": "registry:file",
 			"target": "breadcrumb/breadcrumb-ellipsis.svelte"
 		},
@@ -34,7 +80,7 @@
 			"target": "breadcrumb/breadcrumb-separator.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport type { WithElementRef } from \"$UTILS$.js\";\n\timport { cn } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLElement>> = $props();\n</script>\n\n<nav\n\tbind:this={ref}\n\tdata-slot=\"breadcrumb\"\n\taria-label=\"breadcrumb\"\n\tclass={cn(className)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</nav>\n",
+			"content": "<script lang=\"ts\">\n\timport type { WithElementRef } from \"$UTILS$.js\";\n\timport { cn } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLElement>> = $props();\n</script>\n\n<nav\n\tbind:this={ref}\n\tdata-slot=\"breadcrumb\"\n\taria-label=\"面包屑导航\"\n\tclass={cn(className)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</nav>\n",
 			"type": "registry:file",
 			"target": "breadcrumb/breadcrumb.svelte"
 		},

@@ -1,13 +1,60 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "toggle",
+	"title": "Toggle 切换按钮",
 	"type": "registry:ui",
+	"description": "按下／弹起两种状态的按钮，如工具栏中的加粗。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0",
 		"tailwind-variants@^3.3.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"切换按钮",
+				"toggle",
+				"开关按钮",
+				"按下状态",
+				"pressed"
+			],
+			"whenToUse": [
+				"工具栏中可开关的单个状态，如加粗、静音"
+			],
+			"whenNotToUse": [
+				{
+					"case": "设置项的开启／关闭",
+					"use": "switch"
+				},
+				{
+					"case": "一组单选或多选的状态",
+					"use": "toggle-group"
+				},
+				{
+					"case": "执行一次性操作",
+					"use": "button"
+				}
+			],
+			"accessibility": [
+				"Bits UI 用 aria-pressed 表达按下状态",
+				"只有图标时要加 aria-label"
+			],
+			"responsive": [
+				"窄屏下保证触摸目标足够大（size）"
+			],
+			"related": [
+				"toggle-group",
+				"switch",
+				"button"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Toggle 设计规范\n\n- 用于按下／弹起两种状态的工具按钮（如加粗、显示网格）；表单中的开关设置用 Switch，执行一次性操作用 Button。\n- 状态用 `bind:pressed`；样式和尺寸只用 `variant`（`default`、`outline`）和 `size`（`sm`、`default`、`lg`）。\n- 只有图标时必须有 `aria-label`，名称描述功能而不是状态（“加粗”，不要写“开启加粗”）。\n- 一组互相关联的切换按钮用 Toggle Group。\n",
+			"type": "registry:file",
+			"target": "toggle/RULES.md"
+		},
 		{
 			"content": "import Root from \"./toggle.svelte\";\nexport {\n\ttoggleVariants,\n\ttype ToggleSize,\n\ttype ToggleVariant,\n\ttype ToggleVariants,\n} from \"./toggle.svelte\";\n\nexport {\n\tRoot,\n\t//\n\tRoot as Toggle,\n};\n",
 			"type": "registry:file",

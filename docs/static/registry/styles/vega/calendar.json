@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "calendar",
+	"title": "Calendar 日历",
 	"type": "registry:ui",
+	"description": "在页面上展示月历并选择日期。",
 	"devDependencies": [
 		"@internationalized/date@^3.12.0",
 		"bits-ui@2.20.0"
@@ -9,7 +11,51 @@
 	"registryDependencies": [
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"日历",
+				"calendar",
+				"日期选择",
+				"date picker",
+				"选择日期"
+			],
+			"whenToUse": [
+				"直接在页面上选择一个或多个日期",
+				"与 popover 组合成日期选择器",
+				"captionLayout=dropdown 用下拉选择月份和年份"
+			],
+			"whenNotToUse": [
+				{
+					"case": "选择开始和结束日期",
+					"use": "range-calendar"
+				},
+				{
+					"case": "页面空间有限，点击后再弹出日历",
+					"use": "popover"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（方向键移动日期、回车选择）",
+				"locale 默认 zh-CN，其他语言要设置 locale，日期使用 @internationalized/date"
+			],
+			"responsive": [
+				"用 --cell-size 控制格子大小，可按断点设置不同值",
+				"显示多个月份时窄屏应减少月数"
+			],
+			"related": [
+				"range-calendar",
+				"popover",
+				"input"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Calendar 设计规范\n\n- 值是 `@internationalized/date` 的日期对象（如 `CalendarDate`、`today(getLocalTimeZone())`），不是 JavaScript `Date`；用 `bind:value` 绑定，并设 `type=\"single\"` 或 `type=\"multiple\"`。\n- 默认 `locale=\"zh-CN\"`，月份和星期显示中文；其他语言的界面传对应 `locale`（如 `en-US`）；需要周一开始时设 `weekStartsOn={1}`。\n- 可选范围用 `minValue`、`maxValue`，不可选的日期用 `isDateDisabled`；不要只在提交时才拒绝。\n- 生日等跨度很大的日期用 `captionLayout=\"dropdown\"` 提供年月下拉，不要让用户一个月一个月翻。\n- 日期选择框（Date Picker）用 Popover + Calendar，触发按钮显示已选日期，照日期选择器文档的组合写法；选择日期区间用 Range Calendar。\n- 不要用 `class` 改日期格子的尺寸和圆角，它们跟随组件样式。\n",
+			"type": "registry:file",
+			"target": "calendar/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { DateFormatter, getLocalTimeZone, type DateValue } from \"@internationalized/date\";\n\timport CalendarMonthSelect from \"./calendar-month-select.svelte\";\n\timport CalendarYearSelect from \"./calendar-year-select.svelte\";\n\timport type Calendar from \"./calendar.svelte\";\n\timport type { ComponentProps } from \"svelte\";\n\n\tlet {\n\t\tcaptionLayout,\n\t\tmonths,\n\t\tmonthFormat,\n\t\tyears,\n\t\tyearFormat,\n\t\tmonth,\n\t\tlocale,\n\t\tplaceholder = $bindable(),\n\t\tmonthIndex = 0,\n\t}: {\n\t\tcaptionLayout: ComponentProps<typeof Calendar>[\"captionLayout\"];\n\t\tmonths: ComponentProps<typeof CalendarMonthSelect>[\"months\"];\n\t\tmonthFormat: ComponentProps<typeof CalendarMonthSelect>[\"monthFormat\"];\n\t\tyears: ComponentProps<typeof CalendarYearSelect>[\"years\"];\n\t\tyearFormat: ComponentProps<typeof CalendarYearSelect>[\"yearFormat\"];\n\t\tmonth: DateValue;\n\t\tplaceholder: DateValue | undefined;\n\t\tlocale: string;\n\t\tmonthIndex: number;\n\t} = $props();\n\n\tfunction formatYear(date: DateValue) {\n\t\tconst dateObj = date.toDate(getLocalTimeZone());\n\t\tif (typeof yearFormat === \"function\") return yearFormat(dateObj.getFullYear());\n\t\treturn new DateFormatter(locale, { year: yearFormat }).format(dateObj);\n\t}\n\n\tfunction formatMonth(date: DateValue) {\n\t\tconst dateObj = date.toDate(getLocalTimeZone());\n\t\tif (typeof monthFormat === \"function\") return monthFormat(dateObj.getMonth() + 1);\n\t\treturn new DateFormatter(locale, { month: monthFormat }).format(dateObj);\n\t}\n</script>\n\n{#snippet MonthSelect()}\n\t<CalendarMonthSelect\n\t\t{months}\n\t\t{monthFormat}\n\t\tvalue={month.month}\n\t\tonchange={(e) => {\n\t\t\tif (!placeholder) return;\n\t\t\tconst v = Number.parseInt(e.currentTarget.value);\n\t\t\tconst newPlaceholder = placeholder.set({ month: v });\n\t\t\tplaceholder = newPlaceholder.subtract({ months: monthIndex });\n\t\t}}\n\t/>\n{/snippet}\n\n{#snippet YearSelect()}\n\t<CalendarYearSelect {years} {yearFormat} value={month.year} />\n{/snippet}\n\n{#if captionLayout === \"dropdown\"}\n\t{@render MonthSelect()}\n\t{@render YearSelect()}\n{:else if captionLayout === \"dropdown-months\"}\n\t{@render MonthSelect()}\n\t{#if placeholder}\n\t\t{formatYear(placeholder)}\n\t{/if}\n{:else if captionLayout === \"dropdown-years\"}\n\t{#if placeholder}\n\t\t{formatMonth(placeholder)}\n\t{/if}\n\t{@render YearSelect()}\n{:else}\n\t{formatMonth(month)} {formatYear(month)}\n{/if}\n",
 			"type": "registry:file",
@@ -96,7 +142,7 @@
 			"target": "calendar/calendar-year-select.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport { isEqualMonth, type DateValue } from \"@internationalized/date\";\n\timport { Calendar as CalendarPrimitive } from \"bits-ui\";\n\timport { cn, type WithoutChildrenOrChild } from \"$UTILS$.js\";\n\timport CalendarCaption from \"./calendar-caption.svelte\";\n\timport CalendarCell from \"./calendar-cell.svelte\";\n\timport CalendarDay from \"./calendar-day.svelte\";\n\timport CalendarGridBody from \"./calendar-grid-body.svelte\";\n\timport CalendarGridHead from \"./calendar-grid-head.svelte\";\n\timport CalendarGridRow from \"./calendar-grid-row.svelte\";\n\timport CalendarGrid from \"./calendar-grid.svelte\";\n\timport CalendarHeadCell from \"./calendar-head-cell.svelte\";\n\timport CalendarHeader from \"./calendar-header.svelte\";\n\timport CalendarMonth from \"./calendar-month.svelte\";\n\timport CalendarMonths from \"./calendar-months.svelte\";\n\timport CalendarNav from \"./calendar-nav.svelte\";\n\timport CalendarNextButton from \"./calendar-next-button.svelte\";\n\timport CalendarPrevButton from \"./calendar-prev-button.svelte\";\n\timport type { ButtonVariant } from \"../button/button.svelte\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tvalue = $bindable(),\n\t\tplaceholder = $bindable(),\n\t\tclass: className,\n\t\tweekdayFormat = \"short\",\n\t\tbuttonVariant = \"ghost\",\n\t\tcaptionLayout = \"label\",\n\t\tlocale = \"en-US\",\n\t\tmonths: monthsProp,\n\t\tyears,\n\t\tmonthFormat: monthFormatProp,\n\t\tyearFormat = \"numeric\",\n\t\tday,\n\t\tdisableDaysOutsideMonth = false,\n\t\t...restProps\n\t}: WithoutChildrenOrChild<CalendarPrimitive.RootProps> & {\n\t\tbuttonVariant?: ButtonVariant;\n\t\tcaptionLayout?: \"dropdown\" | \"dropdown-months\" | \"dropdown-years\" | \"label\";\n\t\tmonths?: CalendarPrimitive.MonthSelectProps[\"months\"];\n\t\tyears?: CalendarPrimitive.YearSelectProps[\"years\"];\n\t\tmonthFormat?: CalendarPrimitive.MonthSelectProps[\"monthFormat\"];\n\t\tyearFormat?: CalendarPrimitive.YearSelectProps[\"yearFormat\"];\n\t\tday?: Snippet<[{ day: DateValue; outsideMonth: boolean }]>;\n\t} = $props();\n\n\tconst monthFormat = $derived.by(() => {\n\t\tif (monthFormatProp) return monthFormatProp;\n\t\tif (captionLayout.startsWith(\"dropdown\")) return \"short\";\n\t\treturn \"long\";\n\t});\n</script>\n\n<!--\nDiscriminated Unions + Destructing (required for bindable) do not\nget along, so we shut typescript up by casting `value` to `never`.\n-->\n<CalendarPrimitive.Root\n\tbind:value={value as never}\n\tbind:ref\n\tbind:placeholder\n\t{weekdayFormat}\n\t{disableDaysOutsideMonth}\n\tclass={cn(\n\t\t\"p-3 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(8)] group/calendar bg-background in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent\",\n\t\tclassName\n\t)}\n\t{locale}\n\t{monthFormat}\n\t{yearFormat}\n\t{...restProps}\n>\n\t{#snippet children({ months, weekdays })}\n\t\t<CalendarMonths>\n\t\t\t<CalendarNav>\n\t\t\t\t<CalendarPrevButton variant={buttonVariant} />\n\t\t\t\t<CalendarNextButton variant={buttonVariant} />\n\t\t\t</CalendarNav>\n\t\t\t{#each months as month, monthIndex (month)}\n\t\t\t\t<CalendarMonth>\n\t\t\t\t\t<CalendarHeader>\n\t\t\t\t\t\t<CalendarCaption\n\t\t\t\t\t\t\t{captionLayout}\n\t\t\t\t\t\t\tmonths={monthsProp}\n\t\t\t\t\t\t\t{monthFormat}\n\t\t\t\t\t\t\t{years}\n\t\t\t\t\t\t\t{yearFormat}\n\t\t\t\t\t\t\tmonth={month.value}\n\t\t\t\t\t\t\tbind:placeholder\n\t\t\t\t\t\t\t{locale}\n\t\t\t\t\t\t\t{monthIndex}\n\t\t\t\t\t\t/>\n\t\t\t\t\t</CalendarHeader>\n\t\t\t\t\t<CalendarGrid>\n\t\t\t\t\t\t<CalendarGridHead>\n\t\t\t\t\t\t\t<CalendarGridRow class=\"select-none\">\n\t\t\t\t\t\t\t\t{#each weekdays as weekday, i (i)}\n\t\t\t\t\t\t\t\t\t<CalendarHeadCell>\n\t\t\t\t\t\t\t\t\t\t{weekday.slice(0, 2)}\n\t\t\t\t\t\t\t\t\t</CalendarHeadCell>\n\t\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t\t</CalendarGridRow>\n\t\t\t\t\t\t</CalendarGridHead>\n\t\t\t\t\t\t<CalendarGridBody>\n\t\t\t\t\t\t\t{#each month.weeks as weekDates (weekDates)}\n\t\t\t\t\t\t\t\t<CalendarGridRow class=\"mt-2 w-full\">\n\t\t\t\t\t\t\t\t\t{#each weekDates as date (date)}\n\t\t\t\t\t\t\t\t\t\t<CalendarCell {date} month={month.value}>\n\t\t\t\t\t\t\t\t\t\t\t{#if day}\n\t\t\t\t\t\t\t\t\t\t\t\t{@render day({\n\t\t\t\t\t\t\t\t\t\t\t\t\tday: date,\n\t\t\t\t\t\t\t\t\t\t\t\t\toutsideMonth: !isEqualMonth(date, month.value),\n\t\t\t\t\t\t\t\t\t\t\t\t})}\n\t\t\t\t\t\t\t\t\t\t\t{:else}\n\t\t\t\t\t\t\t\t\t\t\t\t<CalendarDay />\n\t\t\t\t\t\t\t\t\t\t\t{/if}\n\t\t\t\t\t\t\t\t\t\t</CalendarCell>\n\t\t\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t\t\t</CalendarGridRow>\n\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t</CalendarGridBody>\n\t\t\t\t\t</CalendarGrid>\n\t\t\t\t</CalendarMonth>\n\t\t\t{/each}\n\t\t</CalendarMonths>\n\t{/snippet}\n</CalendarPrimitive.Root>\n",
+			"content": "<script lang=\"ts\">\n\timport { isEqualMonth, type DateValue } from \"@internationalized/date\";\n\timport { Calendar as CalendarPrimitive } from \"bits-ui\";\n\timport { cn, type WithoutChildrenOrChild } from \"$UTILS$.js\";\n\timport CalendarCaption from \"./calendar-caption.svelte\";\n\timport CalendarCell from \"./calendar-cell.svelte\";\n\timport CalendarDay from \"./calendar-day.svelte\";\n\timport CalendarGridBody from \"./calendar-grid-body.svelte\";\n\timport CalendarGridHead from \"./calendar-grid-head.svelte\";\n\timport CalendarGridRow from \"./calendar-grid-row.svelte\";\n\timport CalendarGrid from \"./calendar-grid.svelte\";\n\timport CalendarHeadCell from \"./calendar-head-cell.svelte\";\n\timport CalendarHeader from \"./calendar-header.svelte\";\n\timport CalendarMonth from \"./calendar-month.svelte\";\n\timport CalendarMonths from \"./calendar-months.svelte\";\n\timport CalendarNav from \"./calendar-nav.svelte\";\n\timport CalendarNextButton from \"./calendar-next-button.svelte\";\n\timport CalendarPrevButton from \"./calendar-prev-button.svelte\";\n\timport type { ButtonVariant } from \"../button/button.svelte\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tvalue = $bindable(),\n\t\tplaceholder = $bindable(),\n\t\tclass: className,\n\t\tweekdayFormat = \"short\",\n\t\tbuttonVariant = \"ghost\",\n\t\tcaptionLayout = \"label\",\n\t\tlocale = \"zh-CN\",\n\t\tmonths: monthsProp,\n\t\tyears,\n\t\tmonthFormat: monthFormatProp,\n\t\tyearFormat = \"numeric\",\n\t\tday,\n\t\tdisableDaysOutsideMonth = false,\n\t\t...restProps\n\t}: WithoutChildrenOrChild<CalendarPrimitive.RootProps> & {\n\t\tbuttonVariant?: ButtonVariant;\n\t\tcaptionLayout?: \"dropdown\" | \"dropdown-months\" | \"dropdown-years\" | \"label\";\n\t\tmonths?: CalendarPrimitive.MonthSelectProps[\"months\"];\n\t\tyears?: CalendarPrimitive.YearSelectProps[\"years\"];\n\t\tmonthFormat?: CalendarPrimitive.MonthSelectProps[\"monthFormat\"];\n\t\tyearFormat?: CalendarPrimitive.YearSelectProps[\"yearFormat\"];\n\t\tday?: Snippet<[{ day: DateValue; outsideMonth: boolean }]>;\n\t} = $props();\n\n\tconst monthFormat = $derived.by(() => {\n\t\tif (monthFormatProp) return monthFormatProp;\n\t\tif (captionLayout.startsWith(\"dropdown\")) return \"short\";\n\t\treturn \"long\";\n\t});\n</script>\n\n<!--\nDiscriminated Unions + Destructing (required for bindable) do not\nget along, so we shut typescript up by casting `value` to `never`.\n-->\n<CalendarPrimitive.Root\n\tbind:value={value as never}\n\tbind:ref\n\tbind:placeholder\n\t{weekdayFormat}\n\t{disableDaysOutsideMonth}\n\tclass={cn(\n\t\t\"p-3 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(8)] group/calendar bg-background in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent\",\n\t\tclassName\n\t)}\n\t{locale}\n\t{monthFormat}\n\t{yearFormat}\n\t{...restProps}\n>\n\t{#snippet children({ months, weekdays })}\n\t\t<CalendarMonths>\n\t\t\t<CalendarNav>\n\t\t\t\t<CalendarPrevButton variant={buttonVariant} />\n\t\t\t\t<CalendarNextButton variant={buttonVariant} />\n\t\t\t</CalendarNav>\n\t\t\t{#each months as month, monthIndex (month)}\n\t\t\t\t<CalendarMonth>\n\t\t\t\t\t<CalendarHeader>\n\t\t\t\t\t\t<CalendarCaption\n\t\t\t\t\t\t\t{captionLayout}\n\t\t\t\t\t\t\tmonths={monthsProp}\n\t\t\t\t\t\t\t{monthFormat}\n\t\t\t\t\t\t\t{years}\n\t\t\t\t\t\t\t{yearFormat}\n\t\t\t\t\t\t\tmonth={month.value}\n\t\t\t\t\t\t\tbind:placeholder\n\t\t\t\t\t\t\t{locale}\n\t\t\t\t\t\t\t{monthIndex}\n\t\t\t\t\t\t/>\n\t\t\t\t\t</CalendarHeader>\n\t\t\t\t\t<CalendarGrid>\n\t\t\t\t\t\t<CalendarGridHead>\n\t\t\t\t\t\t\t<CalendarGridRow class=\"select-none\">\n\t\t\t\t\t\t\t\t{#each weekdays as weekday, i (i)}\n\t\t\t\t\t\t\t\t\t<CalendarHeadCell>\n\t\t\t\t\t\t\t\t\t\t{weekday.slice(0, 2)}\n\t\t\t\t\t\t\t\t\t</CalendarHeadCell>\n\t\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t\t</CalendarGridRow>\n\t\t\t\t\t\t</CalendarGridHead>\n\t\t\t\t\t\t<CalendarGridBody>\n\t\t\t\t\t\t\t{#each month.weeks as weekDates (weekDates)}\n\t\t\t\t\t\t\t\t<CalendarGridRow class=\"mt-2 w-full\">\n\t\t\t\t\t\t\t\t\t{#each weekDates as date (date)}\n\t\t\t\t\t\t\t\t\t\t<CalendarCell {date} month={month.value}>\n\t\t\t\t\t\t\t\t\t\t\t{#if day}\n\t\t\t\t\t\t\t\t\t\t\t\t{@render day({\n\t\t\t\t\t\t\t\t\t\t\t\t\tday: date,\n\t\t\t\t\t\t\t\t\t\t\t\t\toutsideMonth: !isEqualMonth(date, month.value),\n\t\t\t\t\t\t\t\t\t\t\t\t})}\n\t\t\t\t\t\t\t\t\t\t\t{:else}\n\t\t\t\t\t\t\t\t\t\t\t\t<CalendarDay />\n\t\t\t\t\t\t\t\t\t\t\t{/if}\n\t\t\t\t\t\t\t\t\t\t</CalendarCell>\n\t\t\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t\t\t</CalendarGridRow>\n\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t</CalendarGridBody>\n\t\t\t\t\t</CalendarGrid>\n\t\t\t\t</CalendarMonth>\n\t\t\t{/each}\n\t\t</CalendarMonths>\n\t{/snippet}\n</CalendarPrimitive.Root>\n",
 			"type": "registry:file",
 			"target": "calendar/calendar.svelte"
 		},

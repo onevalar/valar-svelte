@@ -1,12 +1,50 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "separator",
+	"title": "Separator 分隔线",
 	"type": "registry:ui",
+	"description": "在视觉或语义上分隔内容。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"分隔线",
+				"separator",
+				"divider",
+				"分割线"
+			],
+			"whenToUse": [
+				"分隔内容组或菜单项",
+				"orientation=vertical 纵向分隔"
+			],
+			"whenNotToUse": [
+				{
+					"case": "对话中带文字的分隔，如日期",
+					"use": "marker"
+				}
+			],
+			"accessibility": [
+				"纯装饰时设 decorative，读屏忽略"
+			],
+			"responsive": [
+				"纵向分隔线在父元素中自动拉伸高度"
+			],
+			"related": [
+				"marker",
+				"card",
+				"item"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Separator 设计规范\n\n- 方向用 `orientation`（默认横向）；竖向分隔需要父元素有高度或在 flex 行中使用。\n- 只起视觉分隔作用时设 `decorative`，读屏器会忽略它；分隔两段有意义的内容时保持默认。\n- 粗细和颜色跟随全局边框 token，不要用 `class` 改 `h-*`、`w-*` 或颜色；带文字的分隔在对话中用 `<Marker.Root variant=\"separator\">`。\n",
+			"type": "registry:file",
+			"target": "separator/RULES.md"
+		},
 		{
 			"content": "import Root from \"./separator.svelte\";\n\nexport {\n\tRoot,\n\t//\n\tRoot as Separator,\n};\n",
 			"type": "registry:file",

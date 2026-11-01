@@ -1,11 +1,61 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "drawer",
+	"title": "Drawer 抽屉",
 	"type": "registry:ui",
+	"description": "从屏幕边缘拉出、可拖动关闭的面板，适合移动端。",
 	"devDependencies": [
 		"vaul-svelte@next"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"抽屉",
+				"drawer",
+				"底部弹出",
+				"bottom sheet",
+				"拖动关闭"
+			],
+			"whenToUse": [
+				"移动端从底部弹出的选项、简短表单或详情，支持手势拖动关闭",
+				"需要在面板内再打开一层（Drawer.NestedRoot）"
+			],
+			"whenNotToUse": [
+				{
+					"case": "桌面端从侧边滑出的辅助面板",
+					"use": "sheet"
+				},
+				{
+					"case": "桌面端需要专注完成的对话框",
+					"use": "dialog"
+				},
+				{
+					"case": "确认危险操作",
+					"use": "alert-dialog"
+				}
+			],
+			"accessibility": [
+				"必须有标题（Drawer.Title）；Esc 关闭并把焦点还给触发按钮",
+				"除拖动外提供可见的关闭按钮（Drawer.Close），不能只靠手势"
+			],
+			"responsive": [
+				"常与 dialog 搭配：窄屏用 drawer、宽屏用 dialog",
+				"direction 可选 top、right、bottom、left；内容超出时在面板内部滚动",
+				"modal={false} 时可与页面交互，点击外部不会关闭"
+			],
+			"related": [
+				"dialog",
+				"sheet",
+				"alert-dialog"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Drawer 设计规范\n\n- 用于移动端从底部拉起、可拖拽关闭的面板；桌面端同样的内容通常改用 Dialog 或 Sheet，按屏幕宽度切换（见 Drawer 文档“Responsive”示例）。\n- 每个 `Drawer.Content` 都要有 `Drawer.Title`，不显示时加 `class=\"sr-only\"`（检查规则 `valar/overlay-title`）。\n- 方向用 `Drawer.Root` 的 `direction` 属性；拖拽把手只在 `bottom` 方向显示，其他方向要提供 `Drawer.Close` 按钮。\n- 需要停在几个固定高度时用 `snapPoints` 和 `bind:activeSnapPoint`，不要自己计算高度。\n- 背景缩放（`shouldScaleBackground`，默认开启）需要应用根元素带 `data-vaul-drawer-wrapper` 属性才生效；不需要时设为 `false`。\n- 内容区高度有上限，长内容放在 `Drawer.Header` 与 `Drawer.Footer` 之间的可滚动容器中（`overflow-y-auto`）。\n- 打开它的按钮通过 `Drawer.Trigger` 的 `child` snippet 渲染 Button（检查规则 `valar/trigger-child-snippet`）。\n",
+			"type": "registry:file",
+			"target": "drawer/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { Drawer as DrawerPrimitive } from \"vaul-svelte\";\n\n\tlet { ref = $bindable(null), ...restProps }: DrawerPrimitive.CloseProps = $props();\n</script>\n\n<DrawerPrimitive.Close bind:ref data-slot=\"drawer-close\" {...restProps} />\n",
 			"type": "registry:file",

@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "command",
+	"title": "Command 命令菜单",
 	"type": "registry:ui",
+	"description": "可输入筛选的命令列表，用于命令面板（⌘K）和快速搜索选择。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
@@ -10,9 +12,59 @@
 		"dialog",
 		"input-group"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"命令面板",
+				"command",
+				"command palette",
+				"cmdk",
+				"搜索",
+				"快速操作",
+				"combobox"
+			],
+			"whenToUse": [
+				"命令面板：搜索并执行操作或跳转页面（Command.Dialog）",
+				"在大量选项中按关键字筛选，可放进 popover 组成可搜索的选择框"
+			],
+			"whenNotToUse": [
+				{
+					"case": "选项不多、不需要搜索的选择",
+					"use": "select"
+				},
+				{
+					"case": "少量固定操作",
+					"use": "dropdown-menu"
+				},
+				{
+					"case": "页面主导航",
+					"use": "navigation-menu"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（上下键移动、回车选择）和输入过滤",
+				"Command.Dialog 自带视觉隐藏的标题和描述，默认中文，可传入 title、description 改",
+				"用 Command.Empty 告知没有匹配结果"
+			],
+			"responsive": [
+				"列表在固定高度内滚动",
+				"⌘K 快捷键在触屏设备上不可用，要提供可见的打开按钮"
+			],
+			"related": [
+				"dialog",
+				"popover",
+				"select"
+			]
+		}
+	},
 	"files": [
 		{
-			"content": "<script lang=\"ts\">\n\timport * as Dialog from \"$UI$/dialog/index.js\";\n\timport { cn, type WithoutChildrenOrChild } from \"$UTILS$.js\";\n\timport Command from \"./command.svelte\";\n\timport type { Command as CommandPrimitive, Dialog as DialogPrimitive } from \"bits-ui\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\topen = $bindable(false),\n\t\tref = $bindable(null),\n\t\tvalue = $bindable(\"\"),\n\t\ttitle = \"Command Palette\",\n\t\tdescription = \"Search for a command to run...\",\n\t\tshowCloseButton = false,\n\t\tportalProps,\n\t\tchildren,\n\t\tclass: className,\n\t\t...restProps\n\t}: WithoutChildrenOrChild<DialogPrimitive.RootProps> &\n\t\tWithoutChildrenOrChild<CommandPrimitive.RootProps> & {\n\t\t\tportalProps?: DialogPrimitive.PortalProps;\n\t\t\tchildren: Snippet;\n\t\t\ttitle?: string;\n\t\t\tdescription?: string;\n\t\t\tshowCloseButton?: boolean;\n\t\t\tclass?: string;\n\t\t} = $props();\n</script>\n\n<Dialog.Root bind:open {...restProps}>\n\t<Dialog.Header class=\"sr-only\">\n\t\t<Dialog.Title>{title}</Dialog.Title>\n\t\t<Dialog.Description>{description}</Dialog.Description>\n\t</Dialog.Header>\n\t<Dialog.Content\n\t\tclass={cn(\"rounded-none top-1/3 translate-y-0 overflow-hidden p-0\", className)}\n\t\t{showCloseButton}\n\t\t{portalProps}\n\t>\n\t\t<Command {...restProps} bind:value bind:ref {children} />\n\t</Dialog.Content>\n</Dialog.Root>\n",
+			"content": "# Command 设计规范\n\n- 用于可搜索的命令或选项列表：命令面板用 `Command.Dialog`，可搜索的下拉选择（Combobox）用 Popover + `Command.Root`。选项少、不需要搜索时用 Select。\n- 列表必须有 `Command.Empty`，写明没有结果时该怎么做（如“没有匹配的项目，换个关键词试试”）。\n- `Command.Input` 的 `placeholder` 说明能搜什么；它不是标签，需要时用 `aria-label` 命名。\n- 每个 `Command.Item` 设稳定的 `value`，搜索不到的同义词放在 `keywords`；选中后的动作写在 `onSelect`。跳转页面用 `Command.LinkItem`。\n- `Command.Dialog` 的 `title`、`description` 只给读屏器读，默认是“命令面板”“搜索要执行的命令”；能更具体时传自己的值。打开面板的快捷键要自己绑定，`Command.Shortcut` 只显示文字。\n- 用分组 `Command.Group`（设 `heading`）和 `Command.Separator` 组织长列表；异步加载时用 `Command.Loading`。\n",
+			"type": "registry:file",
+			"target": "command/RULES.md"
+		},
+		{
+			"content": "<script lang=\"ts\">\n\timport * as Dialog from \"$UI$/dialog/index.js\";\n\timport { cn, type WithoutChildrenOrChild } from \"$UTILS$.js\";\n\timport Command from \"./command.svelte\";\n\timport type { Command as CommandPrimitive, Dialog as DialogPrimitive } from \"bits-ui\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\topen = $bindable(false),\n\t\tref = $bindable(null),\n\t\tvalue = $bindable(\"\"),\n\t\ttitle = \"命令面板\",\n\t\tdescription = \"搜索要执行的命令\",\n\t\tshowCloseButton = false,\n\t\tportalProps,\n\t\tchildren,\n\t\tclass: className,\n\t\t...restProps\n\t}: WithoutChildrenOrChild<DialogPrimitive.RootProps> &\n\t\tWithoutChildrenOrChild<CommandPrimitive.RootProps> & {\n\t\t\tportalProps?: DialogPrimitive.PortalProps;\n\t\t\tchildren: Snippet;\n\t\t\ttitle?: string;\n\t\t\tdescription?: string;\n\t\t\tshowCloseButton?: boolean;\n\t\t\tclass?: string;\n\t\t} = $props();\n</script>\n\n<Dialog.Root bind:open {...restProps}>\n\t<Dialog.Header class=\"sr-only\">\n\t\t<Dialog.Title>{title}</Dialog.Title>\n\t\t<Dialog.Description>{description}</Dialog.Description>\n\t</Dialog.Header>\n\t<Dialog.Content\n\t\tclass={cn(\"rounded-none top-1/3 translate-y-0 overflow-hidden p-0\", className)}\n\t\t{showCloseButton}\n\t\t{portalProps}\n\t>\n\t\t<Command {...restProps} bind:value bind:ref {children} />\n\t</Dialog.Content>\n</Dialog.Root>\n",
 			"type": "registry:file",
 			"target": "command/command-dialog.svelte"
 		},

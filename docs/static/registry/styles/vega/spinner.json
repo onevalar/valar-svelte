@@ -1,15 +1,57 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "spinner",
+	"title": "Spinner 加载指示",
 	"type": "registry:ui",
+	"description": "表示正在加载的旋转图标。",
+	"meta": {
+		"valar": {
+			"keywords": [
+				"加载",
+				"spinner",
+				"loading",
+				"转圈",
+				"等待"
+			],
+			"whenToUse": [
+				"时长不定的加载状态，可放在按钮、徽标、输入组中"
+			],
+			"whenNotToUse": [
+				{
+					"case": "可度量的进度",
+					"use": "progress"
+				},
+				{
+					"case": "整块内容加载",
+					"use": "skeleton"
+				}
+			],
+			"accessibility": [
+				"默认 role=status、aria-label=加载中，能更具体时改 aria-label"
+			],
+			"responsive": [
+				"用 size-* 调整大小"
+			],
+			"related": [
+				"progress",
+				"skeleton",
+				"button"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Spinner 设计规范\n\n- 用于无法估计进度的短暂等待；可以计算进度时用 Progress，内容区域加载用 Skeleton。\n- Spinner 自带 `role=\"status\"`，默认读屏名称是“加载中”：能说明具体在做什么时传更具体的 `aria-label`（如“正在保存”）。\n- 放在按钮中表示提交中时，同时禁用按钮并保留按钮文字（“保存中…”），不要只换成 Spinner。\n- 尺寸用 `size-*` 档位类，颜色继承文字颜色，不要单独设色。\n",
+			"type": "registry:file",
+			"target": "spinner/RULES.md"
+		},
 		{
 			"content": "export { default as Spinner } from \"./spinner.svelte\";\n",
 			"type": "registry:file",
 			"target": "spinner/index.ts"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { cn } from \"$UTILS$.js\";\n\timport type { SVGAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tclass: className,\n\t\trole = \"status\",\n\t\t// we add name, color, and stroke for compatibility with different icon libraries props.\n\t\t// only forward them when set, otherwise `stroke: undefined` overrides the icon's `currentColor`\n\t\tname,\n\t\tcolor,\n\t\tstroke,\n\t\tclassName: legacyClassName,\n\t\t\"aria-label\": ariaLabel = \"Loading\",\n\t\t...restProps\n\t}: SVGAttributes<SVGSVGElement> = $props();\n</script>\n\n<IconPlaceholder\n\tlucide=\"Loader2Icon\"\n\ttabler=\"IconLoader\"\n\thugeicons=\"Loading03Icon\"\n\tphosphor=\"SpinnerIcon\"\n\tremixicon=\"RiLoaderLine\"\n\t{role}\n\t{...name != null ? { name } : {}}\n\t{...color != null ? { color } : {}}\n\t{...stroke != null ? { stroke } : {}}\n\t{...legacyClassName != null ? { className: legacyClassName } : {}}\n\taria-label={ariaLabel}\n\tclass={cn(\"size-4 animate-spin\", className)}\n\t{...restProps}\n/>\n",
+			"content": "<script lang=\"ts\">\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { cn } from \"$UTILS$.js\";\n\timport type { SVGAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tclass: className,\n\t\trole = \"status\",\n\t\t// we add name, color, and stroke for compatibility with different icon libraries props.\n\t\t// only forward them when set, otherwise `stroke: undefined` overrides the icon's `currentColor`\n\t\tname,\n\t\tcolor,\n\t\tstroke,\n\t\tclassName: legacyClassName,\n\t\t\"aria-label\": ariaLabel = \"加载中\",\n\t\t...restProps\n\t}: SVGAttributes<SVGSVGElement> = $props();\n</script>\n\n<IconPlaceholder\n\tlucide=\"Loader2Icon\"\n\ttabler=\"IconLoader\"\n\thugeicons=\"Loading03Icon\"\n\tphosphor=\"SpinnerIcon\"\n\tremixicon=\"RiLoaderLine\"\n\t{role}\n\t{...name != null ? { name } : {}}\n\t{...color != null ? { color } : {}}\n\t{...stroke != null ? { stroke } : {}}\n\t{...legacyClassName != null ? { className: legacyClassName } : {}}\n\taria-label={ariaLabel}\n\tclass={cn(\"size-4 animate-spin\", className)}\n\t{...restProps}\n/>\n",
 			"type": "registry:file",
 			"target": "spinner/spinner.svelte"
 		}

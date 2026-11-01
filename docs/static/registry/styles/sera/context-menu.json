@@ -1,12 +1,61 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "context-menu",
+	"title": "Context Menu 右键菜单",
 	"type": "registry:ui",
+	"description": "在区域内右键（触屏长按）打开的操作菜单。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"右键菜单",
+				"context menu",
+				"上下文菜单",
+				"快捷菜单",
+				"长按菜单"
+			],
+			"whenToUse": [
+				"为文件、列表项、画布元素等区域提供右键快捷操作",
+				"需要复选项、单选项或子菜单的上下文操作"
+			],
+			"whenNotToUse": [
+				{
+					"case": "页面上唯一的操作入口（右键难以被发现）",
+					"use": "dropdown-menu"
+				},
+				{
+					"case": "桌面应用顶部常驻的命令菜单",
+					"use": "menubar"
+				},
+				{
+					"case": "搜索并执行大量命令",
+					"use": "command"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（方向键、回车、Esc，左右键进出子菜单）",
+				"同样的操作应在可见的按钮或菜单中也能完成；Shortcut 只是快捷键提示，快捷键需另行实现"
+			],
+			"responsive": [
+				"触屏通过长按打开，用户不易发现，移动端要提供可见入口",
+				"菜单靠近边缘时自动调整位置保持在视口内"
+			],
+			"related": [
+				"dropdown-menu",
+				"menubar",
+				"command"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Context Menu 设计规范\n\n- 右键（触屏为长按）菜单不容易被发现：菜单里的每个操作都必须在界面其他地方也能完成，如工具栏按钮或 Dropdown Menu。\n- `ContextMenu.Trigger` 包住响应右键的区域；它渲染为普通容器，里面可以放任意内容。\n- 菜单项的写法与 Dropdown Menu 相同：操作用 `onSelect`，危险项设 `variant=\"destructive\"` 并放最后，可勾选项用 `CheckboxItem`、`RadioItem`，`ContextMenu.Shortcut` 只显示文字不绑定按键。\n- 不要用它替代浏览器在输入框、链接上的原生右键菜单。\n",
+			"type": "registry:file",
+			"target": "context-menu/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { ContextMenu as ContextMenuPrimitive } from \"bits-ui\";\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { cn, type WithoutChildrenOrChild } from \"$UTILS$.js\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tchecked = $bindable(false),\n\t\tindeterminate = $bindable(false),\n\t\tclass: className,\n\t\tinset,\n\t\tchildren: childrenProp,\n\t\tcloseOnSelect = false,\n\t\t...restProps\n\t}: WithoutChildrenOrChild<ContextMenuPrimitive.CheckboxItemProps> & {\n\t\tinset?: boolean;\n\t\tchildren?: Snippet;\n\t} = $props();\n</script>\n\n<ContextMenuPrimitive.CheckboxItem\n\tbind:ref\n\t{closeOnSelect}\n\tbind:checked\n\tbind:indeterminate\n\tdata-slot=\"context-menu-checkbox-item\"\n\tdata-inset={inset}\n\tclass={cn(\n\t\t\"focus:bg-accent focus:text-accent-foreground gap-2.5 rounded-none py-2 pr-8 pl-3 text-xs font-medium uppercase tracking-wider data-inset:pl-9.5 [&_svg:not([class*='size-'])]:size-3.5 relative flex cursor-default items-center outline-hidden select-none data-disabled:pointer-events-none data-disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0\",\n\t\tclassName\n\t)}\n\t{...restProps}\n>\n\t{#snippet children({ checked })}\n\t\t<span class=\"absolute right-2 pointer-events-none\">\n\t\t\t{#if checked}\n\t\t\t\t<IconPlaceholder\n\t\t\t\t\tlucide=\"CheckIcon\"\n\t\t\t\t\ttabler=\"IconCheck\"\n\t\t\t\t\thugeicons=\"Tick02Icon\"\n\t\t\t\t\tphosphor=\"CheckIcon\"\n\t\t\t\t\tremixicon=\"RiCheckLine\"\n\t\t\t\t/>\n\t\t\t{/if}\n\t\t</span>\n\t\t{@render childrenProp?.()}\n\t{/snippet}\n</ContextMenuPrimitive.CheckboxItem>\n",
 			"type": "registry:file",

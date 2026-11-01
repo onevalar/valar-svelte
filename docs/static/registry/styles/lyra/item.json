@@ -1,14 +1,63 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "item",
+	"title": "Item 内容项",
 	"type": "registry:ui",
+	"description": "显示媒体、标题、说明和操作的内容行。",
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],
 	"registryDependencies": [
 		"separator"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"内容项",
+				"item",
+				"列表项",
+				"list item",
+				"行"
+			],
+			"whenToUse": [
+				"显示带图标或头像、标题、说明和操作的内容行",
+				"用 Item.Group 组成列表"
+			],
+			"whenNotToUse": [
+				{
+					"case": "表单控件",
+					"use": "field"
+				},
+				{
+					"case": "大块的分组内容",
+					"use": "card"
+				},
+				{
+					"case": "行列结构化数据",
+					"use": "table"
+				}
+			],
+			"accessibility": [
+				"整行可点击时用 child 渲染为真实链接或按钮",
+				"只有图标的操作要加 aria-label"
+			],
+			"responsive": [
+				"size（default、sm、xs）适应紧凑空间",
+				"窄屏下操作区可换行"
+			],
+			"related": [
+				"card",
+				"field",
+				"avatar"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Item 设计规范\n\n- 用于列表中的一行内容（设置项、文件、成员）：媒体放 `Item.Media`（`variant` 为 `icon` 或 `image`），文字放 `Item.Content`（`Item.Title`、`Item.Description`），操作放 `Item.Actions`。\n- 样式只用 `variant`（`default`、`outline`、`muted`）和 `size`（`default`、`sm`、`xs`），不要用 `class` 改内边距和圆角。\n- 整行可点击时用 `child` snippet 把 `props` 传给 `<a href>` 渲染为链接，不要给 div 加 `onclick`；行内还有其他按钮时不要把整行做成链接，避免嵌套交互元素。\n- 多个 Item 放进 `Item.Group`：它渲染 `role=\"list\"`，组内每个 Item 要设 `role=\"listitem\"`；行之间需要分隔线时用 `Item.Separator`。\n",
+			"type": "registry:file",
+			"target": "item/RULES.md"
+		},
 		{
 			"content": "import Actions from \"./item-actions.svelte\";\nimport Content from \"./item-content.svelte\";\nimport Description from \"./item-description.svelte\";\nimport Footer from \"./item-footer.svelte\";\nimport Group from \"./item-group.svelte\";\nimport Header from \"./item-header.svelte\";\nimport Media from \"./item-media.svelte\";\nimport Separator from \"./item-separator.svelte\";\nimport Title from \"./item-title.svelte\";\nimport Root from \"./item.svelte\";\n\nexport {\n\tRoot,\n\tGroup,\n\tSeparator,\n\tHeader,\n\tFooter,\n\tContent,\n\tTitle,\n\tDescription,\n\tActions,\n\tMedia,\n\t//\n\tRoot as Item,\n\tGroup as ItemGroup,\n\tSeparator as ItemSeparator,\n\tHeader as ItemHeader,\n\tFooter as ItemFooter,\n\tContent as ItemContent,\n\tTitle as ItemTitle,\n\tDescription as ItemDescription,\n\tActions as ItemActions,\n\tMedia as ItemMedia,\n};\n",
 			"type": "registry:file",

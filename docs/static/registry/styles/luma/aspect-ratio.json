@@ -1,12 +1,54 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "aspect-ratio",
+	"title": "Aspect Ratio 宽高比",
 	"type": "registry:ui",
+	"description": "让内容按固定宽高比显示。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"宽高比",
+				"aspect ratio",
+				"比例",
+				"图片容器",
+				"16:9"
+			],
+			"whenToUse": [
+				"图片、视频、地图按固定比例占位，避免加载时布局跳动"
+			],
+			"whenNotToUse": [
+				{
+					"case": "用户头像",
+					"use": "avatar"
+				},
+				{
+					"case": "一组可滑动浏览的图片",
+					"use": "carousel"
+				}
+			],
+			"accessibility": [
+				"内部图片要写 alt 文字"
+			],
+			"responsive": [
+				"宽度随容器变化，高度按 ratio 计算"
+			],
+			"related": [
+				"avatar",
+				"carousel",
+				"card"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Aspect Ratio 设计规范\n\n- 用 `ratio` 属性（如 `ratio={16 / 9}`）固定媒体的宽高比，不要用 padding 技巧或固定高度。\n- 内部的图片、视频设 `size-full object-cover`（需要完整显示时用 `object-contain`），图片要有 `alt`（检查规则 `valar/image-alt`）。\n",
+			"type": "registry:file",
+			"target": "aspect-ratio/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { AspectRatio as AspectRatioPrimitive } from \"bits-ui\";\n\n\tlet { ref = $bindable(null), ...restProps }: AspectRatioPrimitive.RootProps = $props();\n</script>\n\n<AspectRatioPrimitive.Root bind:ref data-slot=\"aspect-ratio\" {...restProps} />\n",
 			"type": "registry:file",

@@ -1,8 +1,54 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "skeleton",
+	"title": "Skeleton 骨架屏",
 	"type": "registry:ui",
+	"description": "内容加载时按最终布局显示的占位。",
+	"meta": {
+		"valar": {
+			"keywords": [
+				"骨架屏",
+				"skeleton",
+				"加载占位",
+				"loading",
+				"占位"
+			],
+			"whenToUse": [
+				"内容加载时按最终布局显示占位，减少布局跳动"
+			],
+			"whenNotToUse": [
+				{
+					"case": "按钮或小区域的短暂加载",
+					"use": "spinner"
+				},
+				{
+					"case": "可度量的进度",
+					"use": "progress"
+				},
+				{
+					"case": "加载完但没有数据",
+					"use": "empty"
+				}
+			],
+			"accessibility": [
+				"占位是装饰，在容器上用 aria-busy 或提供读屏可读的加载文字"
+			],
+			"responsive": [
+				"占位尺寸与真实内容一致，各断点都要对应"
+			],
+			"related": [
+				"spinner",
+				"progress",
+				"empty"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Skeleton 设计规范\n\n- 用于加载时占位，形状和尺寸尽量与真实内容一致（文字行、头像、卡片），避免加载完成后布局跳动。\n- 加载很快（几百毫秒内）时不要显示骨架屏；加载失败时替换为错误提示，不要一直显示 Skeleton。\n- Skeleton 对读屏器没有意义：给加载中的容器设 `aria-busy=\"true\"`，需要时另外放一段 `sr-only` 的“正在加载”文字。\n- 颜色和动画跟随组件样式，不要另设背景色。\n",
+			"type": "registry:file",
+			"target": "skeleton/RULES.md"
+		},
 		{
 			"content": "import Root from \"./skeleton.svelte\";\n\nexport {\n\tRoot,\n\t//\n\tRoot as Skeleton,\n};\n",
 			"type": "registry:file",

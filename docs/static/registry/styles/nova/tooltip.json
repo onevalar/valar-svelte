@@ -43,6 +43,11 @@
 	},
 	"files": [
 		{
+			"content": "# Tooltip 设计规范\n\n- 根布局放一次 `Tooltip.Provider`，包住所有会出现提示的内容；没有 Provider 时 `Tooltip.Root` 会报错。Sidebar 的 `Sidebar.Provider` 已自带一个。\n- 显示延迟由 `Tooltip.Provider` 的 `delayDuration` 统一决定（属于组件参数），不要在单个 Tooltip 上另设不同的延迟。\n- 提示只放简短的纯文字说明；不要放按钮、链接、输入框等可操作内容，它们无法聚焦和点击，改用 Popover（检查规则 `valar/tooltip-no-interactive`）。\n- 提示不能代替名称：只有图标的按钮仍然要写 `aria-label`（见 Button 规范），Tooltip 只是给鼠标用户的补充。\n- 触屏设备没有悬停，关键信息不要只放在提示里。\n- 触发元素必须可聚焦：给 `Tooltip.Trigger` 设 `class={buttonVariants({ ... })}`，或用 `child` snippet 渲染 Button（检查规则 `valar/trigger-child-snippet`）；不要给纯文字或禁用的按钮加提示，禁用按钮收不到悬停和焦点。\n- 方向用 `side` 属性（默认 `top`），碰撞时会自动翻转；不要用 `class` 改定位或动效。\n",
+			"type": "registry:file",
+			"target": "tooltip/RULES.md"
+		},
+		{
 			"content": "import Content from \"./tooltip-content.svelte\";\nimport Portal from \"./tooltip-portal.svelte\";\nimport Provider from \"./tooltip-provider.svelte\";\nimport Trigger from \"./tooltip-trigger.svelte\";\nimport Root from \"./tooltip.svelte\";\n\nexport {\n\tRoot,\n\tTrigger,\n\tContent,\n\tProvider,\n\tPortal,\n\t//\n\tRoot as Tooltip,\n\tContent as TooltipContent,\n\tTrigger as TooltipTrigger,\n\tProvider as TooltipProvider,\n\tPortal as TooltipPortal,\n};\n",
 			"type": "registry:file",
 			"target": "tooltip/index.ts"
@@ -58,7 +63,7 @@
 			"target": "tooltip/tooltip-portal.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport { Tooltip as TooltipPrimitive } from \"bits-ui\";\n\n\tlet { delayDuration = 0, ...restProps }: TooltipPrimitive.ProviderProps = $props();\n</script>\n\n<TooltipPrimitive.Provider {delayDuration} {...restProps} />\n",
+			"content": "<script lang=\"ts\">\n\timport { Tooltip as TooltipPrimitive } from \"bits-ui\";\n\n\t// Valar: the string below is a style class. A style may give it `delay-<ms>` to set the\n\t// default show delay; installing inlines it. Empty means 0, as upstream.\n\tconst styleDelay = Number(/\\bdelay-(\\d+)\\b/.exec(\"\")?.[1] ?? 0);\n\n\tlet { delayDuration = styleDelay, ...restProps }: TooltipPrimitive.ProviderProps = $props();\n</script>\n\n<TooltipPrimitive.Provider {delayDuration} {...restProps} />\n",
 			"type": "registry:file",
 			"target": "tooltip/tooltip-provider.svelte"
 		},

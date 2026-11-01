@@ -1,11 +1,54 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "resizable",
+	"title": "Resizable 可调分栏",
 	"type": "registry:ui",
+	"description": "可拖动调整大小的面板分栏，基于 PaneForge。",
 	"devDependencies": [
 		"paneforge@^1.0.2"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"可调分栏",
+				"resizable",
+				"分栏",
+				"split pane",
+				"拖动调整"
+			],
+			"whenToUse": [
+				"用户可拖动调整大小的分栏，如编辑器、三栏邮件"
+			],
+			"whenNotToUse": [
+				{
+					"case": "应用的侧边导航",
+					"use": "sidebar"
+				},
+				{
+					"case": "固定比例的内容",
+					"use": "aspect-ratio"
+				}
+			],
+			"accessibility": [
+				"分隔把手可键盘聚焦并用方向键调整",
+				"withHandle 显示可见把手，便于发现"
+			],
+			"responsive": [
+				"窄屏不适合多栏拖动，改为单栏或 direction=vertical"
+			],
+			"related": [
+				"sidebar",
+				"scroll-area",
+				"separator"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Resizable 设计规范\n\n- 结构为 `Resizable.PaneGroup`（`direction` 设 `horizontal` 或 `vertical`）> `Resizable.Pane` 和 `Resizable.Handle`；不要自己写拖拽调整宽度。\n- 每个 Pane 设 `defaultSize`，并用 `minSize` 保证内容不会被拖到不可用；可以收起的面板设 `collapsible`。\n- 需要让拖动结果在刷新后保留时，给 PaneGroup 设唯一的 `autoSaveId`。\n- 分隔条可以用键盘方向键调整，需要明显的拖拽提示时设 `withHandle`；窄屏下考虑改为上下堆叠或用 Tabs 切换。\n",
+			"type": "registry:file",
+			"target": "resizable/RULES.md"
+		},
 		{
 			"content": "import { Pane } from \"paneforge\";\nimport Handle from \"./resizable-handle.svelte\";\nimport PaneGroup from \"./resizable-pane-group.svelte\";\n\nexport {\n\tPaneGroup,\n\tPane,\n\tHandle,\n\t//\n\tPaneGroup as ResizablePaneGroup,\n\tPane as ResizablePane,\n\tHandle as ResizableHandle,\n};\n",
 			"type": "registry:file",

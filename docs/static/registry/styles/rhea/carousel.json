@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "carousel",
+	"title": "Carousel 轮播",
 	"type": "registry:ui",
+	"description": "可滑动浏览一组内容的轮播，基于 Embla。",
 	"devDependencies": [
 		"embla-carousel-svelte@^8.6.0",
 		"bits-ui@2.20.0",
@@ -10,29 +12,75 @@
 	"registryDependencies": [
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"轮播",
+				"carousel",
+				"幻灯片",
+				"slider",
+				"滑动浏览"
+			],
+			"whenToUse": [
+				"横向或纵向滑动浏览一组同类内容，如图片、卡片"
+			],
+			"whenNotToUse": [
+				{
+					"case": "只需在区域内滚动",
+					"use": "scroll-area"
+				},
+				{
+					"case": "并列视图切换",
+					"use": "tabs"
+				},
+				{
+					"case": "每项都必须被看到的重要内容",
+					"use": "card"
+				}
+			],
+			"accessibility": [
+				"根元素 role=region、aria-roledescription=carousel，每项为 slide",
+				"上一项／下一项按钮支持方向键；不要无暂停地自动播放"
+			],
+			"responsive": [
+				"用 basis-* 控制每屏显示几项，可按断点设置",
+				"支持触摸滑动"
+			],
+			"related": [
+				"scroll-area",
+				"card",
+				"aspect-ratio"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Carousel 设计规范\n\n- `Carousel.Root` 渲染 `role=\"region\"`，必须用 `aria-label` 说明轮播的内容；每个 `Carousel.Item` 已标为一张幻灯片。\n- 用 `Carousel.Previous`、`Carousel.Next` 提供翻页按钮，它们的读屏文字默认是“上一张”“下一张”，其他语言用 `label` 改。\n- 行为用 `opts`（Embla 选项，如 `loop`、`align`）和 `plugins` 配置；需要读取当前页或跳转时用 `setApi` 拿到 API，不要自己监听滚动。\n- 自动播放会打断阅读：使用自动播放插件时必须提供暂停按钮，并在悬停和聚焦时暂停。\n- 重要内容不要只放在后面几张幻灯片里，用户很少翻到最后。\n",
+			"type": "registry:file",
+			"target": "carousel/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport emblaCarouselSvelte from \"embla-carousel-svelte\";\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport { getEmblaContext } from \"./context.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();\n\n\tconst emblaCtx = getEmblaContext(\"<Carousel.Content/>\");\n</script>\n\n<div\n\tdata-slot=\"carousel-content\"\n\tclass=\"overflow-hidden\"\n\tuse:emblaCarouselSvelte={{\n\t\toptions: {\n\t\t\tcontainer: \"[data-embla-container]\",\n\t\t\tslides: \"[data-embla-slide]\",\n\t\t\t...emblaCtx.options,\n\t\t\taxis: emblaCtx.orientation === \"horizontal\" ? \"x\" : \"y\",\n\t\t},\n\t\tplugins: emblaCtx.plugins,\n\t}}\n\tonemblaInit={emblaCtx.onInit}\n>\n\t<div\n\t\tbind:this={ref}\n\t\tclass={cn(\n\t\t\t\"flex\",\n\t\t\temblaCtx.orientation === \"horizontal\" ? \"-ms-4\" : \"-mt-4 flex-col\",\n\t\t\tclassName\n\t\t)}\n\t\tdata-embla-container=\"\"\n\t\t{...restProps}\n\t>\n\t\t{@render children?.()}\n\t</div>\n</div>\n",
 			"type": "registry:file",
 			"target": "carousel/carousel-content.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport { getEmblaContext } from \"./context.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();\n\n\tconst emblaCtx = getEmblaContext(\"<Carousel.Item/>\");\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"carousel-item\"\n\trole=\"group\"\n\taria-roledescription=\"slide\"\n\tclass={cn(\n\t\t\"min-w-0 shrink-0 grow-0 basis-full\",\n\t\temblaCtx.orientation === \"horizontal\" ? \"ps-4\" : \"pt-4\",\n\t\tclassName\n\t)}\n\tdata-embla-slide=\"\"\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",
+			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport { getEmblaContext } from \"./context.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();\n\n\tconst emblaCtx = getEmblaContext(\"<Carousel.Item/>\");\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"carousel-item\"\n\trole=\"group\"\n\taria-roledescription=\"幻灯片\"\n\tclass={cn(\n\t\t\"min-w-0 shrink-0 grow-0 basis-full\",\n\t\temblaCtx.orientation === \"horizontal\" ? \"ps-4\" : \"pt-4\",\n\t\tclassName\n\t)}\n\tdata-embla-slide=\"\"\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",
 			"type": "registry:file",
 			"target": "carousel/carousel-item.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { Button, type Props } from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\timport { getEmblaContext } from \"./context.js\";\n\timport type { WithoutChildren } from \"bits-ui\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tvariant = \"outline\",\n\t\tsize = \"icon-sm\",\n\t\t...restProps\n\t}: WithoutChildren<Props> = $props();\n\n\tconst emblaCtx = getEmblaContext(\"<Carousel.Next/>\");\n</script>\n\n<Button\n\tdata-slot=\"carousel-next\"\n\t{variant}\n\t{size}\n\taria-disabled={!emblaCtx.canScrollNext}\n\tdisabled={!emblaCtx.canScrollNext}\n\tclass={cn(\n\t\t\"rounded-2xl absolute touch-manipulation\",\n\t\temblaCtx.orientation === \"horizontal\"\n\t\t\t? \"inset-y-0 -end-12 my-auto\"\n\t\t\t: \"start-1/2 -bottom-12 -translate-x-1/2 rotate-90\",\n\t\tclassName\n\t)}\n\tonclick={emblaCtx.scrollNext}\n\tonkeydown={emblaCtx.handleKeyDown}\n\tbind:ref\n\t{...restProps}\n>\n\t<IconPlaceholder\n\t\tlucide=\"ChevronRightIcon\"\n\t\ttabler=\"IconChevronRight\"\n\t\thugeicons=\"ArrowRight01Icon\"\n\t\tphosphor=\"CaretRightIcon\"\n\t\tremixicon=\"RiArrowRightSLine\"\n\t\tclass=\"cn-rtl-flip\"\n\t/>\n\t<span class=\"sr-only\">Next slide</span>\n</Button>\n",
+			"content": "<script lang=\"ts\">\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { Button, type Props } from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\timport { getEmblaContext } from \"./context.js\";\n\timport type { WithoutChildren } from \"bits-ui\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tvariant = \"outline\",\n\t\tsize = \"icon-sm\",\n\t\tlabel = \"下一张\",\n\t\t...restProps\n\t}: WithoutChildren<Props> & {\n\t\t/** Screen reader text. */\n\t\tlabel?: string;\n\t} = $props();\n\n\tconst emblaCtx = getEmblaContext(\"<Carousel.Next/>\");\n</script>\n\n<Button\n\tdata-slot=\"carousel-next\"\n\t{variant}\n\t{size}\n\taria-disabled={!emblaCtx.canScrollNext}\n\tdisabled={!emblaCtx.canScrollNext}\n\tclass={cn(\n\t\t\"rounded-2xl absolute touch-manipulation\",\n\t\temblaCtx.orientation === \"horizontal\"\n\t\t\t? \"inset-y-0 -end-12 my-auto\"\n\t\t\t: \"start-1/2 -bottom-12 -translate-x-1/2 rotate-90\",\n\t\tclassName\n\t)}\n\tonclick={emblaCtx.scrollNext}\n\tonkeydown={emblaCtx.handleKeyDown}\n\tbind:ref\n\t{...restProps}\n>\n\t<IconPlaceholder\n\t\tlucide=\"ChevronRightIcon\"\n\t\ttabler=\"IconChevronRight\"\n\t\thugeicons=\"ArrowRight01Icon\"\n\t\tphosphor=\"CaretRightIcon\"\n\t\tremixicon=\"RiArrowRightSLine\"\n\t\tclass=\"cn-rtl-flip\"\n\t/>\n\t<span class=\"sr-only\">{label}</span>\n</Button>\n",
 			"type": "registry:file",
 			"target": "carousel/carousel-next.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { Button, type Props } from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\timport { getEmblaContext } from \"./context.js\";\n\timport type { WithoutChildren } from \"bits-ui\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tvariant = \"outline\",\n\t\tsize = \"icon-sm\",\n\t\t...restProps\n\t}: WithoutChildren<Props> = $props();\n\n\tconst emblaCtx = getEmblaContext(\"<Carousel.Previous/>\");\n</script>\n\n<Button\n\tdata-slot=\"carousel-previous\"\n\t{variant}\n\t{size}\n\taria-disabled={!emblaCtx.canScrollPrev}\n\tdisabled={!emblaCtx.canScrollPrev}\n\tclass={cn(\n\t\t\"rounded-2xl absolute touch-manipulation\",\n\t\temblaCtx.orientation === \"horizontal\"\n\t\t\t? \"inset-y-0 -start-12 my-auto\"\n\t\t\t: \"start-1/2 -top-12 -translate-x-1/2 rotate-90\",\n\t\tclassName\n\t)}\n\tonclick={emblaCtx.scrollPrev}\n\tonkeydown={emblaCtx.handleKeyDown}\n\t{...restProps}\n\tbind:ref\n>\n\t<IconPlaceholder\n\t\tlucide=\"ChevronLeftIcon\"\n\t\ttabler=\"IconChevronLeft\"\n\t\thugeicons=\"ArrowLeft01Icon\"\n\t\tphosphor=\"CaretLeftIcon\"\n\t\tremixicon=\"RiArrowLeftSLine\"\n\t\tclass=\"cn-rtl-flip\"\n\t/>\n\t<span class=\"sr-only\">Previous slide</span>\n</Button>\n",
+			"content": "<script lang=\"ts\">\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { Button, type Props } from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\timport { getEmblaContext } from \"./context.js\";\n\timport type { WithoutChildren } from \"bits-ui\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tvariant = \"outline\",\n\t\tsize = \"icon-sm\",\n\t\tlabel = \"上一张\",\n\t\t...restProps\n\t}: WithoutChildren<Props> & {\n\t\t/** Screen reader text. */\n\t\tlabel?: string;\n\t} = $props();\n\n\tconst emblaCtx = getEmblaContext(\"<Carousel.Previous/>\");\n</script>\n\n<Button\n\tdata-slot=\"carousel-previous\"\n\t{variant}\n\t{size}\n\taria-disabled={!emblaCtx.canScrollPrev}\n\tdisabled={!emblaCtx.canScrollPrev}\n\tclass={cn(\n\t\t\"rounded-2xl absolute touch-manipulation\",\n\t\temblaCtx.orientation === \"horizontal\"\n\t\t\t? \"inset-y-0 -start-12 my-auto\"\n\t\t\t: \"start-1/2 -top-12 -translate-x-1/2 rotate-90\",\n\t\tclassName\n\t)}\n\tonclick={emblaCtx.scrollPrev}\n\tonkeydown={emblaCtx.handleKeyDown}\n\t{...restProps}\n\tbind:ref\n>\n\t<IconPlaceholder\n\t\tlucide=\"ChevronLeftIcon\"\n\t\ttabler=\"IconChevronLeft\"\n\t\thugeicons=\"ArrowLeft01Icon\"\n\t\tphosphor=\"CaretLeftIcon\"\n\t\tremixicon=\"RiArrowLeftSLine\"\n\t\tclass=\"cn-rtl-flip\"\n\t/>\n\t<span class=\"sr-only\">{label}</span>\n</Button>\n",
 			"type": "registry:file",
 			"target": "carousel/carousel-previous.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport {\n\t\ttype CarouselAPI,\n\t\ttype CarouselProps,\n\t\ttype EmblaContext,\n\t\tsetEmblaContext,\n\t} from \"./context.js\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\topts = {},\n\t\tplugins = [],\n\t\tsetApi = () => {},\n\t\torientation = \"horizontal\",\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<CarouselProps> = $props();\n\n\t// svelte-ignore state_referenced_locally\n\tlet carouselState = $state<EmblaContext>({\n\t\tapi: undefined,\n\t\tscrollPrev,\n\t\tscrollNext,\n\t\torientation,\n\t\tcanScrollNext: false,\n\t\tcanScrollPrev: false,\n\t\thandleKeyDown,\n\t\toptions: opts,\n\t\tplugins,\n\t\tonInit,\n\t\tscrollSnaps: [],\n\t\tselectedIndex: 0,\n\t\tscrollTo,\n\t});\n\n\tsetEmblaContext(carouselState);\n\n\tfunction scrollPrev() {\n\t\tcarouselState.api?.scrollPrev();\n\t}\n\n\tfunction scrollNext() {\n\t\tcarouselState.api?.scrollNext();\n\t}\n\n\tfunction scrollTo(index: number, jump?: boolean) {\n\t\tcarouselState.api?.scrollTo(index, jump);\n\t}\n\n\tfunction onSelect() {\n\t\tif (!carouselState.api) return;\n\t\tcarouselState.selectedIndex = carouselState.api.selectedScrollSnap();\n\t\tcarouselState.canScrollNext = carouselState.api.canScrollNext();\n\t\tcarouselState.canScrollPrev = carouselState.api.canScrollPrev();\n\t}\n\n\tfunction handleKeyDown(e: KeyboardEvent) {\n\t\tif (e.key === \"ArrowLeft\") {\n\t\t\te.preventDefault();\n\t\t\tscrollPrev();\n\t\t} else if (e.key === \"ArrowRight\") {\n\t\t\te.preventDefault();\n\t\t\tscrollNext();\n\t\t}\n\t}\n\n\tfunction onInit(event: CustomEvent<CarouselAPI>) {\n\t\tcarouselState.api = event.detail;\n\t\tsetApi(carouselState.api);\n\n\t\tcarouselState.scrollSnaps = carouselState.api.scrollSnapList();\n\t\tcarouselState.api.on(\"select\", onSelect);\n\t\tonSelect();\n\t}\n\n\t$effect(() => {\n\t\treturn () => {\n\t\t\tcarouselState.api?.off(\"select\", onSelect);\n\t\t};\n\t});\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"carousel\"\n\tclass={cn(\"relative\", className)}\n\trole=\"region\"\n\taria-roledescription=\"carousel\"\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",
+			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport {\n\t\ttype CarouselAPI,\n\t\ttype CarouselProps,\n\t\ttype EmblaContext,\n\t\tsetEmblaContext,\n\t} from \"./context.js\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\topts = {},\n\t\tplugins = [],\n\t\tsetApi = () => {},\n\t\torientation = \"horizontal\",\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<CarouselProps> = $props();\n\n\t// svelte-ignore state_referenced_locally\n\tlet carouselState = $state<EmblaContext>({\n\t\tapi: undefined,\n\t\tscrollPrev,\n\t\tscrollNext,\n\t\torientation,\n\t\tcanScrollNext: false,\n\t\tcanScrollPrev: false,\n\t\thandleKeyDown,\n\t\toptions: opts,\n\t\tplugins,\n\t\tonInit,\n\t\tscrollSnaps: [],\n\t\tselectedIndex: 0,\n\t\tscrollTo,\n\t});\n\n\tsetEmblaContext(carouselState);\n\n\tfunction scrollPrev() {\n\t\tcarouselState.api?.scrollPrev();\n\t}\n\n\tfunction scrollNext() {\n\t\tcarouselState.api?.scrollNext();\n\t}\n\n\tfunction scrollTo(index: number, jump?: boolean) {\n\t\tcarouselState.api?.scrollTo(index, jump);\n\t}\n\n\tfunction onSelect() {\n\t\tif (!carouselState.api) return;\n\t\tcarouselState.selectedIndex = carouselState.api.selectedScrollSnap();\n\t\tcarouselState.canScrollNext = carouselState.api.canScrollNext();\n\t\tcarouselState.canScrollPrev = carouselState.api.canScrollPrev();\n\t}\n\n\tfunction handleKeyDown(e: KeyboardEvent) {\n\t\tif (e.key === \"ArrowLeft\") {\n\t\t\te.preventDefault();\n\t\t\tscrollPrev();\n\t\t} else if (e.key === \"ArrowRight\") {\n\t\t\te.preventDefault();\n\t\t\tscrollNext();\n\t\t}\n\t}\n\n\tfunction onInit(event: CustomEvent<CarouselAPI>) {\n\t\tcarouselState.api = event.detail;\n\t\tsetApi(carouselState.api);\n\n\t\tcarouselState.scrollSnaps = carouselState.api.scrollSnapList();\n\t\tcarouselState.api.on(\"select\", onSelect);\n\t\tonSelect();\n\t}\n\n\t$effect(() => {\n\t\treturn () => {\n\t\t\tcarouselState.api?.off(\"select\", onSelect);\n\t\t};\n\t});\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"carousel\"\n\tclass={cn(\"relative\", className)}\n\trole=\"region\"\n\taria-roledescription=\"轮播\"\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",
 			"type": "registry:file",
 			"target": "carousel/carousel.svelte"
 		},

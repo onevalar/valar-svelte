@@ -1,12 +1,50 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "label",
+	"title": "Label 标签",
 	"type": "registry:ui",
+	"description": "与控件关联的无障碍文字标签。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"标签",
+				"label",
+				"表单标签",
+				"字段名"
+			],
+			"whenToUse": [
+				"为单个控件提供可见、可点击的标签"
+			],
+			"whenNotToUse": [
+				{
+					"case": "完整的表单字段（标签、说明、错误）",
+					"use": "field"
+				}
+			],
+			"accessibility": [
+				"用 for 关联控件的 id",
+				"不要用 placeholder 代替标签"
+			],
+			"responsive": [
+				"窄屏下放在控件上方"
+			],
+			"related": [
+				"field",
+				"input",
+				"checkbox"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Label 设计规范\n\n- 表单里优先用 `Field.Label`，它已包含 Label；只在 Field 之外的简单场景直接用 Label。\n- 必须用 `for` 指向控件的 `id`，或把控件包在 Label 里，点击标签才能聚焦或切换控件。\n- 标签写控件的用途（“邮箱”），不要写“请输入”；必填用文字或 `aria-required` 表达，不要只靠颜色或星号。\n",
+			"type": "registry:file",
+			"target": "label/RULES.md"
+		},
 		{
 			"content": "import Root from \"./label.svelte\";\n\nexport {\n\tRoot,\n\t//\n\tRoot as Label,\n};\n",
 			"type": "registry:file",

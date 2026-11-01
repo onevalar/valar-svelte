@@ -1,12 +1,59 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "progress",
+	"title": "Progress 进度条",
 	"type": "registry:ui",
+	"description": "显示任务的完成进度。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"进度条",
+				"progress",
+				"进度",
+				"完成度",
+				"上传进度"
+			],
+			"whenToUse": [
+				"显示可度量的任务完成度，如上传、导入"
+			],
+			"whenNotToUse": [
+				{
+					"case": "无法估计进度的等待",
+					"use": "spinner"
+				},
+				{
+					"case": "内容加载占位",
+					"use": "skeleton"
+				},
+				{
+					"case": "用户调整数值",
+					"use": "slider"
+				}
+			],
+			"accessibility": [
+				"用 Field 提供标签或加 aria-label，让进度条有名称",
+				"完成度要能用文字读到，如“已上传 60%”"
+			],
+			"responsive": [
+				"占满容器宽度"
+			],
+			"related": [
+				"spinner",
+				"skeleton",
+				"slider"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Progress 设计规范\n\n- 用于可以计算进度的任务（上传、导入）；无法估计进度时用 Spinner。\n- 用 `value` 和 `max` 表达进度，进度条必须有名称：传 `aria-label`，或用 `aria-labelledby` 指向旁边的说明文字。\n- 旁边用文字显示百分比或“3／10”等具体进度，不要只靠条的长度。\n- 高度和圆角跟随组件样式，不要用 `class` 改。\n",
+			"type": "registry:file",
+			"target": "progress/RULES.md"
+		},
 		{
 			"content": "import Root from \"./progress.svelte\";\n\nexport {\n\tRoot,\n\t//\n\tRoot as Progress,\n};\n",
 			"type": "registry:file",

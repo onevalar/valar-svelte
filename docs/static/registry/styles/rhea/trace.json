@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "trace",
+	"title": "Trace 执行轨迹",
 	"type": "registry:ui",
+	"description": "展示 agent 推理、工具调用、来源等步骤的行列表。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
@@ -9,7 +11,51 @@
 	"registryDependencies": [
 		"collapsible"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"执行轨迹",
+				"trace",
+				"工具调用",
+				"推理",
+				"agent",
+				"步骤"
+			],
+			"whenToUse": [
+				"展示 agent 的推理、工具调用、子任务、来源",
+				"步骤可展开详情、链接，或打开 dialog、sheet"
+			],
+			"whenNotToUse": [
+				{
+					"case": "agent 的回复内容",
+					"use": "message"
+				},
+				{
+					"case": "回合之间的提示和分隔",
+					"use": "marker"
+				}
+			],
+			"accessibility": [
+				"本身不加角色，语义来自包裹它的触发器（如 Trace.CollapsibleTrigger 带 aria-expanded）",
+				"Trace.Title 是可访问名称，要写成完整的一句话，状态也写进标题",
+				"运行中的闪烁效果在“减少动态效果”时停止"
+			],
+			"responsive": [
+				"支持嵌套，摘要可展开为步骤"
+			],
+			"related": [
+				"message",
+				"marker",
+				"collapsible"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Trace 设计规范\n\n- 用于展示代理执行的步骤（调用工具、运行命令、编辑文件）；代理的回复用 Message，轮次之间的提示和分隔用 Marker。\n- `Trace.Title` 是这一步的名称，写成说明发生了什么的完整短句（“已编辑 trace.svelte”），不要只写文件名；`Trace.Icon` 对读屏器隐藏。\n- 状态用 `Trace.Line` 的 `status`（`running`、`error`、`pending`，完成的步骤不设），并同时写进标题：进行中用“正在运行 pnpm build”，失败用“运行 pnpm build 失败”。\n- 有细节时用 `Trace.Collapsible` + `Trace.CollapsibleTrigger` + `Trace.CollapsibleContent`；也可以把 Line 包在链接或 Dialog、Sheet 的触发按钮中，它会获得对应的键盘行为。\n- 链接在新标签页打开时，在标题后加 `sr-only` 的“（在新标签页打开）”；CollapsibleContent 中带背景色的块要设 `text-foreground` 保持对比度。\n",
+			"type": "registry:file",
+			"target": "trace/RULES.md"
+		},
 		{
 			"content": "import CollapsibleContent from \"./trace-collapsible-content.svelte\";\nimport CollapsibleTrigger from \"./trace-collapsible-trigger.svelte\";\nimport Collapsible from \"./trace-collapsible.svelte\";\nimport Description from \"./trace-description.svelte\";\nimport Icon from \"./trace-icon.svelte\";\nimport Title from \"./trace-title.svelte\";\nimport Root from \"./trace.svelte\";\nimport Line, { type TraceLineStatus } from \"./trace-line.svelte\";\n\nexport {\n\tRoot,\n\tLine,\n\tIcon,\n\tTitle,\n\tDescription,\n\tCollapsible,\n\tCollapsibleTrigger,\n\tCollapsibleContent,\n\ttype TraceLineStatus,\n\t//\n\tRoot as Trace,\n\tLine as TraceLine,\n\tIcon as TraceIcon,\n\tTitle as TraceTitle,\n\tDescription as TraceDescription,\n\tCollapsible as TraceCollapsible,\n\tCollapsibleTrigger as TraceCollapsibleTrigger,\n\tCollapsibleContent as TraceCollapsibleContent,\n};\n",
 			"type": "registry:file",

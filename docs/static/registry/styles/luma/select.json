@@ -54,6 +54,11 @@
 	},
 	"files": [
 		{
+			"content": "# Select 设计规范\n\n- 用于从一组固定选项中选值：2–5 个且需要一眼看全的选项用 Radio Group，需要搜索大量选项用 Popover + Command，触发操作而不是选值用 Dropdown Menu；需要原生行为（移动端系统选择器）时用 Native Select。\n- `Select.Root` 必须设 `type=\"single\"` 或 `type=\"multiple\"`；值是字符串（多选为字符串数组），用 `bind:value` 绑定。\n- 把选项数组传给 `Select.Root` 的 `items`，触发器里用 `<Select.Value placeholder=\"…\" />` 显示选中项的文字；表单提交时设 `name`。\n- `Select.Trigger` 设 `id` 并用 `Field.Label for={id}` 关联（检查规则 `valar/input-label`）；错误状态用 `aria-invalid=\"true\"`（检查规则 `valar/invalid-via-aria`）。\n- 尺寸用 `Select.Trigger` 的 `size` 属性（`sm`、`default`），宽度用 `w-*` 档位；不要用 `class` 改高度或圆角。\n- 选项多时用 `Select.Group` + `Select.Label` 分组，组间用 `Select.Separator`；每个 `Select.Item` 同时设 `value` 和 `label`。\n",
+			"type": "registry:file",
+			"target": "select/RULES.md"
+		},
+		{
 			"content": "import Content from \"./select-content.svelte\";\nimport GroupHeading from \"./select-group-heading.svelte\";\nimport Group from \"./select-group.svelte\";\nimport Item from \"./select-item.svelte\";\nimport Label from \"./select-label.svelte\";\nimport Portal from \"./select-portal.svelte\";\nimport ScrollDownButton from \"./select-scroll-down-button.svelte\";\nimport ScrollUpButton from \"./select-scroll-up-button.svelte\";\nimport Separator from \"./select-separator.svelte\";\nimport Trigger from \"./select-trigger.svelte\";\nimport Value from \"./select-value.svelte\";\nimport Root from \"./select.svelte\";\n\nexport {\n\tRoot,\n\tGroup,\n\tLabel,\n\tItem,\n\tContent,\n\tTrigger,\n\tSeparator,\n\tScrollDownButton,\n\tScrollUpButton,\n\tGroupHeading,\n\tPortal,\n\tValue,\n\t//\n\tRoot as Select,\n\tGroup as SelectGroup,\n\tLabel as SelectLabel,\n\tItem as SelectItem,\n\tContent as SelectContent,\n\tTrigger as SelectTrigger,\n\tSeparator as SelectSeparator,\n\tScrollDownButton as SelectScrollDownButton,\n\tScrollUpButton as SelectScrollUpButton,\n\tGroupHeading as SelectGroupHeading,\n\tPortal as SelectPortal,\n\tValue as SelectValue,\n};\n",
 			"type": "registry:file",
 			"target": "select/index.ts"

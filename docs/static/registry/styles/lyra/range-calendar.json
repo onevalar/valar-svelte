@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "range-calendar",
+	"title": "Range Calendar 日期范围",
 	"type": "registry:ui",
+	"description": "在月历上选择开始和结束日期。",
 	"devDependencies": [
 		"@internationalized/date@^3.12.0",
 		"bits-ui@2.20.0"
@@ -9,7 +11,49 @@
 	"registryDependencies": [
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"日期范围",
+				"range calendar",
+				"起止日期",
+				"date range",
+				"时间段"
+			],
+			"whenToUse": [
+				"选择预订、报表等的起止日期"
+			],
+			"whenNotToUse": [
+				{
+					"case": "只选一个日期",
+					"use": "calendar"
+				},
+				{
+					"case": "页面空间有限，点击后再弹出",
+					"use": "popover"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（方向键移动日期、回车选择起止）",
+				"locale 默认 zh-CN，其他语言要设置 locale"
+			],
+			"responsive": [
+				"显示多个月份时窄屏应减少月数",
+				"用 --cell-size 控制格子大小，可按断点设置不同值"
+			],
+			"related": [
+				"calendar",
+				"popover",
+				"input"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Range Calendar 设计规范\n\n- 只用于选择起止日期区间；选择单个或多个独立日期用 Calendar。\n- 值是 `{ start, end }`，两端都是 `@internationalized/date` 的日期对象；用 `bind:value` 绑定，处理时注意用户只选了起点（`end` 为空）的状态。\n- 默认 `locale=\"zh-CN\"`；其他语言的界面传对应 `locale`；需要周一开始时设 `weekStartsOn={1}`。\n- 可选范围用 `minValue`、`maxValue`，不可选的日期用 `isDateDisabled`；区间较长时用 `numberOfMonths={2}` 并排显示两个月。\n- 放在 Popover 中作为日期区间选择器时，触发按钮显示已选区间，未选完时提示“选择结束日期”。\n",
+			"type": "registry:file",
+			"target": "range-calendar/RULES.md"
+		},
 		{
 			"content": "import Caption from \"./range-calendar-caption.svelte\";\nimport Cell from \"./range-calendar-cell.svelte\";\nimport Day from \"./range-calendar-day.svelte\";\nimport GridBody from \"./range-calendar-grid-body.svelte\";\nimport GridHead from \"./range-calendar-grid-head.svelte\";\nimport GridRow from \"./range-calendar-grid-row.svelte\";\nimport Grid from \"./range-calendar-grid.svelte\";\nimport HeadCell from \"./range-calendar-head-cell.svelte\";\nimport Header from \"./range-calendar-header.svelte\";\nimport Heading from \"./range-calendar-heading.svelte\";\nimport MonthSelect from \"./range-calendar-month-select.svelte\";\nimport Month from \"./range-calendar-month.svelte\";\nimport Months from \"./range-calendar-months.svelte\";\nimport Nav from \"./range-calendar-nav.svelte\";\nimport NextButton from \"./range-calendar-next-button.svelte\";\nimport PrevButton from \"./range-calendar-prev-button.svelte\";\nimport YearSelect from \"./range-calendar-year-select.svelte\";\nimport Root from \"./range-calendar.svelte\";\n\nexport {\n\tDay,\n\tCell,\n\tGrid,\n\tHeader,\n\tMonths,\n\tGridRow,\n\tHeading,\n\tGridBody,\n\tGridHead,\n\tHeadCell,\n\tNextButton,\n\tPrevButton,\n\tMonthSelect,\n\tYearSelect,\n\tCaption,\n\tNav,\n\tMonth,\n\t//\n\tRoot as RangeCalendar,\n};\n",
 			"type": "registry:file",
@@ -101,7 +145,7 @@
 			"target": "range-calendar/range-calendar-year-select.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport { isEqualMonth, type DateValue } from \"@internationalized/date\";\n\timport { RangeCalendar as RangeCalendarPrimitive } from \"bits-ui\";\n\timport type { ButtonVariant } from \"$UI$/button/index.js\";\n\timport { cn, type WithoutChildrenOrChild } from \"$UTILS$.js\";\n\timport RangeCalendarCaption from \"./range-calendar-caption.svelte\";\n\timport RangeCalendarCell from \"./range-calendar-cell.svelte\";\n\timport RangeCalendarDay from \"./range-calendar-day.svelte\";\n\timport RangeCalendarGridBody from \"./range-calendar-grid-body.svelte\";\n\timport RangeCalendarGridHead from \"./range-calendar-grid-head.svelte\";\n\timport RangeCalendarGridRow from \"./range-calendar-grid-row.svelte\";\n\timport RangeCalendarGrid from \"./range-calendar-grid.svelte\";\n\timport RangeCalendarHeadCell from \"./range-calendar-head-cell.svelte\";\n\timport RangeCalendarHeader from \"./range-calendar-header.svelte\";\n\timport RangeCalendarMonth from \"./range-calendar-month.svelte\";\n\timport RangeCalendarMonths from \"./range-calendar-months.svelte\";\n\timport RangeCalendarNav from \"./range-calendar-nav.svelte\";\n\timport RangeCalendarNextButton from \"./range-calendar-next-button.svelte\";\n\timport RangeCalendarPrevButton from \"./range-calendar-prev-button.svelte\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tvalue = $bindable(),\n\t\tplaceholder = $bindable(),\n\t\tweekdayFormat = \"short\",\n\t\tclass: className,\n\t\tbuttonVariant = \"ghost\",\n\t\tcaptionLayout = \"label\",\n\t\tlocale = \"en-US\",\n\t\tmonths: monthsProp,\n\t\tyears,\n\t\tmonthFormat: monthFormatProp,\n\t\tyearFormat = \"numeric\",\n\t\tday,\n\t\tdisableDaysOutsideMonth = false,\n\t\t...restProps\n\t}: WithoutChildrenOrChild<RangeCalendarPrimitive.RootProps> & {\n\t\tbuttonVariant?: ButtonVariant;\n\t\tcaptionLayout?: \"dropdown\" | \"dropdown-months\" | \"dropdown-years\" | \"label\";\n\t\tmonths?: RangeCalendarPrimitive.MonthSelectProps[\"months\"];\n\t\tyears?: RangeCalendarPrimitive.YearSelectProps[\"years\"];\n\t\tmonthFormat?: RangeCalendarPrimitive.MonthSelectProps[\"monthFormat\"];\n\t\tyearFormat?: RangeCalendarPrimitive.YearSelectProps[\"yearFormat\"];\n\t\tday?: Snippet<[{ day: DateValue; outsideMonth: boolean }]>;\n\t} = $props();\n\n\tconst monthFormat = $derived.by(() => {\n\t\tif (monthFormatProp) return monthFormatProp;\n\t\tif (captionLayout.startsWith(\"dropdown\")) return \"short\";\n\t\treturn \"long\";\n\t});\n</script>\n\n<RangeCalendarPrimitive.Root\n\tbind:ref\n\tbind:value\n\tbind:placeholder\n\t{weekdayFormat}\n\t{disableDaysOutsideMonth}\n\tclass={cn(\n\t\t\"p-2 [--cell-size:--spacing(7)] group/calendar bg-background p-3 [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent\",\n\t\tclassName\n\t)}\n\t{locale}\n\t{monthFormat}\n\t{yearFormat}\n\t{...restProps}\n>\n\t{#snippet children({ months, weekdays })}\n\t\t<RangeCalendarMonths>\n\t\t\t<RangeCalendarNav>\n\t\t\t\t<RangeCalendarPrevButton variant={buttonVariant} />\n\t\t\t\t<RangeCalendarNextButton variant={buttonVariant} />\n\t\t\t</RangeCalendarNav>\n\t\t\t{#each months as month, monthIndex (month)}\n\t\t\t\t<RangeCalendarMonth>\n\t\t\t\t\t<RangeCalendarHeader>\n\t\t\t\t\t\t<RangeCalendarCaption\n\t\t\t\t\t\t\t{captionLayout}\n\t\t\t\t\t\t\tmonths={monthsProp}\n\t\t\t\t\t\t\t{monthFormat}\n\t\t\t\t\t\t\t{years}\n\t\t\t\t\t\t\t{yearFormat}\n\t\t\t\t\t\t\tmonth={month.value}\n\t\t\t\t\t\t\tbind:placeholder\n\t\t\t\t\t\t\t{locale}\n\t\t\t\t\t\t\t{monthIndex}\n\t\t\t\t\t\t/>\n\t\t\t\t\t</RangeCalendarHeader>\n\n\t\t\t\t\t<RangeCalendarGrid>\n\t\t\t\t\t\t<RangeCalendarGridHead>\n\t\t\t\t\t\t\t<RangeCalendarGridRow class=\"select-none\">\n\t\t\t\t\t\t\t\t{#each weekdays as weekday, i (i)}\n\t\t\t\t\t\t\t\t\t<RangeCalendarHeadCell>\n\t\t\t\t\t\t\t\t\t\t{weekday.slice(0, 2)}\n\t\t\t\t\t\t\t\t\t</RangeCalendarHeadCell>\n\t\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t\t</RangeCalendarGridRow>\n\t\t\t\t\t\t</RangeCalendarGridHead>\n\t\t\t\t\t\t<RangeCalendarGridBody>\n\t\t\t\t\t\t\t{#each month.weeks as weekDates (weekDates)}\n\t\t\t\t\t\t\t\t<RangeCalendarGridRow class=\"mt-2 w-full\">\n\t\t\t\t\t\t\t\t\t{#each weekDates as date (date)}\n\t\t\t\t\t\t\t\t\t\t<RangeCalendarCell {date} month={month.value}>\n\t\t\t\t\t\t\t\t\t\t\t{#if day}\n\t\t\t\t\t\t\t\t\t\t\t\t{@render day({\n\t\t\t\t\t\t\t\t\t\t\t\t\tday: date,\n\t\t\t\t\t\t\t\t\t\t\t\t\toutsideMonth: !isEqualMonth(date, month.value),\n\t\t\t\t\t\t\t\t\t\t\t\t})}\n\t\t\t\t\t\t\t\t\t\t\t{:else}\n\t\t\t\t\t\t\t\t\t\t\t\t<RangeCalendarDay />\n\t\t\t\t\t\t\t\t\t\t\t{/if}\n\t\t\t\t\t\t\t\t\t\t</RangeCalendarCell>\n\t\t\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t\t\t</RangeCalendarGridRow>\n\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t</RangeCalendarGridBody>\n\t\t\t\t\t</RangeCalendarGrid>\n\t\t\t\t</RangeCalendarMonth>\n\t\t\t{/each}\n\t\t</RangeCalendarMonths>\n\t{/snippet}\n</RangeCalendarPrimitive.Root>\n",
+			"content": "<script lang=\"ts\">\n\timport { isEqualMonth, type DateValue } from \"@internationalized/date\";\n\timport { RangeCalendar as RangeCalendarPrimitive } from \"bits-ui\";\n\timport type { ButtonVariant } from \"$UI$/button/index.js\";\n\timport { cn, type WithoutChildrenOrChild } from \"$UTILS$.js\";\n\timport RangeCalendarCaption from \"./range-calendar-caption.svelte\";\n\timport RangeCalendarCell from \"./range-calendar-cell.svelte\";\n\timport RangeCalendarDay from \"./range-calendar-day.svelte\";\n\timport RangeCalendarGridBody from \"./range-calendar-grid-body.svelte\";\n\timport RangeCalendarGridHead from \"./range-calendar-grid-head.svelte\";\n\timport RangeCalendarGridRow from \"./range-calendar-grid-row.svelte\";\n\timport RangeCalendarGrid from \"./range-calendar-grid.svelte\";\n\timport RangeCalendarHeadCell from \"./range-calendar-head-cell.svelte\";\n\timport RangeCalendarHeader from \"./range-calendar-header.svelte\";\n\timport RangeCalendarMonth from \"./range-calendar-month.svelte\";\n\timport RangeCalendarMonths from \"./range-calendar-months.svelte\";\n\timport RangeCalendarNav from \"./range-calendar-nav.svelte\";\n\timport RangeCalendarNextButton from \"./range-calendar-next-button.svelte\";\n\timport RangeCalendarPrevButton from \"./range-calendar-prev-button.svelte\";\n\timport type { Snippet } from \"svelte\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tvalue = $bindable(),\n\t\tplaceholder = $bindable(),\n\t\tweekdayFormat = \"short\",\n\t\tclass: className,\n\t\tbuttonVariant = \"ghost\",\n\t\tcaptionLayout = \"label\",\n\t\tlocale = \"zh-CN\",\n\t\tmonths: monthsProp,\n\t\tyears,\n\t\tmonthFormat: monthFormatProp,\n\t\tyearFormat = \"numeric\",\n\t\tday,\n\t\tdisableDaysOutsideMonth = false,\n\t\t...restProps\n\t}: WithoutChildrenOrChild<RangeCalendarPrimitive.RootProps> & {\n\t\tbuttonVariant?: ButtonVariant;\n\t\tcaptionLayout?: \"dropdown\" | \"dropdown-months\" | \"dropdown-years\" | \"label\";\n\t\tmonths?: RangeCalendarPrimitive.MonthSelectProps[\"months\"];\n\t\tyears?: RangeCalendarPrimitive.YearSelectProps[\"years\"];\n\t\tmonthFormat?: RangeCalendarPrimitive.MonthSelectProps[\"monthFormat\"];\n\t\tyearFormat?: RangeCalendarPrimitive.YearSelectProps[\"yearFormat\"];\n\t\tday?: Snippet<[{ day: DateValue; outsideMonth: boolean }]>;\n\t} = $props();\n\n\tconst monthFormat = $derived.by(() => {\n\t\tif (monthFormatProp) return monthFormatProp;\n\t\tif (captionLayout.startsWith(\"dropdown\")) return \"short\";\n\t\treturn \"long\";\n\t});\n</script>\n\n<RangeCalendarPrimitive.Root\n\tbind:ref\n\tbind:value\n\tbind:placeholder\n\t{weekdayFormat}\n\t{disableDaysOutsideMonth}\n\tclass={cn(\n\t\t\"p-2 [--cell-size:--spacing(7)] group/calendar bg-background p-3 [[data-slot=card-content]_&]:bg-transparent [[data-slot=popover-content]_&]:bg-transparent\",\n\t\tclassName\n\t)}\n\t{locale}\n\t{monthFormat}\n\t{yearFormat}\n\t{...restProps}\n>\n\t{#snippet children({ months, weekdays })}\n\t\t<RangeCalendarMonths>\n\t\t\t<RangeCalendarNav>\n\t\t\t\t<RangeCalendarPrevButton variant={buttonVariant} />\n\t\t\t\t<RangeCalendarNextButton variant={buttonVariant} />\n\t\t\t</RangeCalendarNav>\n\t\t\t{#each months as month, monthIndex (month)}\n\t\t\t\t<RangeCalendarMonth>\n\t\t\t\t\t<RangeCalendarHeader>\n\t\t\t\t\t\t<RangeCalendarCaption\n\t\t\t\t\t\t\t{captionLayout}\n\t\t\t\t\t\t\tmonths={monthsProp}\n\t\t\t\t\t\t\t{monthFormat}\n\t\t\t\t\t\t\t{years}\n\t\t\t\t\t\t\t{yearFormat}\n\t\t\t\t\t\t\tmonth={month.value}\n\t\t\t\t\t\t\tbind:placeholder\n\t\t\t\t\t\t\t{locale}\n\t\t\t\t\t\t\t{monthIndex}\n\t\t\t\t\t\t/>\n\t\t\t\t\t</RangeCalendarHeader>\n\n\t\t\t\t\t<RangeCalendarGrid>\n\t\t\t\t\t\t<RangeCalendarGridHead>\n\t\t\t\t\t\t\t<RangeCalendarGridRow class=\"select-none\">\n\t\t\t\t\t\t\t\t{#each weekdays as weekday, i (i)}\n\t\t\t\t\t\t\t\t\t<RangeCalendarHeadCell>\n\t\t\t\t\t\t\t\t\t\t{weekday.slice(0, 2)}\n\t\t\t\t\t\t\t\t\t</RangeCalendarHeadCell>\n\t\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t\t</RangeCalendarGridRow>\n\t\t\t\t\t\t</RangeCalendarGridHead>\n\t\t\t\t\t\t<RangeCalendarGridBody>\n\t\t\t\t\t\t\t{#each month.weeks as weekDates (weekDates)}\n\t\t\t\t\t\t\t\t<RangeCalendarGridRow class=\"mt-2 w-full\">\n\t\t\t\t\t\t\t\t\t{#each weekDates as date (date)}\n\t\t\t\t\t\t\t\t\t\t<RangeCalendarCell {date} month={month.value}>\n\t\t\t\t\t\t\t\t\t\t\t{#if day}\n\t\t\t\t\t\t\t\t\t\t\t\t{@render day({\n\t\t\t\t\t\t\t\t\t\t\t\t\tday: date,\n\t\t\t\t\t\t\t\t\t\t\t\t\toutsideMonth: !isEqualMonth(date, month.value),\n\t\t\t\t\t\t\t\t\t\t\t\t})}\n\t\t\t\t\t\t\t\t\t\t\t{:else}\n\t\t\t\t\t\t\t\t\t\t\t\t<RangeCalendarDay />\n\t\t\t\t\t\t\t\t\t\t\t{/if}\n\t\t\t\t\t\t\t\t\t\t</RangeCalendarCell>\n\t\t\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t\t\t</RangeCalendarGridRow>\n\t\t\t\t\t\t\t{/each}\n\t\t\t\t\t\t</RangeCalendarGridBody>\n\t\t\t\t\t</RangeCalendarGrid>\n\t\t\t\t</RangeCalendarMonth>\n\t\t\t{/each}\n\t\t</RangeCalendarMonths>\n\t{/snippet}\n</RangeCalendarPrimitive.Root>\n",
 			"type": "registry:file",
 			"target": "range-calendar/range-calendar.svelte"
 		}

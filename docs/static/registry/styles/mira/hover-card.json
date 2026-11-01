@@ -1,12 +1,60 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "hover-card",
+	"title": "Hover Card 悬停卡片",
 	"type": "registry:ui",
+	"description": "鼠标悬停在链接上时浮出的预览卡片，展示链接背后的内容摘要。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"悬停卡片",
+				"hover card",
+				"链接预览",
+				"link preview",
+				"资料卡"
+			],
+			"whenToUse": [
+				"悬停链接时预览其指向的内容，如用户资料、页面摘要"
+			],
+			"whenNotToUse": [
+				{
+					"case": "简短的文字提示",
+					"use": "tooltip"
+				},
+				{
+					"case": "点击打开，或卡片内有需要操作的控件",
+					"use": "popover"
+				},
+				{
+					"case": "触屏为主的场景中唯一的信息入口",
+					"use": "popover"
+				}
+			],
+			"accessibility": [
+				"只是给能看见、用鼠标的用户的补充预览，链接本身必须可访问，卡片内容不能是获取信息的唯一途径",
+				"用 openDelay、closeDelay 控制开合延迟，避免划过时误触发"
+			],
+			"responsive": [
+				"触屏设备没有悬停，卡片不会出现，需保证点击链接仍能到达完整内容",
+				"默认显示在下方（side=bottom），空间不足时自动翻转"
+			],
+			"related": [
+				"tooltip",
+				"popover",
+				"avatar"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Hover Card 设计规范\n\n- 只用于链接的补充预览，如用户名、仓库、文章链接；可操作的内容用 Popover，简短说明用 Tooltip。\n- `HoverCard.Trigger` 渲染为链接，应设 `href` 指向完整内容：触屏设备没有悬停，用户点击后要能直接到达预览中的信息。\n- 预览中不要放只能在这里完成的操作；键盘聚焦链接时也会打开预览，但内容不在 Tab 顺序中，读屏用户可能读不到。\n- 位置用 `side`（默认 `bottom`）、`align`、`sideOffset`；打开和关闭延迟用 `openDelay`、`closeDelay`，同一项目内保持一致。\n",
+			"type": "registry:file",
+			"target": "hover-card/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { LinkPreview as HoverCardPrimitive } from \"bits-ui\";\n\timport { cn, type WithoutChildrenOrChild } from \"$UTILS$.js\";\n\timport HoverCardPortal from \"./hover-card-portal.svelte\";\n\timport type { ComponentProps } from \"svelte\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tside = \"bottom\",\n\t\tsideOffset = 4,\n\t\talign = \"center\",\n\t\tportalProps,\n\t\t...restProps\n\t}: HoverCardPrimitive.ContentProps & {\n\t\tportalProps?: WithoutChildrenOrChild<ComponentProps<typeof HoverCardPortal>>;\n\t} = $props();\n</script>\n\n<HoverCardPortal {...portalProps}>\n\t<HoverCardPrimitive.Content\n\t\tbind:ref\n\t\tdata-slot=\"hover-card-content\"\n\t\t{side}\n\t\t{sideOffset}\n\t\t{align}\n\t\tclass={cn(\n\t\t\t\"data-open:animate-in data-closed:animate-out data-closed:fade-out-0 data-open:fade-in-0 data-closed:zoom-out-95 data-open:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 ring-foreground/10 bg-popover text-popover-foreground w-72 rounded-lg p-2.5 text-xs/relaxed shadow-md ring-1 duration-fast z-50 origin-(--bits-link-preview-content-transform-origin) outline-hidden\",\n\t\t\tclassName\n\t\t)}\n\t\t{...restProps}\n\t/>\n</HoverCardPortal>\n",
 			"type": "registry:file",

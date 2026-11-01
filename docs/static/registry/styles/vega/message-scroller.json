@@ -1,21 +1,63 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "message-scroller",
+	"title": "Message Scroller 消息滚动区",
 	"type": "registry:ui",
+	"description": "聊天记录滚动容器：跟随流式回复、加载历史不跳动、可跳转到任意消息。",
 	"devDependencies": [
 		"@valar/svelte-primitives@^0.1.0"
 	],
 	"registryDependencies": [
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"消息滚动",
+				"message scroller",
+				"聊天记录",
+				"chat scroll",
+				"流式",
+				"transcript"
+			],
+			"whenToUse": [
+				"聊天记录：新回合锚定、跟随流式回复、加载更早消息时保持位置",
+				"打开保存的会话时定位到合适位置"
+			],
+			"whenNotToUse": [
+				{
+					"case": "普通内容的滚动区域",
+					"use": "scroll-area"
+				}
+			],
+			"accessibility": [
+				"Viewport 默认 role=region、aria-label=消息、可聚焦；其他语言要改 aria-label",
+				"Content 为 role=log，新行会被朗读；流式输出时可传 aria-busy",
+				"MessageScroller.Button 无内容可滚时设为 inert，不占焦点"
+			],
+			"responsive": [
+				"填满父元素，必须放在有确定高度的容器内"
+			],
+			"related": [
+				"message",
+				"scroll-area",
+				"marker"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Message Scroller 设计规范\n\n- 结构为 `MessageScroller.Provider` > `MessageScroller.Root` > `MessageScroller.Viewport` > `MessageScroller.Content`，`MessageScroller.Button` 放在 Root 内；不要自己写聊天滚动逻辑。\n- 它会填满父元素：放在高度受限的容器中（如 `flex h-screen flex-col` 里设 `flex-1`），否则无法滚动。\n- `MessageScroller.Content` 的每个直接子元素都包一层 `MessageScroller.Item`，并设稳定的 `messageId`（消息 id，不要用数组下标）。\n- 用 `scrollAnchor` 标记开启新一轮对话的行（通常是用户的消息），新一轮会停在视口上方并保留上一轮的一部分；输入提示、加载更多等行不要设为锚点。\n- 不要自动滚到底部打断阅读；跳到指定消息用 `useMessageScroller` 提供的方法。\n",
+			"type": "registry:file",
+			"target": "message-scroller/RULES.md"
+		},
 		{
 			"content": "import Button from \"./message-scroller-button.svelte\";\nimport Content from \"./message-scroller-content.svelte\";\nimport Item from \"./message-scroller-item.svelte\";\nimport Provider from \"./message-scroller-provider.svelte\";\nimport Viewport from \"./message-scroller-viewport.svelte\";\nimport Root from \"./message-scroller.svelte\";\n\nexport {\n\tuseMessageScroller,\n\tuseMessageScrollerScrollable,\n\tuseMessageScrollerVisibility,\n} from \"@valar/svelte-primitives/message-scroller\";\n\nexport {\n\tProvider,\n\tRoot,\n\tViewport,\n\tContent,\n\tItem,\n\tButton,\n\t//\n\tProvider as MessageScrollerProvider,\n\tRoot as MessageScroller,\n\tViewport as MessageScrollerViewport,\n\tContent as MessageScrollerContent,\n\tItem as MessageScrollerItem,\n\tButton as MessageScrollerButton,\n};\n",
 			"type": "registry:file",
 			"target": "message-scroller/index.ts"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport { MessageScroller as MessageScrollerPrimitive } from \"@valar/svelte-primitives/message-scroller\";\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { Button } from \"$UI$/button/index.js\";\n\timport type { ButtonSize, ButtonVariant } from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tdirection = \"end\",\n\t\tclass: className,\n\t\tchildren,\n\t\tchild: childProp,\n\t\tvariant = \"secondary\",\n\t\tsize = \"icon-sm\",\n\t\t...restProps\n\t}: MessageScrollerPrimitive.ButtonProps & {\n\t\tvariant?: ButtonVariant;\n\t\tsize?: ButtonSize;\n\t} = $props();\n</script>\n\n<MessageScrollerPrimitive.Button\n\tbind:ref\n\tdata-slot=\"message-scroller-button\"\n\tdata-direction={direction}\n\tdata-variant={variant}\n\tdata-size={size}\n\t{direction}\n\tclass={cn(\n\t\t\"absolute inset-s-1/2 -translate-x-1/2 border-border bg-background text-foreground transition-[translate,scale,opacity] duration-normal hover:bg-muted hover:text-foreground data-[active=false]:pointer-events-none data-[active=false]:scale-95 data-[active=false]:opacity-0 data-[active=false]:duration-400 data-[active=false]:ease-exit data-[active=true]:translate-y-0 data-[active=true]:scale-100 data-[active=true]:opacity-100 data-[active=true]:ease-enter data-[direction=end]:bottom-4 data-[direction=end]:data-[active=false]:translate-y-full data-[direction=start]:top-4 data-[direction=start]:data-[active=false]:-translate-y-full rtl:translate-x-1/2 data-[direction=start]:[&_svg]:rotate-180\",\n\t\tclassName\n\t)}\n\t{...restProps}\n>\n\t{#snippet child(state)}\n\t\t{#if childProp}\n\t\t\t{@render childProp(state)}\n\t\t{:else}\n\t\t\t<Button {variant} {size} {...state.props}>\n\t\t\t\t{#if children}\n\t\t\t\t\t{@render children()}\n\t\t\t\t{:else}\n\t\t\t\t\t<IconPlaceholder\n\t\t\t\t\t\tlucide=\"ArrowDownIcon\"\n\t\t\t\t\t\ttabler=\"IconArrowDown\"\n\t\t\t\t\t\thugeicons=\"ArrowDown02Icon\"\n\t\t\t\t\t\tphosphor=\"ArrowDownIcon\"\n\t\t\t\t\t\tremixicon=\"RiArrowDownLine\"\n\t\t\t\t\t/>\n\t\t\t\t\t<span class=\"sr-only\">\n\t\t\t\t\t\t{direction === \"end\" ? \"Scroll to end\" : \"Scroll to start\"}\n\t\t\t\t\t</span>\n\t\t\t\t{/if}\n\t\t\t</Button>\n\t\t{/if}\n\t{/snippet}\n</MessageScrollerPrimitive.Button>\n",
+			"content": "<script lang=\"ts\">\n\timport { MessageScroller as MessageScrollerPrimitive } from \"@valar/svelte-primitives/message-scroller\";\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { Button } from \"$UI$/button/index.js\";\n\timport type { ButtonSize, ButtonVariant } from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tdirection = \"end\",\n\t\tclass: className,\n\t\tchildren,\n\t\tchild: childProp,\n\t\tvariant = \"secondary\",\n\t\tsize = \"icon-sm\",\n\t\tlabel = direction === \"end\" ? \"滚动到底部\" : \"滚动到顶部\",\n\t\t...restProps\n\t}: MessageScrollerPrimitive.ButtonProps & {\n\t\tvariant?: ButtonVariant;\n\t\tsize?: ButtonSize;\n\t\t/** Screen reader text of the default button. */\n\t\tlabel?: string;\n\t} = $props();\n</script>\n\n<MessageScrollerPrimitive.Button\n\tbind:ref\n\tdata-slot=\"message-scroller-button\"\n\tdata-direction={direction}\n\tdata-variant={variant}\n\tdata-size={size}\n\t{direction}\n\tclass={cn(\n\t\t\"absolute inset-s-1/2 -translate-x-1/2 border-border bg-background text-foreground transition-[translate,scale,opacity] duration-normal hover:bg-muted hover:text-foreground data-[active=false]:pointer-events-none data-[active=false]:scale-95 data-[active=false]:opacity-0 data-[active=false]:duration-400 data-[active=false]:ease-exit data-[active=true]:translate-y-0 data-[active=true]:scale-100 data-[active=true]:opacity-100 data-[active=true]:ease-enter data-[direction=end]:bottom-4 data-[direction=end]:data-[active=false]:translate-y-full data-[direction=start]:top-4 data-[direction=start]:data-[active=false]:-translate-y-full rtl:translate-x-1/2 data-[direction=start]:[&_svg]:rotate-180\",\n\t\tclassName\n\t)}\n\t{...restProps}\n>\n\t{#snippet child(state)}\n\t\t{#if childProp}\n\t\t\t{@render childProp(state)}\n\t\t{:else}\n\t\t\t<Button {variant} {size} {...state.props}>\n\t\t\t\t{#if children}\n\t\t\t\t\t{@render children()}\n\t\t\t\t{:else}\n\t\t\t\t\t<IconPlaceholder\n\t\t\t\t\t\tlucide=\"ArrowDownIcon\"\n\t\t\t\t\t\ttabler=\"IconArrowDown\"\n\t\t\t\t\t\thugeicons=\"ArrowDown02Icon\"\n\t\t\t\t\t\tphosphor=\"ArrowDownIcon\"\n\t\t\t\t\t\tremixicon=\"RiArrowDownLine\"\n\t\t\t\t\t/>\n\t\t\t\t\t<span class=\"sr-only\">\n\t\t\t\t\t\t{label}\n\t\t\t\t\t</span>\n\t\t\t\t{/if}\n\t\t\t</Button>\n\t\t{/if}\n\t{/snippet}\n</MessageScrollerPrimitive.Button>\n",
 			"type": "registry:file",
 			"target": "message-scroller/message-scroller-button.svelte"
 		},
@@ -35,7 +77,7 @@
 			"target": "message-scroller/message-scroller-provider.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport { MessageScroller as MessageScrollerPrimitive } from \"@valar/svelte-primitives/message-scroller\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tclass: className,\n\t\tref = $bindable(null),\n\t\t...restProps\n\t}: MessageScrollerPrimitive.ViewportProps = $props();\n</script>\n\n<MessageScrollerPrimitive.Viewport\n\tbind:ref\n\tdata-slot=\"message-scroller-viewport\"\n\tclass={cn(\n\t\t\"size-full min-h-0 min-w-0 scroll-fade-b scrollbar-thin scrollbar-gutter-stable overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-thumb-transparent data-autoscrolling:scrollbar-track-transparent data-pending-scroll:invisible\",\n\t\tclassName\n\t)}\n\t{...restProps}\n/>\n",
+			"content": "<script lang=\"ts\">\n\timport { MessageScroller as MessageScrollerPrimitive } from \"@valar/svelte-primitives/message-scroller\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tclass: className,\n\t\tref = $bindable(null),\n\t\t\"aria-label\": ariaLabel = \"消息\",\n\t\t...restProps\n\t}: MessageScrollerPrimitive.ViewportProps = $props();\n</script>\n\n<MessageScrollerPrimitive.Viewport\n\tbind:ref\n\tdata-slot=\"message-scroller-viewport\"\n\taria-label={ariaLabel}\n\tclass={cn(\n\t\t\"size-full min-h-0 min-w-0 scroll-fade-b scrollbar-thin scrollbar-gutter-stable overflow-y-auto overscroll-contain contain-content data-autoscrolling:scrollbar-thumb-transparent data-autoscrolling:scrollbar-track-transparent data-pending-scroll:invisible\",\n\t\tclassName\n\t)}\n\t{...restProps}\n/>\n",
 			"type": "registry:file",
 			"target": "message-scroller/message-scroller-viewport.svelte"
 		},

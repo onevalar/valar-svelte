@@ -1,8 +1,51 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "table",
+	"title": "Table 表格",
 	"type": "registry:ui",
+	"description": "展示行列结构化数据的表格。",
+	"meta": {
+		"valar": {
+			"keywords": [
+				"表格",
+				"table",
+				"数据表",
+				"data table",
+				"列表"
+			],
+			"whenToUse": [
+				"行列结构化数据",
+				"结合 @tanstack/table 做排序、筛选、分页"
+			],
+			"whenNotToUse": [
+				{
+					"case": "数据的趋势或对比",
+					"use": "chart"
+				},
+				{
+					"case": "少量内容项",
+					"use": "item"
+				}
+			],
+			"accessibility": [
+				"使用语义化 table、表头单元格，用 Table.Caption 说明表格内容"
+			],
+			"responsive": [
+				"外层容器横向滚动，窄屏不压缩列"
+			],
+			"related": [
+				"pagination",
+				"chart",
+				"item"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Table 设计规范\n\n- 结构用 `Table.Header`、`Table.Body`、`Table.Footer`，行用 `Table.Row`，表头单元格用 `Table.Head`，数据用 `Table.Cell`；用 `Table.Caption` 说明表格内容。\n- 表格容器会横向滚动，窄屏下不要压缩列宽到无法阅读；列很多时考虑在移动端改为卡片列表。\n- 数字列右对齐并用 `tabular-nums`，便于比较。\n- 需要排序、筛选、分页、选择行时，按 Data Table 文档用 TanStack Table 组合，不要自己实现；表头上的排序按钮要说明排序状态。\n- 空表格用 Empty 说明原因，不要只显示空白。\n",
+			"type": "registry:file",
+			"target": "table/RULES.md"
+		},
 		{
 			"content": "import Body from \"./table-body.svelte\";\nimport Caption from \"./table-caption.svelte\";\nimport Cell from \"./table-cell.svelte\";\nimport Footer from \"./table-footer.svelte\";\nimport Head from \"./table-head.svelte\";\nimport Header from \"./table-header.svelte\";\nimport Row from \"./table-row.svelte\";\nimport Root from \"./table.svelte\";\n\nexport {\n\tRoot,\n\tBody,\n\tCaption,\n\tCell,\n\tFooter,\n\tHead,\n\tHeader,\n\tRow,\n\t//\n\tRoot as Table,\n\tBody as TableBody,\n\tCaption as TableCaption,\n\tCell as TableCell,\n\tFooter as TableFooter,\n\tHead as TableHead,\n\tHeader as TableHeader,\n\tRow as TableRow,\n};\n",
 			"type": "registry:file",

@@ -1,12 +1,57 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "accordion",
+	"title": "Accordion 手风琴",
 	"type": "registry:ui",
+	"description": "一组可展开的标题，每项展开后显示对应内容。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"手风琴",
+				"accordion",
+				"折叠面板",
+				"FAQ",
+				"展开收起"
+			],
+			"whenToUse": [
+				"把多段内容收成标题列表，如常见问题、设置分组",
+				"type=multiple 允许同时展开多项"
+			],
+			"whenNotToUse": [
+				{
+					"case": "只有一个区域需要展开收起",
+					"use": "collapsible"
+				},
+				{
+					"case": "并列视图切换且一次只看一个",
+					"use": "tabs"
+				}
+			],
+			"accessibility": [
+				"标题是按钮，Bits UI 提供 aria-expanded 和键盘操作",
+				"不要把必须看到的信息或关键操作藏在折叠内容里"
+			],
+			"responsive": [
+				"窄屏下比 tabs 更适合较长的标题",
+				"内容展开后随页面滚动"
+			],
+			"related": [
+				"collapsible",
+				"tabs",
+				"card"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Accordion 设计规范\n\n- 用于可以按需展开的次要内容（常见问题、分组设置）；用户必须看到的内容不要折叠起来。只有一块可展开内容时用 Collapsible。\n- `Accordion.Root` 必须设 `type=\"single\"`（同时只展开一项）或 `type=\"multiple\"`；每个 `Accordion.Item` 设唯一的 `value`。\n- `Accordion.Trigger` 外层渲染为标题，用 `level` 属性设成与页面结构相符的标题级别（默认 3），不要再在 Trigger 里套 `<h3>`。\n- 标题写成能看出内容的短句；展开动效、间距跟随组件样式和组件参数，不要用 `class` 改 `duration-*` 或内边距。\n",
+			"type": "registry:file",
+			"target": "accordion/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { Accordion as AccordionPrimitive } from \"bits-ui\";\n\timport { cn, type WithoutChild } from \"$UTILS$.js\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithoutChild<AccordionPrimitive.ContentProps> = $props();\n</script>\n\n<AccordionPrimitive.Content\n\tbind:ref\n\tdata-slot=\"accordion-content\"\n\tclass=\"data-open:animate-accordion-down data-closed:animate-accordion-up text-sm overflow-hidden\"\n\t{...restProps}\n>\n\t<div\n\t\tclass={cn(\n\t\t\t\"pt-0 pb-4 [&_a]:underline [&_a]:underline-offset-3 [&_a]:hover:text-foreground [&_p:not(:last-child)]:mb-4\",\n\t\t\tclassName\n\t\t)}\n\t>\n\t\t{@render children?.()}\n\t</div>\n</AccordionPrimitive.Content>\n",
 			"type": "registry:file",

@@ -1,13 +1,61 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "navigation-menu",
+	"title": "Navigation Menu 导航菜单",
 	"type": "registry:ui",
+	"description": "网站顶部的导航链接，可展开为带说明的分组面板。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0",
 		"tailwind-variants@^3.3.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"导航菜单",
+				"navigation menu",
+				"顶部导航",
+				"mega menu",
+				"站点导航"
+			],
+			"whenToUse": [
+				"网站顶部导航，部分入口展开为分组链接面板"
+			],
+			"whenNotToUse": [
+				{
+					"case": "应用内的侧边导航",
+					"use": "sidebar"
+				},
+				{
+					"case": "执行命令的菜单",
+					"use": "menubar"
+				},
+				{
+					"case": "同一页面内切换视图",
+					"use": "tabs"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的键盘操作（方向键、回车、Esc）",
+				"用 NavigationMenu.Link 的 href 渲染真实链接；普通链接可用 navigationMenuTriggerStyle() 统一外观"
+			],
+			"responsive": [
+				"内容面板在 md 及以上绝对定位，窄屏占满宽度",
+				"移动端通常改用 sheet 或 drawer 承载导航"
+			],
+			"related": [
+				"sidebar",
+				"breadcrumb",
+				"menubar"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Navigation Menu 设计规范\n\n- 只用于网站的主导航（带下拉面板的顶部导航）；页面内的操作菜单用 Dropdown Menu，应用式菜单栏用 Menubar。\n- 每个入口都是 `NavigationMenu.Link`（设 `href`）；有子菜单的项用 `NavigationMenu.Trigger` + `NavigationMenu.Content`，Trigger 本身不跳转，子菜单中要包含该栏目的入口链接。\n- 当前页面的链接设 `active`（会带 `aria-current=\"page\"`），不要只改颜色。\n- 窄屏下不要强行横排：移动端改用 Sheet 或 Drawer 承载同样的链接。\n- 下拉面板默认渲染在共享的 viewport 中（`viewport`，默认开启）；不需要时设 `viewport={false}`，不要自己写定位。\n",
+			"type": "registry:file",
+			"target": "navigation-menu/RULES.md"
+		},
 		{
 			"content": "import Content from \"./navigation-menu-content.svelte\";\nimport Indicator from \"./navigation-menu-indicator.svelte\";\nimport Item from \"./navigation-menu-item.svelte\";\nimport Link from \"./navigation-menu-link.svelte\";\nimport List from \"./navigation-menu-list.svelte\";\nimport Trigger from \"./navigation-menu-trigger.svelte\";\nimport Viewport from \"./navigation-menu-viewport.svelte\";\nimport Root from \"./navigation-menu.svelte\";\n\nexport {\n\tRoot,\n\tContent,\n\tIndicator,\n\tItem,\n\tLink,\n\tList,\n\tTrigger,\n\tViewport,\n\t//\n\tRoot as NavigationMenu,\n\tContent as NavigationMenuContent,\n\tIndicator as NavigationMenuIndicator,\n\tItem as NavigationMenuItem,\n\tLink as NavigationMenuLink,\n\tList as NavigationMenuList,\n\tTrigger as NavigationMenuTrigger,\n\tViewport as NavigationMenuViewport,\n};\n",
 			"type": "registry:file",

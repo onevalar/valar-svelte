@@ -1,8 +1,48 @@
 [
 	{
 		"name": "accordion",
+		"title": "Accordion 手风琴",
 		"type": "registry:ui",
+		"description": "一组可展开的标题，每项展开后显示对应内容。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"手风琴",
+					"accordion",
+					"折叠面板",
+					"FAQ",
+					"展开收起"
+				],
+				"whenToUse": [
+					"把多段内容收成标题列表，如常见问题、设置分组",
+					"type=multiple 允许同时展开多项"
+				],
+				"whenNotToUse": [
+					{
+						"case": "只有一个区域需要展开收起",
+						"use": "collapsible"
+					},
+					{
+						"case": "并列视图切换且一次只看一个",
+						"use": "tabs"
+					}
+				],
+				"accessibility": [
+					"标题是按钮，Bits UI 提供 aria-expanded 和键盘操作",
+					"不要把必须看到的信息或关键操作藏在折叠内容里"
+				],
+				"responsive": [
+					"窄屏下比 tabs 更适合较长的标题",
+					"内容展开后随页面滚动"
+				],
+				"related": [
+					"collapsible",
+					"tabs",
+					"card"
+				]
+			}
+		},
 		"relativeUrl": "accordion.json"
 	},
 	{
@@ -95,40 +135,288 @@
 	},
 	{
 		"name": "aspect-ratio",
+		"title": "Aspect Ratio 宽高比",
 		"type": "registry:ui",
+		"description": "让内容按固定宽高比显示。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"宽高比",
+					"aspect ratio",
+					"比例",
+					"图片容器",
+					"16:9"
+				],
+				"whenToUse": [
+					"图片、视频、地图按固定比例占位，避免加载时布局跳动"
+				],
+				"whenNotToUse": [
+					{
+						"case": "用户头像",
+						"use": "avatar"
+					},
+					{
+						"case": "一组可滑动浏览的图片",
+						"use": "carousel"
+					}
+				],
+				"accessibility": [
+					"内部图片要写 alt 文字"
+				],
+				"responsive": [
+					"宽度随容器变化，高度按 ratio 计算"
+				],
+				"related": [
+					"avatar",
+					"carousel",
+					"card"
+				]
+			}
+		},
 		"relativeUrl": "aspect-ratio.json"
 	},
 	{
 		"name": "attachment",
+		"title": "Attachment 附件",
 		"type": "registry:ui",
+		"description": "显示文件或图片附件，包含缩略图、名称、上传状态和操作。",
 		"registryDependencies": [
 			"button"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"附件",
+					"attachment",
+					"文件",
+					"上传",
+					"图片附件"
+				],
+				"whenToUse": [
+					"聊天输入框、消息或上传列表中的文件／图片",
+					"展示上传状态 idle、uploading、processing、error、done"
+				],
+				"whenNotToUse": [
+					{
+						"case": "普通的内容列表项",
+						"use": "item"
+					},
+					{
+						"case": "只展示图片",
+						"use": "aspect-ratio"
+					},
+					{
+						"case": "需要显示具体百分比的进度",
+						"use": "progress"
+					}
+				],
+				"accessibility": [
+					"只有图标的 Attachment.Action 和覆盖整卡的 Attachment.Trigger 都要加 aria-label",
+					"error 状态要在 Attachment.Description 写明原因，不能只靠颜色",
+					"纯展示的 Attachment.Group 加 tabindex=0、role=group 和 aria-label，便于键盘滚动"
+				],
+				"responsive": [
+					"Attachment.Group 横向滚动、吸附，边缘渐隐",
+					"size（default、sm、xs）与 orientation 适应紧凑空间"
+				],
+				"related": [
+					"message",
+					"item",
+					"progress"
+				]
+			}
+		},
 		"relativeUrl": "attachment.json"
 	},
 	{
 		"name": "avatar",
+		"title": "Avatar 头像",
 		"type": "registry:ui",
+		"description": "表示用户的图片，加载失败时显示缩写等后备内容。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"头像",
+					"avatar",
+					"用户头像",
+					"头像组"
+				],
+				"whenToUse": [
+					"显示用户或团队头像，图片失败时显示 Avatar.Fallback",
+					"用 Avatar.Group 叠放多个头像，Avatar.GroupCount 显示剩余数量"
+				],
+				"whenNotToUse": [
+					{
+						"case": "普通图片或封面",
+						"use": "aspect-ratio"
+					},
+					{
+						"case": "状态或分类标签",
+						"use": "badge"
+					}
+				],
+				"accessibility": [
+					"图片 alt 写人名；与名字并排时可视为装饰",
+					"Avatar.Badge 表示的在线等状态不能只靠颜色"
+				],
+				"responsive": [
+					"头像过多时用 Avatar.GroupCount 收起"
+				],
+				"related": [
+					"badge",
+					"item",
+					"message"
+				]
+			}
+		},
 		"relativeUrl": "avatar.json"
 	},
 	{
 		"name": "badge",
+		"title": "Badge 徽标",
 		"type": "registry:ui",
+		"description": "简短的状态、分类或计数标签。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"徽标",
+					"badge",
+					"标签",
+					"状态",
+					"tag"
+				],
+				"whenToUse": [
+					"显示状态、分类或数量",
+					"用 href 渲染为链接"
+				],
+				"whenNotToUse": [
+					{
+						"case": "用户输入、可删除的多个标签",
+						"use": "tags-input"
+					},
+					{
+						"case": "需要说明的提示信息",
+						"use": "alert"
+					},
+					{
+						"case": "可点击的操作",
+						"use": "button"
+					}
+				],
+				"accessibility": [
+					"含义要用文字表达，不能只靠颜色",
+					"作为链接时文字要说明去向"
+				],
+				"responsive": [
+					"文字保持简短，避免换行"
+				],
+				"related": [
+					"button",
+					"tags-input",
+					"avatar"
+				]
+			}
+		},
 		"relativeUrl": "badge.json"
 	},
 	{
 		"name": "breadcrumb",
+		"title": "Breadcrumb 面包屑",
 		"type": "registry:ui",
+		"description": "按层级显示当前页面的路径。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"面包屑",
+					"breadcrumb",
+					"路径",
+					"层级导航"
+				],
+				"whenToUse": [
+					"层级较深的页面显示当前位置，并能返回上级"
+				],
+				"whenNotToUse": [
+					{
+						"case": "列表分页",
+						"use": "pagination"
+					},
+					{
+						"case": "站点主导航",
+						"use": "navigation-menu"
+					},
+					{
+						"case": "有先后顺序的流程步骤",
+						"use": "stepper"
+					}
+				],
+				"accessibility": [
+					"根元素带 aria-label，当前页 Breadcrumb.Page 设置 aria-current=page",
+					"分隔符和省略号对读屏隐藏"
+				],
+				"responsive": [
+					"层级过长时用 Breadcrumb.Ellipsis 折叠中间层，可配合 dropdown-menu 展开"
+				],
+				"related": [
+					"navigation-menu",
+					"dropdown-menu",
+					"sidebar"
+				]
+			}
+		},
 		"relativeUrl": "breadcrumb.json"
 	},
 	{
 		"name": "bubble",
+		"title": "Bubble 消息气泡",
 		"type": "registry:ui",
+		"description": "对话中的消息气泡，支持多种变体、对齐、分组和表情反应。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"消息气泡",
+					"bubble",
+					"聊天",
+					"chat",
+					"对话",
+					"reaction"
+				],
+				"whenToUse": [
+					"聊天文字、引用回复、建议和反应的气泡外观"
+				],
+				"whenNotToUse": [
+					{
+						"case": "完整的消息行（头像、名字、时间、操作）",
+						"use": "message"
+					},
+					{
+						"case": "系统提示或日期分隔",
+						"use": "marker"
+					},
+					{
+						"case": "agent 的推理和工具调用步骤",
+						"use": "trace"
+					}
+				],
+				"accessibility": [
+					"表情反应整组设 role=img 和描述性 aria-label，只读一次",
+					"可点击的气泡用 child 渲染为真实 button 或 a",
+					"变体颜色之外配合文字或对齐表达含义"
+				],
+				"responsive": [
+					"气泡宽度随内容，最多占容器 80%；ghost 变体不限宽"
+				],
+				"related": [
+					"message",
+					"marker",
+					"message-scroller"
+				]
+			}
+		},
 		"relativeUrl": "bubble.json"
 	},
 	{
@@ -183,18 +471,98 @@
 	},
 	{
 		"name": "button-group",
+		"title": "Button Group 按钮组",
 		"type": "registry:ui",
+		"description": "把相关的操作按钮组合在一起，样式连贯。",
 		"registryDependencies": [
 			"separator"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"按钮组",
+					"button group",
+					"分段按钮",
+					"split button",
+					"工具栏"
+				],
+				"whenToUse": [
+					"把相关操作的按钮组合在一起，如按钮加下拉菜单"
+				],
+				"whenNotToUse": [
+					{
+						"case": "切换状态而不是执行操作",
+						"use": "toggle-group"
+					},
+					{
+						"case": "输入框旁边的按钮",
+						"use": "input-group"
+					}
+				],
+				"accessibility": [
+					"根元素 role=group，用 aria-label 或 aria-labelledby 命名",
+					"用 Tab 在按钮间移动"
+				],
+				"responsive": [
+					"窄屏可改 orientation=vertical",
+					"嵌套 ButtonGroup 形成带间距的分组"
+				],
+				"related": [
+					"button",
+					"toggle-group",
+					"input-group"
+				]
+			}
+		},
 		"relativeUrl": "button-group.json"
 	},
 	{
 		"name": "calendar",
+		"title": "Calendar 日历",
 		"type": "registry:ui",
+		"description": "在页面上展示月历并选择日期。",
 		"registryDependencies": [
 			"button"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"日历",
+					"calendar",
+					"日期选择",
+					"date picker",
+					"选择日期"
+				],
+				"whenToUse": [
+					"直接在页面上选择一个或多个日期",
+					"与 popover 组合成日期选择器",
+					"captionLayout=dropdown 用下拉选择月份和年份"
+				],
+				"whenNotToUse": [
+					{
+						"case": "选择开始和结束日期",
+						"use": "range-calendar"
+					},
+					{
+						"case": "页面空间有限，点击后再弹出日历",
+						"use": "popover"
+					}
+				],
+				"accessibility": [
+					"保留 Bits UI 的键盘操作（方向键移动日期、回车选择）",
+					"locale 默认 zh-CN，其他语言要设置 locale，日期使用 @internationalized/date"
+				],
+				"responsive": [
+					"用 --cell-size 控制格子大小，可按断点设置不同值",
+					"显示多个月份时窄屏应减少月数"
+				],
+				"related": [
+					"range-calendar",
+					"popover",
+					"input"
+				]
+			}
+		},
 		"relativeUrl": "calendar.json"
 	},
 	{
@@ -240,16 +608,99 @@
 	},
 	{
 		"name": "carousel",
+		"title": "Carousel 轮播",
 		"type": "registry:ui",
+		"description": "可滑动浏览一组内容的轮播，基于 Embla。",
 		"registryDependencies": [
 			"button"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"轮播",
+					"carousel",
+					"幻灯片",
+					"slider",
+					"滑动浏览"
+				],
+				"whenToUse": [
+					"横向或纵向滑动浏览一组同类内容，如图片、卡片"
+				],
+				"whenNotToUse": [
+					{
+						"case": "只需在区域内滚动",
+						"use": "scroll-area"
+					},
+					{
+						"case": "并列视图切换",
+						"use": "tabs"
+					},
+					{
+						"case": "每项都必须被看到的重要内容",
+						"use": "card"
+					}
+				],
+				"accessibility": [
+					"根元素 role=region、aria-roledescription=carousel，每项为 slide",
+					"上一项／下一项按钮支持方向键；不要无暂停地自动播放"
+				],
+				"responsive": [
+					"用 basis-* 控制每屏显示几项，可按断点设置",
+					"支持触摸滑动"
+				],
+				"related": [
+					"scroll-area",
+					"card",
+					"aspect-ratio"
+				]
+			}
+		},
 		"relativeUrl": "carousel.json"
 	},
 	{
 		"name": "chart",
+		"title": "Chart 图表",
 		"type": "registry:ui",
+		"description": "基于 LayerChart 的图表容器与提示框，统一配色和样式。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"图表",
+					"chart",
+					"柱状图",
+					"折线图",
+					"数据可视化",
+					"layerchart"
+				],
+				"whenToUse": [
+					"展示数据的趋势、对比或分布"
+				],
+				"whenNotToUse": [
+					{
+						"case": "需要逐项查看精确数值",
+						"use": "table"
+					},
+					{
+						"case": "只显示一项完成度",
+						"use": "progress"
+					}
+				],
+				"accessibility": [
+					"颜色之外提供图例或数据标签",
+					"在图表旁提供文字摘要或数据表"
+				],
+				"responsive": [
+					"Chart.Container 默认 aspect-video，可改为固定最小高度",
+					"窄屏减少刻度和图例项"
+				],
+				"related": [
+					"table",
+					"card",
+					"progress"
+				]
+			}
+		},
 		"relativeUrl": "chart.json"
 	},
 	{
@@ -299,17 +750,95 @@
 	},
 	{
 		"name": "code-block",
+		"title": "Code Block 代码块",
 		"type": "registry:ui",
+		"description": "展示代码、终端输出和 diff，可带标题栏、行号和复制按钮。",
 		"registryDependencies": [
 			"use-highlighted-code",
 			"button"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"代码块",
+					"code block",
+					"代码",
+					"终端输出",
+					"diff",
+					"语法高亮"
+				],
+				"whenToUse": [
+					"展示代码片段、终端输出、日志或 diff",
+					"在消息或 trace 中显示工具输出（流式追加时只高亮新行）"
+				],
+				"whenNotToUse": [
+					{
+						"case": "显示键盘按键或快捷键",
+						"use": "kbd"
+					},
+					{
+						"case": "行列结构化数据",
+						"use": "table"
+					}
+				],
+				"accessibility": [
+					"内容区可聚焦，键盘可滚动；浮动操作在获得焦点时也会显示",
+					"复制按钮默认名称“复制”／“已复制”，其他语言用 copyLabel、copiedLabel 改",
+					"diff 行带 +／− 标记，不只靠颜色；换行切换按钮要设 aria-pressed"
+				],
+				"responsive": [
+					"默认不换行、横向滚动；窄屏可开启 wrap",
+					"内容始终从左到右显示，标题栏跟随页面方向"
+				],
+				"related": [
+					"trace",
+					"message",
+					"kbd"
+				]
+			}
+		},
 		"relativeUrl": "code-block.json"
 	},
 	{
 		"name": "collapsible",
+		"title": "Collapsible 折叠区",
 		"type": "registry:ui",
+		"description": "展开或收起单个内容区域。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"折叠",
+					"collapsible",
+					"展开收起",
+					"显示更多"
+				],
+				"whenToUse": [
+					"展开或收起单个区域，如高级设置、文件树"
+				],
+				"whenNotToUse": [
+					{
+						"case": "多段同类内容",
+						"use": "accordion"
+					},
+					{
+						"case": "在浮层中显示内容",
+						"use": "popover"
+					}
+				],
+				"accessibility": [
+					"触发器是按钮，带 aria-expanded"
+				],
+				"responsive": [
+					"窄屏下可收起次要内容"
+				],
+				"related": [
+					"accordion",
+					"trace",
+					"sidebar"
+				]
+			}
+		},
 		"relativeUrl": "collapsible.json"
 	},
 	{
@@ -355,17 +884,108 @@
 	},
 	{
 		"name": "command",
+		"title": "Command 命令菜单",
 		"type": "registry:ui",
+		"description": "可输入筛选的命令列表，用于命令面板（⌘K）和快速搜索选择。",
 		"registryDependencies": [
 			"dialog",
 			"input-group"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"命令面板",
+					"command",
+					"command palette",
+					"cmdk",
+					"搜索",
+					"快速操作",
+					"combobox"
+				],
+				"whenToUse": [
+					"命令面板：搜索并执行操作或跳转页面（Command.Dialog）",
+					"在大量选项中按关键字筛选，可放进 popover 组成可搜索的选择框"
+				],
+				"whenNotToUse": [
+					{
+						"case": "选项不多、不需要搜索的选择",
+						"use": "select"
+					},
+					{
+						"case": "少量固定操作",
+						"use": "dropdown-menu"
+					},
+					{
+						"case": "页面主导航",
+						"use": "navigation-menu"
+					}
+				],
+				"accessibility": [
+					"保留 Bits UI 的键盘操作（上下键移动、回车选择）和输入过滤",
+					"Command.Dialog 自带视觉隐藏的标题和描述，默认中文，可传入 title、description 改",
+					"用 Command.Empty 告知没有匹配结果"
+				],
+				"responsive": [
+					"列表在固定高度内滚动",
+					"⌘K 快捷键在触屏设备上不可用，要提供可见的打开按钮"
+				],
+				"related": [
+					"dialog",
+					"popover",
+					"select"
+				]
+			}
+		},
 		"relativeUrl": "command.json"
 	},
 	{
 		"name": "context-menu",
+		"title": "Context Menu 右键菜单",
 		"type": "registry:ui",
+		"description": "在区域内右键（触屏长按）打开的操作菜单。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"右键菜单",
+					"context menu",
+					"上下文菜单",
+					"快捷菜单",
+					"长按菜单"
+				],
+				"whenToUse": [
+					"为文件、列表项、画布元素等区域提供右键快捷操作",
+					"需要复选项、单选项或子菜单的上下文操作"
+				],
+				"whenNotToUse": [
+					{
+						"case": "页面上唯一的操作入口（右键难以被发现）",
+						"use": "dropdown-menu"
+					},
+					{
+						"case": "桌面应用顶部常驻的命令菜单",
+						"use": "menubar"
+					},
+					{
+						"case": "搜索并执行大量命令",
+						"use": "command"
+					}
+				],
+				"accessibility": [
+					"保留 Bits UI 的键盘操作（方向键、回车、Esc，左右键进出子菜单）",
+					"同样的操作应在可见的按钮或菜单中也能完成；Shortcut 只是快捷键提示，快捷键需另行实现"
+				],
+				"responsive": [
+					"触屏通过长按打开，用户不易发现，移动端要提供可见入口",
+					"菜单靠近边缘时自动调整位置保持在视口内"
+				],
+				"related": [
+					"dropdown-menu",
+					"menubar",
+					"command"
+				]
+			}
+		},
 		"relativeUrl": "context-menu.json"
 	},
 	{
@@ -421,8 +1041,53 @@
 	},
 	{
 		"name": "drawer",
+		"title": "Drawer 抽屉",
 		"type": "registry:ui",
+		"description": "从屏幕边缘拉出、可拖动关闭的面板，适合移动端。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"抽屉",
+					"drawer",
+					"底部弹出",
+					"bottom sheet",
+					"拖动关闭"
+				],
+				"whenToUse": [
+					"移动端从底部弹出的选项、简短表单或详情，支持手势拖动关闭",
+					"需要在面板内再打开一层（Drawer.NestedRoot）"
+				],
+				"whenNotToUse": [
+					{
+						"case": "桌面端从侧边滑出的辅助面板",
+						"use": "sheet"
+					},
+					{
+						"case": "桌面端需要专注完成的对话框",
+						"use": "dialog"
+					},
+					{
+						"case": "确认危险操作",
+						"use": "alert-dialog"
+					}
+				],
+				"accessibility": [
+					"必须有标题（Drawer.Title）；Esc 关闭并把焦点还给触发按钮",
+					"除拖动外提供可见的关闭按钮（Drawer.Close），不能只靠手势"
+				],
+				"responsive": [
+					"常与 dialog 搭配：窄屏用 drawer、宽屏用 dialog",
+					"direction 可选 top、right、bottom、left；内容超出时在面板内部滚动",
+					"modal={false} 时可与页面交互，点击外部不会关闭"
+				],
+				"related": [
+					"dialog",
+					"sheet",
+					"alert-dialog"
+				]
+			}
+		},
 		"relativeUrl": "drawer.json"
 	},
 	{
@@ -475,8 +1140,45 @@
 	},
 	{
 		"name": "empty",
+		"title": "Empty 空状态",
 		"type": "registry:ui",
+		"description": "列表或页面没有数据时显示的说明与下一步操作。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"空状态",
+					"empty",
+					"无数据",
+					"暂无内容",
+					"empty state"
+				],
+				"whenToUse": [
+					"列表、搜索结果或页面没有数据时，说明原因并给出下一步操作"
+				],
+				"whenNotToUse": [
+					{
+						"case": "内容正在加载",
+						"use": "skeleton"
+					},
+					{
+						"case": "出错或需要警告",
+						"use": "alert"
+					}
+				],
+				"accessibility": [
+					"标题和说明用文字讲清原因和下一步；图标是装饰"
+				],
+				"responsive": [
+					"内容居中，窄屏下自动收窄"
+				],
+				"related": [
+					"skeleton",
+					"alert",
+					"button"
+				]
+			}
+		},
 		"relativeUrl": "empty.json"
 	},
 	{
@@ -525,17 +1227,103 @@
 	},
 	{
 		"name": "form",
+		"title": "Form 表单（Formsnap）",
 		"type": "registry:ui",
+		"description": "基于 Formsnap 与 sveltekit-superforms 的表单组件，按字段管理状态与校验错误。",
 		"registryDependencies": [
 			"button",
 			"label"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"表单",
+					"form",
+					"formsnap",
+					"superforms",
+					"zod",
+					"表单校验"
+				],
+				"whenToUse": [
+					"SvelteKit 中用 sveltekit-superforms 与 Zod 等做客户端和服务端校验的表单"
+				],
+				"whenNotToUse": [
+					{
+						"case": "不使用 superforms，只需字段布局与错误展示",
+						"use": "field"
+					},
+					{
+						"case": "分步骤填写的流程",
+						"use": "stepper"
+					},
+					{
+						"case": "多题型问卷",
+						"use": "questionnaire"
+					}
+				],
+				"accessibility": [
+					"Form.Control 根据字段状态为控件设置 id、aria-describedby、aria-invalid",
+					"错误用 Form.FieldErrors 显示，说明用 Form.Description"
+				],
+				"responsive": [
+					"布局由内部控件决定，窄屏下单列排列"
+				],
+				"related": [
+					"field",
+					"input",
+					"label"
+				]
+			}
+		},
 		"relativeUrl": "form.json"
 	},
 	{
 		"name": "hover-card",
+		"title": "Hover Card 悬停卡片",
 		"type": "registry:ui",
+		"description": "鼠标悬停在链接上时浮出的预览卡片，展示链接背后的内容摘要。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"悬停卡片",
+					"hover card",
+					"链接预览",
+					"link preview",
+					"资料卡"
+				],
+				"whenToUse": [
+					"悬停链接时预览其指向的内容，如用户资料、页面摘要"
+				],
+				"whenNotToUse": [
+					{
+						"case": "简短的文字提示",
+						"use": "tooltip"
+					},
+					{
+						"case": "点击打开，或卡片内有需要操作的控件",
+						"use": "popover"
+					},
+					{
+						"case": "触屏为主的场景中唯一的信息入口",
+						"use": "popover"
+					}
+				],
+				"accessibility": [
+					"只是给能看见、用鼠标的用户的补充预览，链接本身必须可访问，卡片内容不能是获取信息的唯一途径",
+					"用 openDelay、closeDelay 控制开合延迟，避免划过时误触发"
+				],
+				"responsive": [
+					"触屏设备没有悬停，卡片不会出现，需保证点击链接仍能到达完整内容",
+					"默认显示在下方（side=bottom），空间不足时自动翻转"
+				],
+				"related": [
+					"tooltip",
+					"popover",
+					"avatar"
+				]
+			}
+		},
 		"relativeUrl": "hover-card.json"
 	},
 	{
@@ -590,90 +1378,640 @@
 	},
 	{
 		"name": "input-group",
+		"title": "Input Group 输入组",
 		"type": "registry:ui",
+		"description": "给输入框或多行文本框加上图标、文字、按钮等前后缀内容。",
 		"registryDependencies": [
 			"button",
 			"input",
 			"textarea"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"输入组",
+					"input group",
+					"前缀",
+					"后缀",
+					"addon",
+					"搜索框"
+				],
+				"whenToUse": [
+					"输入框带前后缀图标、单位、按钮或快捷键提示，如搜索框、复制链接",
+					"多行文本框带底部操作栏（InputGroup.Textarea）"
+				],
+				"whenNotToUse": [
+					{
+						"case": "没有附加内容的普通输入",
+						"use": "input"
+					},
+					{
+						"case": "几个按钮拼在一起",
+						"use": "button-group"
+					},
+					{
+						"case": "标签、说明和错误信息",
+						"use": "field"
+					}
+				],
+				"accessibility": [
+					"InputGroup.Addon 在 DOM 中放在 Input／Textarea 之后，用 align 调整视觉位置，保证焦点顺序",
+					"只有图标的 InputGroup.Button 要加 aria-label",
+					"仍需用 Field 提供可见标签"
+				],
+				"responsive": [
+					"整组占满容器宽度，附加内容过多会在窄屏挤压输入区",
+					"align=block-start／block-end 把附加内容放到输入区上方或下方"
+				],
+				"related": [
+					"input",
+					"textarea",
+					"button-group"
+				]
+			}
+		},
 		"relativeUrl": "input-group.json"
 	},
 	{
 		"name": "input-otp",
+		"title": "Input OTP 验证码输入",
 		"type": "registry:ui",
+		"description": "按位输入固定长度的验证码或一次性密码，支持整串粘贴。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"验证码",
+					"otp",
+					"一次性密码",
+					"pin",
+					"pin input",
+					"短信验证码"
+				],
+				"whenToUse": [
+					"输入固定位数的短信验证码、一次性密码或 PIN"
+				],
+				"whenNotToUse": [
+					{
+						"case": "长度不固定的文本",
+						"use": "input"
+					},
+					{
+						"case": "可步进的数值",
+						"use": "number-field"
+					}
+				],
+				"accessibility": [
+					"基于 Bits UI PinInput，保留粘贴和键盘删除行为",
+					"用 Field 的可见标签说明位数和用途",
+					"用 pattern 限制可输入字符（如仅数字）"
+				],
+				"responsive": [
+					"默认 inputmode=numeric，移动端弹出数字键盘",
+					"格子多时窄屏注意总宽度，可用 InputOTP.Separator 分组"
+				],
+				"related": [
+					"input",
+					"field",
+					"number-field"
+				]
+			}
+		},
 		"relativeUrl": "input-otp.json"
 	},
 	{
 		"name": "item",
+		"title": "Item 内容项",
 		"type": "registry:ui",
+		"description": "显示媒体、标题、说明和操作的内容行。",
 		"registryDependencies": [
 			"separator"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"内容项",
+					"item",
+					"列表项",
+					"list item",
+					"行"
+				],
+				"whenToUse": [
+					"显示带图标或头像、标题、说明和操作的内容行",
+					"用 Item.Group 组成列表"
+				],
+				"whenNotToUse": [
+					{
+						"case": "表单控件",
+						"use": "field"
+					},
+					{
+						"case": "大块的分组内容",
+						"use": "card"
+					},
+					{
+						"case": "行列结构化数据",
+						"use": "table"
+					}
+				],
+				"accessibility": [
+					"整行可点击时用 child 渲染为真实链接或按钮",
+					"只有图标的操作要加 aria-label"
+				],
+				"responsive": [
+					"size（default、sm、xs）适应紧凑空间",
+					"窄屏下操作区可换行"
+				],
+				"related": [
+					"card",
+					"field",
+					"avatar"
+				]
+			}
+		},
 		"relativeUrl": "item.json"
 	},
 	{
 		"name": "kbd",
+		"title": "Kbd 按键",
 		"type": "registry:ui",
+		"description": "显示键盘按键或快捷键。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"按键",
+					"kbd",
+					"快捷键",
+					"keyboard",
+					"shortcut"
+				],
+				"whenToUse": [
+					"在按钮、提示、输入组中显示快捷键，如 ⌘K"
+				],
+				"whenNotToUse": [
+					{
+						"case": "代码片段",
+						"use": "code-block"
+					},
+					{
+						"case": "状态标签",
+						"use": "badge"
+					}
+				],
+				"accessibility": [
+					"渲染为 kbd 元素；⌘ 等符号读屏可能读不出，需配合文字说明"
+				],
+				"responsive": [
+					"触屏设备上快捷键无意义，窄屏可隐藏"
+				],
+				"related": [
+					"button",
+					"tooltip",
+					"command"
+				]
+			}
+		},
 		"relativeUrl": "kbd.json"
 	},
 	{
 		"name": "label",
+		"title": "Label 标签",
 		"type": "registry:ui",
+		"description": "与控件关联的无障碍文字标签。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"标签",
+					"label",
+					"表单标签",
+					"字段名"
+				],
+				"whenToUse": [
+					"为单个控件提供可见、可点击的标签"
+				],
+				"whenNotToUse": [
+					{
+						"case": "完整的表单字段（标签、说明、错误）",
+						"use": "field"
+					}
+				],
+				"accessibility": [
+					"用 for 关联控件的 id",
+					"不要用 placeholder 代替标签"
+				],
+				"responsive": [
+					"窄屏下放在控件上方"
+				],
+				"related": [
+					"field",
+					"input",
+					"checkbox"
+				]
+			}
+		},
 		"relativeUrl": "label.json"
 	},
 	{
 		"name": "marker",
+		"title": "Marker 对话标记",
 		"type": "registry:ui",
+		"description": "对话中的状态提示、系统说明、带边框的行或带文字的分隔线。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"对话标记",
+					"marker",
+					"系统消息",
+					"状态",
+					"日期分隔",
+					"思考中"
+				],
+				"whenToUse": [
+					"对话中的进行中状态（如“思考中…”）、系统说明、日期分隔"
+				],
+				"whenNotToUse": [
+					{
+						"case": "用户或助手的消息内容",
+						"use": "message"
+					},
+					{
+						"case": "agent 的工具调用等步骤",
+						"use": "trace"
+					},
+					{
+						"case": "没有文字的普通分隔线",
+						"use": "separator"
+					}
+				],
+				"accessibility": [
+					"进行中的状态设 role=status，并配合 spinner",
+					"带文字的分隔不要加 role=separator，否则文字不会被朗读",
+					"Marker.Icon 对读屏隐藏，含义写在 Marker.Content"
+				],
+				"responsive": [
+					"宽度随对话列表"
+				],
+				"related": [
+					"message",
+					"trace",
+					"separator"
+				]
+			}
+		},
 		"relativeUrl": "marker.json"
 	},
 	{
 		"name": "menubar",
+		"title": "Menubar 菜单栏",
 		"type": "registry:ui",
+		"description": "桌面应用风格的常驻菜单栏，集中提供文件、编辑、视图等命令。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"菜单栏",
+					"menubar",
+					"顶部菜单",
+					"应用菜单",
+					"文件菜单"
+				],
+				"whenToUse": [
+					"编辑器、工具类应用顶部常驻的一组命令菜单",
+					"命令带复选项、单选项、子菜单或快捷键提示"
+				],
+				"whenNotToUse": [
+					{
+						"case": "网站页面之间的导航链接",
+						"use": "navigation-menu"
+					},
+					{
+						"case": "单个按钮触发的少量操作",
+						"use": "dropdown-menu"
+					},
+					{
+						"case": "以移动端为主的界面",
+						"use": "dropdown-menu"
+					}
+				],
+				"accessibility": [
+					"保留 Bits UI 的键盘操作：左右键在菜单间切换，上下键选择，Esc 关闭",
+					"Menubar.Shortcut 只显示快捷键，快捷键本身需另行实现"
+				],
+				"responsive": [
+					"菜单横向排列，窄屏空间有限，菜单数量要少，否则改用 dropdown-menu",
+					"菜单内容靠近边缘时自动调整位置"
+				],
+				"related": [
+					"dropdown-menu",
+					"context-menu",
+					"navigation-menu"
+				]
+			}
+		},
 		"relativeUrl": "menubar.json"
 	},
 	{
 		"name": "message",
+		"title": "Message 消息",
 		"type": "registry:ui",
+		"description": "对话中的一条消息行，负责头像、对齐、头部和底部。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"消息",
+					"message",
+					"聊天",
+					"chat",
+					"对话",
+					"AI 回复"
+				],
+				"whenToUse": [
+					"对话中的一条消息，带头像、发送者、时间和操作",
+					"Message.Group 叠放同一发送者的连续消息"
+				],
+				"whenNotToUse": [
+					{
+						"case": "只需要气泡外观",
+						"use": "bubble"
+					},
+					{
+						"case": "agent 的推理与工具调用步骤",
+						"use": "trace"
+					},
+					{
+						"case": "系统提示与分隔",
+						"use": "marker"
+					}
+				],
+				"accessibility": [
+					"Message.Footer 中只有图标的操作按钮要加 aria-label",
+					"进行中的状态用 marker 并设 role=status"
+				],
+				"responsive": [
+					"align=end 让自己的消息排在另一侧，头像随之移动"
+				],
+				"related": [
+					"bubble",
+					"message-scroller",
+					"marker"
+				]
+			}
+		},
 		"relativeUrl": "message.json"
 	},
 	{
 		"name": "message-scroller",
+		"title": "Message Scroller 消息滚动区",
 		"type": "registry:ui",
+		"description": "聊天记录滚动容器：跟随流式回复、加载历史不跳动、可跳转到任意消息。",
 		"registryDependencies": [
 			"button"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"消息滚动",
+					"message scroller",
+					"聊天记录",
+					"chat scroll",
+					"流式",
+					"transcript"
+				],
+				"whenToUse": [
+					"聊天记录：新回合锚定、跟随流式回复、加载更早消息时保持位置",
+					"打开保存的会话时定位到合适位置"
+				],
+				"whenNotToUse": [
+					{
+						"case": "普通内容的滚动区域",
+						"use": "scroll-area"
+					}
+				],
+				"accessibility": [
+					"Viewport 默认 role=region、aria-label=消息、可聚焦；其他语言要改 aria-label",
+					"Content 为 role=log，新行会被朗读；流式输出时可传 aria-busy",
+					"MessageScroller.Button 无内容可滚时设为 inert，不占焦点"
+				],
+				"responsive": [
+					"填满父元素，必须放在有确定高度的容器内"
+				],
+				"related": [
+					"message",
+					"scroll-area",
+					"marker"
+				]
+			}
+		},
 		"relativeUrl": "message-scroller.json"
 	},
 	{
 		"name": "native-select",
+		"title": "Native Select 原生下拉选择",
 		"type": "registry:ui",
+		"description": "带统一样式的原生 HTML select，使用浏览器自带的下拉行为。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"原生下拉",
+					"native select",
+					"select",
+					"下拉框",
+					"optgroup"
+				],
+				"whenToUse": [
+					"需要浏览器原生行为：移动端系统选择器、更好的性能",
+					"选项可用 NativeSelect.OptGroup 分组"
+				],
+				"whenNotToUse": [
+					{
+						"case": "需要自定义选项外观、动画或复杂交互",
+						"use": "select"
+					},
+					{
+						"case": "选项 2–5 个且需要一眼看全",
+						"use": "radio-group"
+					},
+					{
+						"case": "需要搜索大量选项",
+						"use": "command"
+					}
+				],
+				"accessibility": [
+					"原生 select 自带键盘和读屏支持",
+					"用 Field 提供可见标签；校验错误用 aria-invalid"
+				],
+				"responsive": [
+					"移动端使用系统原生选择器",
+					"窄屏下占满容器宽度"
+				],
+				"related": [
+					"select",
+					"field",
+					"radio-group"
+				]
+			}
+		},
 		"relativeUrl": "native-select.json"
 	},
 	{
 		"name": "navigation-menu",
+		"title": "Navigation Menu 导航菜单",
 		"type": "registry:ui",
+		"description": "网站顶部的导航链接，可展开为带说明的分组面板。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"导航菜单",
+					"navigation menu",
+					"顶部导航",
+					"mega menu",
+					"站点导航"
+				],
+				"whenToUse": [
+					"网站顶部导航，部分入口展开为分组链接面板"
+				],
+				"whenNotToUse": [
+					{
+						"case": "应用内的侧边导航",
+						"use": "sidebar"
+					},
+					{
+						"case": "执行命令的菜单",
+						"use": "menubar"
+					},
+					{
+						"case": "同一页面内切换视图",
+						"use": "tabs"
+					}
+				],
+				"accessibility": [
+					"保留 Bits UI 的键盘操作（方向键、回车、Esc）",
+					"用 NavigationMenu.Link 的 href 渲染真实链接；普通链接可用 navigationMenuTriggerStyle() 统一外观"
+				],
+				"responsive": [
+					"内容面板在 md 及以上绝对定位，窄屏占满宽度",
+					"移动端通常改用 sheet 或 drawer 承载导航"
+				],
+				"related": [
+					"sidebar",
+					"breadcrumb",
+					"menubar"
+				]
+			}
+		},
 		"relativeUrl": "navigation-menu.json"
 	},
 	{
 		"name": "number-field",
+		"title": "Number Field 数字输入",
 		"type": "registry:ui",
+		"description": "可编辑、可步进的本地化数值输入，支持原生表单提交。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"数字输入",
+					"number field",
+					"数量",
+					"步进",
+					"stepper input",
+					"金额",
+					"百分比"
+				],
+				"whenToUse": [
+					"输入数量、金额、百分比等可步进的数值",
+					"需要按地区格式化显示（formatOptions），提交时仍是纯数值"
+				],
+				"whenNotToUse": [
+					{
+						"case": "已知范围、希望拖动调整",
+						"use": "slider-field"
+					},
+					{
+						"case": "验证码等逐位输入的数字",
+						"use": "input-otp"
+					},
+					{
+						"case": "电话号码、编号等不做运算的数字串",
+						"use": "input"
+					},
+					{
+						"case": "任意精度的金融运算（组件使用 JavaScript number）"
+					}
+				],
+				"accessibility": [
+					"上下键步进，PageUp／PageDown 十格，Home／End 到最小／最大值",
+					"加减按钮名称用 decrementLabel、incrementLabel 本地化",
+					"无效输入设置 aria-invalid 并阻止提交，不静默恢复旧值"
+				],
+				"responsive": [
+					"不响应滚轮和长按自动重复，避免滚动页面时误改数值",
+					"加减按钮是原生按钮，支持触摸点击"
+				],
+				"related": [
+					"slider-field",
+					"input",
+					"field"
+				]
+			}
+		},
 		"relativeUrl": "number-field.json"
 	},
 	{
 		"name": "pagination",
+		"title": "Pagination 分页",
 		"type": "registry:ui",
+		"description": "页码与上一页、下一页导航。",
 		"registryDependencies": [
 			"button"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"分页",
+					"pagination",
+					"页码",
+					"上一页",
+					"下一页"
+				],
+				"whenToUse": [
+					"把长列表或表格分成多页浏览"
+				],
+				"whenNotToUse": [
+					{
+						"case": "显示层级位置",
+						"use": "breadcrumb"
+					},
+					{
+						"case": "有顺序的流程步骤",
+						"use": "stepper"
+					},
+					{
+						"case": "少量内容的轮换浏览",
+						"use": "carousel"
+					}
+				],
+				"accessibility": [
+					"当前页带 aria-current=page",
+					"上一页／下一页默认中文文字和 aria-label，其他语言传 label 和 aria-label 覆盖"
+				],
+				"responsive": [
+					"上一页／下一页的文字在 sm 以下隐藏，只留图标",
+					"窄屏减少显示的页码数"
+				],
+				"related": [
+					"table",
+					"breadcrumb",
+					"button"
+				]
+			}
+		},
 		"relativeUrl": "pagination.json"
 	},
 	{
@@ -724,16 +2062,103 @@
 	},
 	{
 		"name": "progress",
+		"title": "Progress 进度条",
 		"type": "registry:ui",
+		"description": "显示任务的完成进度。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"进度条",
+					"progress",
+					"进度",
+					"完成度",
+					"上传进度"
+				],
+				"whenToUse": [
+					"显示可度量的任务完成度，如上传、导入"
+				],
+				"whenNotToUse": [
+					{
+						"case": "无法估计进度的等待",
+						"use": "spinner"
+					},
+					{
+						"case": "内容加载占位",
+						"use": "skeleton"
+					},
+					{
+						"case": "用户调整数值",
+						"use": "slider"
+					}
+				],
+				"accessibility": [
+					"用 Field 提供标签或加 aria-label，让进度条有名称",
+					"完成度要能用文字读到，如“已上传 60%”"
+				],
+				"responsive": [
+					"占满容器宽度"
+				],
+				"related": [
+					"spinner",
+					"skeleton",
+					"slider"
+				]
+			}
+		},
 		"relativeUrl": "progress.json"
 	},
 	{
 		"name": "questionnaire",
+		"title": "Questionnaire 问卷",
 		"type": "registry:ui",
+		"description": "逐题作答的多步问卷，支持单选、多选、自由回答和跳过。",
 		"registryDependencies": [
 			"button"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"问卷",
+					"questionnaire",
+					"调查",
+					"survey",
+					"多步",
+					"答题"
+				],
+				"whenToUse": [
+					"逐题作答的问卷：单选、多选、自由回答、可跳过",
+					"需要条件题、校验、进度、恢复作答"
+				],
+				"whenNotToUse": [
+					{
+						"case": "一般的多步表单流程",
+						"use": "stepper"
+					},
+					{
+						"case": "单页表单",
+						"use": "field"
+					},
+					{
+						"case": "只有一个选择题",
+						"use": "radio-group"
+					}
+				],
+				"accessibility": [
+					"Questionnaire.Item 是 fieldset，Title 是 legend；错误与 aria-invalid 关联到当前题",
+					"切换后焦点到新题，校验失败聚焦答案控件",
+					"Questionnaire.Input 必须有可访问名称，placeholder 不算标签"
+				],
+				"responsive": [
+					"可放进 card 或 dialog 中使用"
+				],
+				"related": [
+					"stepper",
+					"radio-group",
+					"progress"
+				]
+			}
+		},
 		"relativeUrl": "questionnaire.json"
 	},
 	{
@@ -785,22 +2210,138 @@
 	},
 	{
 		"name": "range-calendar",
+		"title": "Range Calendar 日期范围",
 		"type": "registry:ui",
+		"description": "在月历上选择开始和结束日期。",
 		"registryDependencies": [
 			"button"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"日期范围",
+					"range calendar",
+					"起止日期",
+					"date range",
+					"时间段"
+				],
+				"whenToUse": [
+					"选择预订、报表等的起止日期"
+				],
+				"whenNotToUse": [
+					{
+						"case": "只选一个日期",
+						"use": "calendar"
+					},
+					{
+						"case": "页面空间有限，点击后再弹出",
+						"use": "popover"
+					}
+				],
+				"accessibility": [
+					"保留 Bits UI 的键盘操作（方向键移动日期、回车选择起止）",
+					"locale 默认 zh-CN，其他语言要设置 locale"
+				],
+				"responsive": [
+					"显示多个月份时窄屏应减少月数",
+					"用 --cell-size 控制格子大小，可按断点设置不同值"
+				],
+				"related": [
+					"calendar",
+					"popover",
+					"input"
+				]
+			}
+		},
 		"relativeUrl": "range-calendar.json"
 	},
 	{
 		"name": "resizable",
+		"title": "Resizable 可调分栏",
 		"type": "registry:ui",
+		"description": "可拖动调整大小的面板分栏，基于 PaneForge。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"可调分栏",
+					"resizable",
+					"分栏",
+					"split pane",
+					"拖动调整"
+				],
+				"whenToUse": [
+					"用户可拖动调整大小的分栏，如编辑器、三栏邮件"
+				],
+				"whenNotToUse": [
+					{
+						"case": "应用的侧边导航",
+						"use": "sidebar"
+					},
+					{
+						"case": "固定比例的内容",
+						"use": "aspect-ratio"
+					}
+				],
+				"accessibility": [
+					"分隔把手可键盘聚焦并用方向键调整",
+					"withHandle 显示可见把手，便于发现"
+				],
+				"responsive": [
+					"窄屏不适合多栏拖动，改为单栏或 direction=vertical"
+				],
+				"related": [
+					"sidebar",
+					"scroll-area",
+					"separator"
+				]
+			}
+		},
 		"relativeUrl": "resizable.json"
 	},
 	{
 		"name": "scroll-area",
+		"title": "Scroll Area 滚动区域",
 		"type": "registry:ui",
+		"description": "固定尺寸区域内的滚动，各浏览器滚动条样式一致。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"滚动区域",
+					"scroll area",
+					"滚动条",
+					"scrollbar",
+					"溢出"
+				],
+				"whenToUse": [
+					"固定高度或宽度的区域内滚动，需要统一的滚动条外观",
+					"orientation=horizontal 横向滚动"
+				],
+				"whenNotToUse": [
+					{
+						"case": "聊天记录",
+						"use": "message-scroller"
+					},
+					{
+						"case": "逐项滑动浏览的内容",
+						"use": "carousel"
+					}
+				],
+				"accessibility": [
+					"保留原生滚动和键盘滚动",
+					"区域内没有可聚焦元素时，确保键盘用户仍能滚动查看内容"
+				],
+				"responsive": [
+					"必须给出高度或宽度，否则不会滚动"
+				],
+				"related": [
+					"message-scroller",
+					"carousel",
+					"table"
+				]
+			}
+		},
 		"relativeUrl": "scroll-area.json"
 	},
 	{
@@ -856,8 +2397,41 @@
 	},
 	{
 		"name": "separator",
+		"title": "Separator 分隔线",
 		"type": "registry:ui",
+		"description": "在视觉或语义上分隔内容。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"分隔线",
+					"separator",
+					"divider",
+					"分割线"
+				],
+				"whenToUse": [
+					"分隔内容组或菜单项",
+					"orientation=vertical 纵向分隔"
+				],
+				"whenNotToUse": [
+					{
+						"case": "对话中带文字的分隔，如日期",
+						"use": "marker"
+					}
+				],
+				"accessibility": [
+					"纯装饰时设 decorative，读屏忽略"
+				],
+				"responsive": [
+					"纵向分隔线在父元素中自动拉伸高度"
+				],
+				"related": [
+					"marker",
+					"card",
+					"item"
+				]
+			}
+		},
 		"relativeUrl": "separator.json"
 	},
 	{
@@ -909,7 +2483,9 @@
 	},
 	{
 		"name": "sidebar",
+		"title": "Sidebar 侧边栏",
 		"type": "registry:ui",
+		"description": "可折叠、可定制的应用侧边导航。",
 		"registryDependencies": [
 			"is-mobile",
 			"input",
@@ -919,18 +2495,146 @@
 			"button",
 			"sheet"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"侧边栏",
+					"sidebar",
+					"侧边导航",
+					"导航栏",
+					"菜单"
+				],
+				"whenToUse": [
+					"应用的主侧边导航，可折叠为图标或完全隐藏"
+				],
+				"whenNotToUse": [
+					{
+						"case": "网站顶部导航",
+						"use": "navigation-menu"
+					},
+					{
+						"case": "临时的辅助面板",
+						"use": "sheet"
+					},
+					{
+						"case": "用户可拖动调整的分栏",
+						"use": "resizable"
+					}
+				],
+				"accessibility": [
+					"Ctrl／⌘+B 切换侧边栏",
+					"Sidebar.Trigger 和 Rail 的读屏名称默认“切换侧边栏”，其他语言需改",
+					"菜单项用真实链接"
+				],
+				"responsive": [
+					"移动端以 sheet 形式显示",
+					"collapsible 可选 offcanvas、icon、none"
+				],
+				"related": [
+					"sheet",
+					"navigation-menu",
+					"breadcrumb"
+				]
+			}
+		},
 		"relativeUrl": "sidebar.json"
 	},
 	{
 		"name": "skeleton",
+		"title": "Skeleton 骨架屏",
 		"type": "registry:ui",
+		"description": "内容加载时按最终布局显示的占位。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"骨架屏",
+					"skeleton",
+					"加载占位",
+					"loading",
+					"占位"
+				],
+				"whenToUse": [
+					"内容加载时按最终布局显示占位，减少布局跳动"
+				],
+				"whenNotToUse": [
+					{
+						"case": "按钮或小区域的短暂加载",
+						"use": "spinner"
+					},
+					{
+						"case": "可度量的进度",
+						"use": "progress"
+					},
+					{
+						"case": "加载完但没有数据",
+						"use": "empty"
+					}
+				],
+				"accessibility": [
+					"占位是装饰，在容器上用 aria-busy 或提供读屏可读的加载文字"
+				],
+				"responsive": [
+					"占位尺寸与真实内容一致，各断点都要对应"
+				],
+				"related": [
+					"spinner",
+					"progress",
+					"empty"
+				]
+			}
+		},
 		"relativeUrl": "skeleton.json"
 	},
 	{
 		"name": "slider",
+		"title": "Slider 滑块",
 		"type": "registry:ui",
+		"description": "在给定范围内拖动选择一个值或一个区间。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"滑块",
+					"slider",
+					"范围",
+					"range",
+					"拖动"
+				],
+				"whenToUse": [
+					"在已知范围内粗略选择数值，如音量",
+					"用 type=multiple 选择区间或多个值"
+				],
+				"whenNotToUse": [
+					{
+						"case": "需要精确输入数值",
+						"use": "slider-field"
+					},
+					{
+						"case": "没有明确范围的数字",
+						"use": "number-field"
+					},
+					{
+						"case": "只展示完成度、不可调整",
+						"use": "progress"
+					}
+				],
+				"accessibility": [
+					"用 aria-label 或 aria-labelledby 命名可聚焦的滑块把手；指向根元素 id 的 HTML label 不能命名内部把手",
+					"多个把手用 thumbLabels 按值的顺序分别命名",
+					"方向键调整数值"
+				],
+				"responsive": [
+					"支持触摸拖动，窄屏下占满容器宽度",
+					"orientation=vertical 纵向显示，需要给出高度"
+				],
+				"related": [
+					"slider-field",
+					"number-field",
+					"progress"
+				]
+			}
+		},
 		"relativeUrl": "slider.json"
 	},
 	{
@@ -1024,14 +2728,95 @@
 	},
 	{
 		"name": "spinner",
+		"title": "Spinner 加载指示",
 		"type": "registry:ui",
+		"description": "表示正在加载的旋转图标。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"加载",
+					"spinner",
+					"loading",
+					"转圈",
+					"等待"
+				],
+				"whenToUse": [
+					"时长不定的加载状态，可放在按钮、徽标、输入组中"
+				],
+				"whenNotToUse": [
+					{
+						"case": "可度量的进度",
+						"use": "progress"
+					},
+					{
+						"case": "整块内容加载",
+						"use": "skeleton"
+					}
+				],
+				"accessibility": [
+					"默认 role=status、aria-label=加载中，能更具体时改 aria-label"
+				],
+				"responsive": [
+					"用 size-* 调整大小"
+				],
+				"related": [
+					"progress",
+					"skeleton",
+					"button"
+				]
+			}
+		},
 		"relativeUrl": "spinner.json"
 	},
 	{
 		"name": "stepper",
+		"title": "Stepper 步骤条",
 		"type": "registry:ui",
+		"description": "带校验门禁、可取消异步校验的分步流程。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"步骤条",
+					"stepper",
+					"向导",
+					"wizard",
+					"多步表单",
+					"流程"
+				],
+				"whenToUse": [
+					"有先后顺序的多步流程，如多步表单、配置向导",
+					"前进前需要校验（beforeChange），可异步并可取消"
+				],
+				"whenNotToUse": [
+					{
+						"case": "多题型、可跳过的问卷",
+						"use": "questionnaire"
+					},
+					{
+						"case": "并列视图切换",
+						"use": "tabs"
+					},
+					{
+						"case": "显示页面层级",
+						"use": "breadcrumb"
+					}
+				],
+				"accessibility": [
+					"步骤为原生按钮列表，当前步骤 aria-current=step，切换后聚焦内容区",
+					"方向键移动焦点，Enter／Space 激活，Home／End 到首尾"
+				],
+				"responsive": [
+					"横向步骤在窄屏折为竖排，键盘方向仍以 orientation 为准"
+				],
+				"related": [
+					"tabs",
+					"questionnaire",
+					"progress"
+				]
+			}
+		},
 		"relativeUrl": "stepper.json"
 	},
 	{
@@ -1079,8 +2864,46 @@
 	},
 	{
 		"name": "table",
+		"title": "Table 表格",
 		"type": "registry:ui",
+		"description": "展示行列结构化数据的表格。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"表格",
+					"table",
+					"数据表",
+					"data table",
+					"列表"
+				],
+				"whenToUse": [
+					"行列结构化数据",
+					"结合 @tanstack/table 做排序、筛选、分页"
+				],
+				"whenNotToUse": [
+					{
+						"case": "数据的趋势或对比",
+						"use": "chart"
+					},
+					{
+						"case": "少量内容项",
+						"use": "item"
+					}
+				],
+				"accessibility": [
+					"使用语义化 table、表头单元格，用 Table.Caption 说明表格内容"
+				],
+				"responsive": [
+					"外层容器横向滚动，窄屏不压缩列"
+				],
+				"related": [
+					"pagination",
+					"chart",
+					"item"
+				]
+			}
+		},
 		"relativeUrl": "table.json"
 	},
 	{
@@ -1130,8 +2953,53 @@
 	},
 	{
 		"name": "tags-input",
+		"title": "Tags Input 标签输入",
 		"type": "registry:ui",
+		"description": "输入并管理一组自由文本标签，支持输入法、校验和原生表单。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"标签输入",
+					"tags input",
+					"多值输入",
+					"关键词",
+					"chips",
+					"tag"
+				],
+				"whenToUse": [
+					"输入任意数量的自由文本标签，如话题、关键词、邮箱列表"
+				],
+				"whenNotToUse": [
+					{
+						"case": "从固定选项中多选",
+						"use": "checkbox"
+					},
+					{
+						"case": "只有一个文本值",
+						"use": "input"
+					},
+					{
+						"case": "需要搜索建议后选择",
+						"use": "command"
+					}
+				],
+				"accessibility": [
+					"中文输入法组合输入期间不会误添加标签",
+					"Backspace、方向键选择和删除标签；删除按钮可 Tab 操作，名称用 removeLabel 本地化",
+					"required 与校验错误通过原生约束阻止提交，并关联错误文字"
+				],
+				"responsive": [
+					"标签自动换行，长文本可换行",
+					"不做虚拟化，适合合理数量的标签"
+				],
+				"related": [
+					"input",
+					"badge",
+					"field"
+				]
+			}
+		},
 		"relativeUrl": "tags-input.json"
 	},
 	{
@@ -1179,16 +3047,101 @@
 	},
 	{
 		"name": "toggle",
+		"title": "Toggle 切换按钮",
 		"type": "registry:ui",
+		"description": "按下／弹起两种状态的按钮，如工具栏中的加粗。",
 		"registryDependencies": [],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"切换按钮",
+					"toggle",
+					"开关按钮",
+					"按下状态",
+					"pressed"
+				],
+				"whenToUse": [
+					"工具栏中可开关的单个状态，如加粗、静音"
+				],
+				"whenNotToUse": [
+					{
+						"case": "设置项的开启／关闭",
+						"use": "switch"
+					},
+					{
+						"case": "一组单选或多选的状态",
+						"use": "toggle-group"
+					},
+					{
+						"case": "执行一次性操作",
+						"use": "button"
+					}
+				],
+				"accessibility": [
+					"Bits UI 用 aria-pressed 表达按下状态",
+					"只有图标时要加 aria-label"
+				],
+				"responsive": [
+					"窄屏下保证触摸目标足够大（size）"
+				],
+				"related": [
+					"toggle-group",
+					"switch",
+					"button"
+				]
+			}
+		},
 		"relativeUrl": "toggle.json"
 	},
 	{
 		"name": "toggle-group",
+		"title": "Toggle Group 切换按钮组",
 		"type": "registry:ui",
+		"description": "一组切换按钮，可单选（如对齐方式）或多选（如文字样式）。",
 		"registryDependencies": [
 			"toggle"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"切换按钮组",
+					"toggle group",
+					"分段控制",
+					"segmented control",
+					"对齐方式"
+				],
+				"whenToUse": [
+					"一组相关的状态按钮，type=single 单选或 type=multiple 多选"
+				],
+				"whenNotToUse": [
+					{
+						"case": "执行操作的按钮组",
+						"use": "button-group"
+					},
+					{
+						"case": "表单中的单选项",
+						"use": "radio-group"
+					},
+					{
+						"case": "切换页面内的内容面板",
+						"use": "tabs"
+					}
+				],
+				"accessibility": [
+					"保留 Bits UI 的方向键移动焦点",
+					"用 aria-label 命名整组和只有图标的项"
+				],
+				"responsive": [
+					"项较多时窄屏可改 orientation=vertical",
+					"spacing 控制项之间的间距"
+				],
+				"related": [
+					"toggle",
+					"button-group",
+					"tabs"
+				]
+			}
+		},
 		"relativeUrl": "toggle-group.json"
 	},
 	{
@@ -1234,10 +3187,51 @@
 	},
 	{
 		"name": "trace",
+		"title": "Trace 执行轨迹",
 		"type": "registry:ui",
+		"description": "展示 agent 推理、工具调用、来源等步骤的行列表。",
 		"registryDependencies": [
 			"collapsible"
 		],
+		"meta": {
+			"valar": {
+				"keywords": [
+					"执行轨迹",
+					"trace",
+					"工具调用",
+					"推理",
+					"agent",
+					"步骤"
+				],
+				"whenToUse": [
+					"展示 agent 的推理、工具调用、子任务、来源",
+					"步骤可展开详情、链接，或打开 dialog、sheet"
+				],
+				"whenNotToUse": [
+					{
+						"case": "agent 的回复内容",
+						"use": "message"
+					},
+					{
+						"case": "回合之间的提示和分隔",
+						"use": "marker"
+					}
+				],
+				"accessibility": [
+					"本身不加角色，语义来自包裹它的触发器（如 Trace.CollapsibleTrigger 带 aria-expanded）",
+					"Trace.Title 是可访问名称，要写成完整的一句话，状态也写进标题",
+					"运行中的闪烁效果在“减少动态效果”时停止"
+				],
+				"responsive": [
+					"支持嵌套，摘要可展开为步骤"
+				],
+				"related": [
+					"message",
+					"marker",
+					"collapsible"
+				]
+			}
+		},
 		"relativeUrl": "trace.json"
 	},
 	{

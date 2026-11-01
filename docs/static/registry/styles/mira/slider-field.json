@@ -46,6 +46,11 @@
 	},
 	"files": [
 		{
+			"content": "# Slider Field 设计规范\n\n- 用于有明确范围、又需要精确数值的参数（尺寸、透明度、音量）；只需粗略拖动时用 Slider，没有范围的数字用 Number Field。\n- `label` 必填，它同时命名滑块、数字输入框和加减按钮，并显示为可见标签；不要在外面再包一个 Field.Label。\n- 单位写在 `unit`（如 `unit=\"px\"`），它只显示在数字后面，不进入值；值始终是数字。\n- 必须给出 `min`、`max`、`step`。超出范围或无法解析的输入会被标为无效并保持上一个有效值，不要另外写截断逻辑。\n- 放在表单中提交时设 `name`，提交的是纯数字。\n",
+			"type": "registry:file",
+			"target": "slider-field/RULES.md"
+		},
+		{
 			"content": "export { default as SliderField, type SliderFieldProps } from \"./slider-field.svelte\";\n",
 			"type": "registry:file",
 			"target": "slider-field/index.ts"

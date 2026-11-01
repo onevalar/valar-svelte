@@ -1,11 +1,53 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "empty",
+	"title": "Empty 空状态",
 	"type": "registry:ui",
+	"description": "列表或页面没有数据时显示的说明与下一步操作。",
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"空状态",
+				"empty",
+				"无数据",
+				"暂无内容",
+				"empty state"
+			],
+			"whenToUse": [
+				"列表、搜索结果或页面没有数据时，说明原因并给出下一步操作"
+			],
+			"whenNotToUse": [
+				{
+					"case": "内容正在加载",
+					"use": "skeleton"
+				},
+				{
+					"case": "出错或需要警告",
+					"use": "alert"
+				}
+			],
+			"accessibility": [
+				"标题和说明用文字讲清原因和下一步；图标是装饰"
+			],
+			"responsive": [
+				"内容居中，窄屏下自动收窄"
+			],
+			"related": [
+				"skeleton",
+				"alert",
+				"button"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Empty 设计规范\n\n- 用于列表、表格、搜索结果为空时的占位：用 `Empty.Header` 包 `Empty.Media`、`Empty.Title`、`Empty.Description`，下一步操作放进 `Empty.Content`。\n- 标题说明当前状态（“还没有项目”），说明文字告诉用户怎么做；尽量提供一个能解决问题的主按钮（如“新建项目”“清除筛选”）。\n- `Empty.Title` 渲染为 `div`：需要进入页面标题层级时在里面放合适级别的标题元素。\n- 图标用 `<Empty.Media variant=\"icon\">`，不要自己写带背景色的图标容器。\n",
+			"type": "registry:file",
+			"target": "empty/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"empty-content\"\n\tclass={cn(\n\t\t\"gap-2 text-xs/relaxed flex w-full max-w-sm min-w-0 flex-col items-center text-balance\",\n\t\tclassName\n\t)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",
 			"type": "registry:file",

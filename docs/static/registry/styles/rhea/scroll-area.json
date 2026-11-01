@@ -1,12 +1,56 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "scroll-area",
+	"title": "Scroll Area 滚动区域",
 	"type": "registry:ui",
+	"description": "固定尺寸区域内的滚动，各浏览器滚动条样式一致。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"滚动区域",
+				"scroll area",
+				"滚动条",
+				"scrollbar",
+				"溢出"
+			],
+			"whenToUse": [
+				"固定高度或宽度的区域内滚动，需要统一的滚动条外观",
+				"orientation=horizontal 横向滚动"
+			],
+			"whenNotToUse": [
+				{
+					"case": "聊天记录",
+					"use": "message-scroller"
+				},
+				{
+					"case": "逐项滑动浏览的内容",
+					"use": "carousel"
+				}
+			],
+			"accessibility": [
+				"保留原生滚动和键盘滚动",
+				"区域内没有可聚焦元素时，确保键盘用户仍能滚动查看内容"
+			],
+			"responsive": [
+				"必须给出高度或宽度，否则不会滚动"
+			],
+			"related": [
+				"message-scroller",
+				"carousel",
+				"table"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Scroll Area 设计规范\n\n- 用于固定区域内的自定义滚动条（侧栏列表、弹层中的长内容）；整页滚动保持浏览器原生滚动。\n- Scroll Area 必须有确定的高度或最大高度（`h-*`、`max-h-*` 档位类，或在 flex 布局中 `flex-1 min-h-0`），否则不会出现滚动。\n- 横向滚动设 `orientation=\"horizontal\"`，两个方向都需要时设 `both`。\n- 视口可以被键盘聚焦并滚动；区域内容没有标题时给 Scroll Area 设 `aria-label` 说明内容。\n",
+			"type": "registry:file",
+			"target": "scroll-area/RULES.md"
+		},
 		{
 			"content": "import Scrollbar from \"./scroll-area-scrollbar.svelte\";\nimport Root from \"./scroll-area.svelte\";\n\nexport {\n\tRoot,\n\tScrollbar,\n\t//,\n\tRoot as ScrollArea,\n\tScrollbar as ScrollAreaScrollbar,\n};\n",
 			"type": "registry:file",

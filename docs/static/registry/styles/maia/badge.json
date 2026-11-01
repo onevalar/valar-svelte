@@ -1,11 +1,59 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "badge",
+	"title": "Badge 徽标",
 	"type": "registry:ui",
+	"description": "简短的状态、分类或计数标签。",
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"徽标",
+				"badge",
+				"标签",
+				"状态",
+				"tag"
+			],
+			"whenToUse": [
+				"显示状态、分类或数量",
+				"用 href 渲染为链接"
+			],
+			"whenNotToUse": [
+				{
+					"case": "用户输入、可删除的多个标签",
+					"use": "tags-input"
+				},
+				{
+					"case": "需要说明的提示信息",
+					"use": "alert"
+				},
+				{
+					"case": "可点击的操作",
+					"use": "button"
+				}
+			],
+			"accessibility": [
+				"含义要用文字表达，不能只靠颜色",
+				"作为链接时文字要说明去向"
+			],
+			"responsive": [
+				"文字保持简短，避免换行"
+			],
+			"related": [
+				"button",
+				"tags-input",
+				"avatar"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Badge 设计规范\n\n- 用于状态、分类、计数等简短标记；样式只用 `variant`（`default`、`secondary`、`destructive`、`outline`、`ghost`、`link`），不要自定义背景色。\n- Badge 不是按钮：需要点击执行操作时用 `Button size=\"xs\"` 等小号按钮；需要跳转时给 Badge 设 `href`，它会渲染为链接。\n- 文字保持一两个词；用颜色表示状态时文字本身也要说明状态（“已失败”），不要只靠颜色。\n",
+			"type": "registry:file",
+			"target": "badge/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\" module>\n\timport { type VariantProps, tv } from \"tailwind-variants\";\n\n\texport const badgeVariants = tv({\n\t\tbase: \"h-5 gap-1 rounded-4xl border border-transparent px-2 py-0.5 text-xs font-medium transition-all has-data-[icon=inline-end]:pr-1.5 has-data-[icon=inline-start]:pl-1.5 [&>svg]:size-3! group/badge inline-flex w-fit shrink-0 items-center justify-center overflow-hidden whitespace-nowrap focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 [&>svg]:pointer-events-none\",\n\t\tvariants: {\n\t\t\tvariant: {\n\t\t\t\tdefault: \"bg-primary text-primary-foreground [a]:hover:bg-primary/80\",\n\t\t\t\tsecondary: \"bg-secondary text-secondary-foreground [a]:hover:bg-secondary/80\",\n\t\t\t\tdestructive: \"bg-destructive/10 [a]:hover:bg-destructive/20 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 text-destructive dark:bg-destructive/20\",\n\t\t\t\toutline: \"border-border text-foreground [a]:hover:bg-muted [a]:hover:text-muted-foreground bg-input/30\",\n\t\t\t\tghost: \"hover:bg-muted hover:text-muted-foreground dark:hover:bg-muted/50\",\n\t\t\t\tlink: \"text-primary underline-offset-4 hover:underline\",\n\t\t\t},\n\t\t},\n\t\tdefaultVariants: {\n\t\t\tvariant: \"default\",\n\t\t},\n\t});\n\n\texport type BadgeVariant = VariantProps<typeof badgeVariants>[\"variant\"];\n</script>\n\n<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAnchorAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\thref,\n\t\tclass: className,\n\t\tvariant = \"default\",\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAnchorAttributes> & {\n\t\tvariant?: BadgeVariant;\n\t} = $props();\n</script>\n\n<svelte:element\n\tthis={href ? \"a\" : \"span\"}\n\tbind:this={ref}\n\tdata-slot=\"badge\"\n\t{href}\n\tclass={cn(badgeVariants({ variant }), className)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</svelte:element>\n",
 			"type": "registry:file",

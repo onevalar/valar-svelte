@@ -1,14 +1,64 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "attachment",
+	"title": "Attachment 附件",
 	"type": "registry:ui",
+	"description": "显示文件或图片附件，包含缩略图、名称、上传状态和操作。",
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],
 	"registryDependencies": [
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"附件",
+				"attachment",
+				"文件",
+				"上传",
+				"图片附件"
+			],
+			"whenToUse": [
+				"聊天输入框、消息或上传列表中的文件／图片",
+				"展示上传状态 idle、uploading、processing、error、done"
+			],
+			"whenNotToUse": [
+				{
+					"case": "普通的内容列表项",
+					"use": "item"
+				},
+				{
+					"case": "只展示图片",
+					"use": "aspect-ratio"
+				},
+				{
+					"case": "需要显示具体百分比的进度",
+					"use": "progress"
+				}
+			],
+			"accessibility": [
+				"只有图标的 Attachment.Action 和覆盖整卡的 Attachment.Trigger 都要加 aria-label",
+				"error 状态要在 Attachment.Description 写明原因，不能只靠颜色",
+				"纯展示的 Attachment.Group 加 tabindex=0、role=group 和 aria-label，便于键盘滚动"
+			],
+			"responsive": [
+				"Attachment.Group 横向滚动、吸附，边缘渐隐",
+				"size（default、sm、xs）与 orientation 适应紧凑空间"
+			],
+			"related": [
+				"message",
+				"item",
+				"progress"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Attachment 设计规范\n\n- 用于聊天输入框、消息和上传列表中的文件或图片；多个附件放进 `Attachment.Group`，它会横向滚动。\n- 上传过程用 `state` 表达（`idle`、`uploading`、`processing`、`error`、`done`），不要自己加颜色；出错时在 `Attachment.Description` 写明原因，不要只靠红色。\n- `Attachment.Action` 默认只有图标，每个都要有说明动作和对象的 `aria-label`（如“移除 report.pdf”）；`Attachment.Trigger` 覆盖整张卡片且没有文字，也必须有 `aria-label`（检查规则 `valar/icon-button-label`）。\n- 图片附件在 `<Attachment.Media variant=\"image\">` 中放 `<img>` 并写 `alt`（检查规则 `valar/image-alt`）。\n- 尺寸用 `size`（`default`、`sm`、`xs`），排列用 `orientation`，不要用 `class` 改宽高。\n- 只用于展示的附件行没有可聚焦元素时，给 `Attachment.Group` 设 `tabindex={0}`、`role=\"group\"` 和 `aria-label`，键盘用户才能滚动它。\n",
+			"type": "registry:file",
+			"target": "attachment/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { Button, type ButtonProps } from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tvariant = \"ghost\",\n\t\tsize = \"icon-xs\",\n\t\t...restProps\n\t}: ButtonProps = $props();\n</script>\n\n<Button\n\tbind:ref\n\tdata-slot=\"attachment-action\"\n\t{variant}\n\t{size}\n\tclass={cn(className)}\n\t{...restProps}\n/>\n",
 			"type": "registry:file",

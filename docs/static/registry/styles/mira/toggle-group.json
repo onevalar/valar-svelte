@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "toggle-group",
+	"title": "Toggle Group 切换按钮组",
 	"type": "registry:ui",
+	"description": "一组切换按钮，可单选（如对齐方式）或多选（如文字样式）。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0",
@@ -10,7 +12,53 @@
 	"registryDependencies": [
 		"toggle"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"切换按钮组",
+				"toggle group",
+				"分段控制",
+				"segmented control",
+				"对齐方式"
+			],
+			"whenToUse": [
+				"一组相关的状态按钮，type=single 单选或 type=multiple 多选"
+			],
+			"whenNotToUse": [
+				{
+					"case": "执行操作的按钮组",
+					"use": "button-group"
+				},
+				{
+					"case": "表单中的单选项",
+					"use": "radio-group"
+				},
+				{
+					"case": "切换页面内的内容面板",
+					"use": "tabs"
+				}
+			],
+			"accessibility": [
+				"保留 Bits UI 的方向键移动焦点",
+				"用 aria-label 命名整组和只有图标的项"
+			],
+			"responsive": [
+				"项较多时窄屏可改 orientation=vertical",
+				"spacing 控制项之间的间距"
+			],
+			"related": [
+				"toggle",
+				"button-group",
+				"tabs"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Toggle Group 设计规范\n\n- `ToggleGroup.Root` 必须设 `type=\"single\"`（多选一，如对齐方式）或 `type=\"multiple\"`（如加粗、斜体）；用 `bind:value` 绑定。\n- 整组用 `aria-label` 说明用途；只有图标的 `ToggleGroup.Item` 都要有 `aria-label`。\n- `variant`、`size` 设在 Root 上，所有项保持一致；需要项之间留空时用 `spacing`，不要给项单独改圆角或边框。\n- 切换视图或模式且各视图内容差异较大时用 Tabs。\n",
+			"type": "registry:file",
+			"target": "toggle-group/RULES.md"
+		},
 		{
 			"content": "import Item from \"./toggle-group-item.svelte\";\nimport Root from \"./toggle-group.svelte\";\n\nexport {\n\tRoot,\n\tItem,\n\t//\n\tRoot as ToggleGroup,\n\tItem as ToggleGroupItem,\n};\n",
 			"type": "registry:file",

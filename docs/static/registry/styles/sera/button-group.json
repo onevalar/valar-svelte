@@ -1,14 +1,58 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "button-group",
+	"title": "Button Group 按钮组",
 	"type": "registry:ui",
+	"description": "把相关的操作按钮组合在一起，样式连贯。",
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],
 	"registryDependencies": [
 		"separator"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"按钮组",
+				"button group",
+				"分段按钮",
+				"split button",
+				"工具栏"
+			],
+			"whenToUse": [
+				"把相关操作的按钮组合在一起，如按钮加下拉菜单"
+			],
+			"whenNotToUse": [
+				{
+					"case": "切换状态而不是执行操作",
+					"use": "toggle-group"
+				},
+				{
+					"case": "输入框旁边的按钮",
+					"use": "input-group"
+				}
+			],
+			"accessibility": [
+				"根元素 role=group，用 aria-label 或 aria-labelledby 命名",
+				"用 Tab 在按钮间移动"
+			],
+			"responsive": [
+				"窄屏可改 orientation=vertical",
+				"嵌套 ButtonGroup 形成带间距的分组"
+			],
+			"related": [
+				"button",
+				"toggle-group",
+				"input-group"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Button Group 设计规范\n\n- 用于一组紧密相关、连在一起的按钮（如分段操作、按钮加下拉菜单）；只是并排的独立按钮用普通 flex 间距排列即可。\n- `ButtonGroup.Root` 渲染 `role=\"group\"`，要用 `aria-label` 说明这组按钮做什么。\n- 组内按钮使用相同的 `size`；方向用 `orientation`，组之间需要间距时嵌套多个 ButtonGroup，不要给按钮单独改圆角或边框（组件已处理相邻按钮的圆角和边框）。\n- 组内的说明文字用 `ButtonGroup.Text`，分隔用 `ButtonGroup.Separator`；Input、Select 等控件也可以放进组内。\n",
+			"type": "registry:file",
+			"target": "button-group/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { Separator } from \"$UI$/separator/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\timport type { ComponentProps } from \"svelte\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\torientation = \"vertical\",\n\t\t...restProps\n\t}: ComponentProps<typeof Separator> = $props();\n</script>\n\n<Separator\n\tbind:ref\n\tdata-slot=\"button-group-separator\"\n\t{orientation}\n\tclass={cn(\n\t\t\"bg-input relative self-stretch data-horizontal:mx-px data-horizontal:w-auto data-vertical:my-px data-vertical:h-auto\",\n\t\tclassName\n\t)}\n\t{...restProps}\n/>\n",
 			"type": "registry:file",

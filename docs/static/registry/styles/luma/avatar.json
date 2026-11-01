@@ -1,12 +1,55 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "avatar",
+	"title": "Avatar 头像",
 	"type": "registry:ui",
+	"description": "表示用户的图片，加载失败时显示缩写等后备内容。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"头像",
+				"avatar",
+				"用户头像",
+				"头像组"
+			],
+			"whenToUse": [
+				"显示用户或团队头像，图片失败时显示 Avatar.Fallback",
+				"用 Avatar.Group 叠放多个头像，Avatar.GroupCount 显示剩余数量"
+			],
+			"whenNotToUse": [
+				{
+					"case": "普通图片或封面",
+					"use": "aspect-ratio"
+				},
+				{
+					"case": "状态或分类标签",
+					"use": "badge"
+				}
+			],
+			"accessibility": [
+				"图片 alt 写人名；与名字并排时可视为装饰",
+				"Avatar.Badge 表示的在线等状态不能只靠颜色"
+			],
+			"responsive": [
+				"头像过多时用 Avatar.GroupCount 收起"
+			],
+			"related": [
+				"badge",
+				"item",
+				"message"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Avatar 设计规范\n\n- 每个 Avatar 都放 `Avatar.Image` 和 `Avatar.Fallback`：图片加载失败或没有图片时显示 Fallback（姓名首字或图标）。\n- `Avatar.Image` 必须有 `alt`，写人名或账号名；旁边已有姓名文字时写 `alt=\"\"`（检查规则 `valar/image-alt`）。\n- 尺寸只用 `size` 属性（`sm`、`default`、`lg`），不要用 `class` 写 `size-*`。\n- 在线状态等标记用 `Avatar.Badge`，并另外用文字或 `aria-label` 表达状态，不要只靠圆点颜色；多个头像用 `Avatar.Group`，超出部分用 `Avatar.GroupCount` 显示数量。\n",
+			"type": "registry:file",
+			"target": "avatar/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLSpanElement>> = $props();\n</script>\n\n<span\n\tbind:this={ref}\n\tdata-slot=\"avatar-badge\"\n\tclass={cn(\n\t\t\"bg-primary text-primary-foreground ring-background absolute right-0 bottom-0 z-10 inline-flex items-center justify-center rounded-full bg-blend-color ring-2 select-none\",\n\t\t\"group-data-[size=sm]/avatar:size-2 group-data-[size=sm]/avatar:[&>svg]:hidden\",\n\t\t\"group-data-[size=default]/avatar:size-2.5 group-data-[size=default]/avatar:[&>svg]:size-2\",\n\t\t\"group-data-[size=lg]/avatar:size-3 group-data-[size=lg]/avatar:[&>svg]:size-2\",\n\t\tclassName\n\t)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</span>\n",
 			"type": "registry:file",

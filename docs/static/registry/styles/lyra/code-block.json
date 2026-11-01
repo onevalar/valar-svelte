@@ -1,7 +1,9 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "code-block",
+	"title": "Code Block 代码块",
 	"type": "registry:ui",
+	"description": "展示代码、终端输出和 diff，可带标题栏、行号和复制按钮。",
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],
@@ -9,7 +11,52 @@
 		"use-highlighted-code",
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"代码块",
+				"code block",
+				"代码",
+				"终端输出",
+				"diff",
+				"语法高亮"
+			],
+			"whenToUse": [
+				"展示代码片段、终端输出、日志或 diff",
+				"在消息或 trace 中显示工具输出（流式追加时只高亮新行）"
+			],
+			"whenNotToUse": [
+				{
+					"case": "显示键盘按键或快捷键",
+					"use": "kbd"
+				},
+				{
+					"case": "行列结构化数据",
+					"use": "table"
+				}
+			],
+			"accessibility": [
+				"内容区可聚焦，键盘可滚动；浮动操作在获得焦点时也会显示",
+				"复制按钮默认名称“复制”／“已复制”，其他语言用 copyLabel、copiedLabel 改",
+				"diff 行带 +／− 标记，不只靠颜色；换行切换按钮要设 aria-pressed"
+			],
+			"responsive": [
+				"默认不换行、横向滚动；窄屏可开启 wrap",
+				"内容始终从左到右显示，标题栏跟随页面方向"
+			],
+			"related": [
+				"trace",
+				"message",
+				"kbd"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Code Block 设计规范\n\n- 用于展示代码和命令；行内的短代码用 `<code>`，键盘按键用 Kbd。\n- 代码文本传给 `CodeBlock.Content` 的 `code` 属性，需要行号时设 `lineNumbers`（可配合 `startLine`），长行需要换行时设 `wrap`；不要手写行号。\n- 复制按钮用 `CodeBlock.CopyButton` 并传 `value`；读屏名称和复制后的提示默认是中文（“复制”“已复制”），其他语言用 `copyLabel`、`copiedLabel` 改。\n- 文件名或语言写在 `CodeBlock.Header` 的 `CodeBlock.Title` 中；出错的输出用 `variant=\"destructive\"`，同时在文字中说明错误。\n- 紧凑场景用 `size=\"sm\"`；代码内容固定从左到右排版，不要改 `dir`。\n",
+			"type": "registry:file",
+			"target": "code-block/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchildren,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> = $props();\n</script>\n\n<div\n\tbind:this={ref}\n\tdata-slot=\"code-block-actions\"\n\tclass={cn(\n\t\t\"-my-1 -me-1.5 gap-1 [[data-slot=code-block]>&]:m-0 [[data-slot=code-block]>&]:top-2 [[data-slot=code-block]>&]:end-2 group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:top-1.5 group-data-[size=sm]/code-block:[[data-slot=code-block]>&]:end-1.5 [[data-slot=code-block]>&]:*:[button]:bg-background [[data-slot=code-block]>&]:*:[button]:ring-1 [[data-slot=code-block]>&]:*:[button]:ring-foreground/10 ms-auto flex shrink-0 items-center [[data-slot=code-block]>&]:absolute [[data-slot=code-block]>&]:z-10 [[data-slot=code-block]>&]:opacity-0 [[data-slot=code-block]>&]:transition-opacity [[data-slot=code-block]>&]:group-focus-within/code-block:opacity-100 [[data-slot=code-block]>&]:group-hover/code-block:opacity-100 [[data-slot=code-block]>&]:pointer-coarse:opacity-100\",\n\t\tclassName\n\t)}\n\t{...restProps}\n>\n\t{@render children?.()}\n</div>\n",
 			"type": "registry:file",
@@ -21,7 +68,7 @@
 			"target": "code-block/code-block-content.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport { onDestroy } from \"svelte\";\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { Button, type ButtonProps } from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tvalue,\n\t\tvariant = \"ghost\",\n\t\tsize = \"icon-xs\",\n\t\tonclick,\n\t\t...restProps\n\t}: Omit<ButtonProps, \"onclick\"> & {\n\t\tvalue: string;\n\t\tonclick?: (e: MouseEvent) => void;\n\t} = $props();\n\n\tlet copied = $state(false);\n\tlet timeout: ReturnType<typeof setTimeout> | undefined;\n\n\tfunction copy() {\n\t\tnavigator.clipboard\n\t\t\t.writeText(value)\n\t\t\t.then(() => {\n\t\t\t\tcopied = true;\n\t\t\t\tclearTimeout(timeout);\n\t\t\t\ttimeout = setTimeout(() => (copied = false), 2000);\n\t\t\t})\n\t\t\t.catch(() => {});\n\t}\n\n\tonDestroy(() => clearTimeout(timeout));\n</script>\n\n<Button\n\tbind:ref\n\tdata-slot=\"code-block-copy-button\"\n\tdata-copied={copied || undefined}\n\t{variant}\n\t{size}\n\taria-label={copied ? \"Copied\" : \"Copy\"}\n\tclass={cn(className)}\n\tonclick={(e) => {\n\t\tonclick?.(e);\n\t\tcopy();\n\t}}\n\t{...restProps}\n>\n\t{#if copied}\n\t\t<IconPlaceholder\n\t\t\tlucide=\"CheckIcon\"\n\t\t\ttabler=\"IconCheck\"\n\t\t\thugeicons=\"Tick02Icon\"\n\t\t\tphosphor=\"CheckIcon\"\n\t\t\tremixicon=\"RiCheckLine\"\n\t\t/>\n\t{:else}\n\t\t<IconPlaceholder\n\t\t\tlucide=\"CopyIcon\"\n\t\t\ttabler=\"IconCopy\"\n\t\t\thugeicons=\"Copy01Icon\"\n\t\t\tphosphor=\"CopyIcon\"\n\t\t\tremixicon=\"RiFileCopyLine\"\n\t\t/>\n\t{/if}\n</Button>\n<span aria-live=\"polite\" class=\"sr-only\">{copied ? \"Copied\" : \"\"}</span>\n",
+			"content": "<script lang=\"ts\">\n\timport { onDestroy } from \"svelte\";\n\timport IconPlaceholder from \"$lib/components/icon-placeholder/icon-placeholder.svelte\";\n\timport { Button, type ButtonProps } from \"$UI$/button/index.js\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tvalue,\n\t\tvariant = \"ghost\",\n\t\tsize = \"icon-xs\",\n\t\tonclick,\n\t\tcopyLabel = \"复制\",\n\t\tcopiedLabel = \"已复制\",\n\t\t...restProps\n\t}: Omit<ButtonProps, \"onclick\"> & {\n\t\tvalue: string;\n\t\tonclick?: (e: MouseEvent) => void;\n\t\tcopyLabel?: string;\n\t\tcopiedLabel?: string;\n\t} = $props();\n\n\tlet copied = $state(false);\n\tlet timeout: ReturnType<typeof setTimeout> | undefined;\n\n\tfunction copy() {\n\t\tnavigator.clipboard\n\t\t\t.writeText(value)\n\t\t\t.then(() => {\n\t\t\t\tcopied = true;\n\t\t\t\tclearTimeout(timeout);\n\t\t\t\ttimeout = setTimeout(() => (copied = false), 2000);\n\t\t\t})\n\t\t\t.catch(() => {});\n\t}\n\n\tonDestroy(() => clearTimeout(timeout));\n</script>\n\n<Button\n\tbind:ref\n\tdata-slot=\"code-block-copy-button\"\n\tdata-copied={copied || undefined}\n\t{variant}\n\t{size}\n\taria-label={copied ? copiedLabel : copyLabel}\n\tclass={cn(className)}\n\tonclick={(e) => {\n\t\tonclick?.(e);\n\t\tcopy();\n\t}}\n\t{...restProps}\n>\n\t{#if copied}\n\t\t<IconPlaceholder\n\t\t\tlucide=\"CheckIcon\"\n\t\t\ttabler=\"IconCheck\"\n\t\t\thugeicons=\"Tick02Icon\"\n\t\t\tphosphor=\"CheckIcon\"\n\t\t\tremixicon=\"RiCheckLine\"\n\t\t/>\n\t{:else}\n\t\t<IconPlaceholder\n\t\t\tlucide=\"CopyIcon\"\n\t\t\ttabler=\"IconCopy\"\n\t\t\thugeicons=\"Copy01Icon\"\n\t\t\tphosphor=\"CopyIcon\"\n\t\t\tremixicon=\"RiFileCopyLine\"\n\t\t/>\n\t{/if}\n</Button>\n<span aria-live=\"polite\" class=\"sr-only\">{copied ? copiedLabel : \"\"}</span>\n",
 			"type": "registry:file",
 			"target": "code-block/code-block-copy-button.svelte"
 		},

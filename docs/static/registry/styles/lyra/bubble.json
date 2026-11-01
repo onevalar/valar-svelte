@@ -1,11 +1,60 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "bubble",
+	"title": "Bubble 消息气泡",
 	"type": "registry:ui",
+	"description": "对话中的消息气泡，支持多种变体、对齐、分组和表情反应。",
 	"devDependencies": [
 		"tailwind-variants@^3.3.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"消息气泡",
+				"bubble",
+				"聊天",
+				"chat",
+				"对话",
+				"reaction"
+			],
+			"whenToUse": [
+				"聊天文字、引用回复、建议和反应的气泡外观"
+			],
+			"whenNotToUse": [
+				{
+					"case": "完整的消息行（头像、名字、时间、操作）",
+					"use": "message"
+				},
+				{
+					"case": "系统提示或日期分隔",
+					"use": "marker"
+				},
+				{
+					"case": "agent 的推理和工具调用步骤",
+					"use": "trace"
+				}
+			],
+			"accessibility": [
+				"表情反应整组设 role=img 和描述性 aria-label，只读一次",
+				"可点击的气泡用 child 渲染为真实 button 或 a",
+				"变体颜色之外配合文字或对齐表达含义"
+			],
+			"responsive": [
+				"气泡宽度随内容，最多占容器 80%；ghost 变体不限宽"
+			],
+			"related": [
+				"message",
+				"marker",
+				"message-scroller"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Bubble 设计规范\n\n- 用于聊天中带框的消息内容；一条消息的整行布局（头像、对齐、发送者）交给 Message，左右对齐写在 `Message.Root` 的 `align` 上，而不是 Bubble。\n- 样式只用 `variant`（`default`、`secondary`、`muted`、`tinted`、`outline`、`ghost`、`destructive`）；助手的长文本、富内容用 `ghost` 占满整行。不要只靠颜色表示含义，`destructive` 气泡的错误原因要写在文字里。\n- 同一发送者连续的气泡放进 `Bubble.Group`。\n- 表情回应用 `Bubble.Reactions`（`side`、`align` 定位），只展示时给它设 `role=\"img\"` 和概括全部回应的 `aria-label`；可点击时改用带 `aria-label` 的图标按钮。回应会压在气泡边缘，行间要留出间距。\n- 整个气泡需要可点击时，用 `Bubble.Content` 的 `child` snippet 渲染为 Button 或链接，不要给 div 加 `onclick`。\n",
+			"type": "registry:file",
+			"target": "bubble/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { cn, type WithElementRef } from \"$UTILS$.js\";\n\timport type { Snippet } from \"svelte\";\n\timport type { HTMLAttributes } from \"svelte/elements\";\n\n\tlet {\n\t\tref = $bindable(null),\n\t\tclass: className,\n\t\tchild,\n\t\t...restProps\n\t}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {\n\t\tchild?: Snippet<[{ props: Record<string, unknown> }]>;\n\t} = $props();\n\n\tconst mergedProps = $derived({\n\t\tclass: cn(\n\t\t\t\"rounded-none border border-transparent px-2.5 py-2 text-xs leading-relaxed [button,a]:outline-none [button,a]:focus-visible:border-ring [button,a]:focus-visible:ring-1 [button,a]:focus-visible:ring-ring/50 group-data-[align=end]/bubble:self-end w-fit max-w-full min-w-0 overflow-hidden wrap-break-word [button]:text-left [button,a]:transition-colors\",\n\t\t\tclassName\n\t\t),\n\t\t\"data-slot\": \"bubble-content\",\n\t\t...restProps,\n\t});\n</script>\n\n{#if child}\n\t{@render child({ props: mergedProps })}\n{:else}\n\t<div bind:this={ref} {...mergedProps}>\n\t\t{@render mergedProps.children?.()}\n\t</div>\n{/if}\n",
 			"type": "registry:file",

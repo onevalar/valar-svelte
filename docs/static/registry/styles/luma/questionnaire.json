@@ -1,14 +1,64 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "questionnaire",
+	"title": "Questionnaire 问卷",
 	"type": "registry:ui",
+	"description": "逐题作答的多步问卷，支持单选、多选、自由回答和跳过。",
 	"devDependencies": [
 		"@valar/svelte-primitives@^0.1.0"
 	],
 	"registryDependencies": [
 		"button"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"问卷",
+				"questionnaire",
+				"调查",
+				"survey",
+				"多步",
+				"答题"
+			],
+			"whenToUse": [
+				"逐题作答的问卷：单选、多选、自由回答、可跳过",
+				"需要条件题、校验、进度、恢复作答"
+			],
+			"whenNotToUse": [
+				{
+					"case": "一般的多步表单流程",
+					"use": "stepper"
+				},
+				{
+					"case": "单页表单",
+					"use": "field"
+				},
+				{
+					"case": "只有一个选择题",
+					"use": "radio-group"
+				}
+			],
+			"accessibility": [
+				"Questionnaire.Item 是 fieldset，Title 是 legend；错误与 aria-invalid 关联到当前题",
+				"切换后焦点到新题，校验失败聚焦答案控件",
+				"Questionnaire.Input 必须有可访问名称，placeholder 不算标签"
+			],
+			"responsive": [
+				"可放进 card 或 dialog 中使用"
+			],
+			"related": [
+				"stepper",
+				"radio-group",
+				"progress"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Questionnaire 设计规范\n\n- 用于一次只显示一题、按顺序回答的问卷；结构为 `Questionnaire.Root` > `Questionnaire.Progress`、`Questionnaire.Item`（`Title`、`Description`、`Choices`／`Input`、`Error`）和 `Questionnaire.Actions`（`Previous`、`Skip`、`Next`、`Submit`）。\n- 题目、答案状态、校验、进度和导航都交给 Questionnaire；关闭、取消、保存进度、提交到服务器和题目跳转逻辑由外层页面、卡片或对话框负责。\n- 每个 `Questionnaire.Input` 都要有名称：可见标签、`aria-label` 或 `aria-labelledby`，`placeholder` 不能代替。\n- 固定选项用 `Questionnaire.Choice`（多选题在 `Questionnaire.Item` 上设 `multiple`），不要自己写单选、复选框；可以跳过的题用 `Questionnaire.Skip` 明确跳过。\n- 导航按钮的样式用 `size`、`variant` 属性；需要服务端渲染时传 `items`。\n- 进度文字、进度的读屏名称和默认错误提示是中文（“第 1 题，共 3 题”等）；其他语言给 `Questionnaire.Root` 传 `messages`。\n",
+			"type": "registry:file",
+			"target": "questionnaire/RULES.md"
+		},
 		{
 			"content": "import Actions from \"./questionnaire-actions.svelte\";\nimport ChoiceDescription from \"./questionnaire-choice-description.svelte\";\nimport Choice from \"./questionnaire-choice.svelte\";\nimport Choices from \"./questionnaire-choices.svelte\";\nimport Description from \"./questionnaire-description.svelte\";\nimport Error from \"./questionnaire-error.svelte\";\nimport Input from \"./questionnaire-input.svelte\";\nimport Item from \"./questionnaire-item.svelte\";\nimport Next from \"./questionnaire-next.svelte\";\nimport Previous from \"./questionnaire-previous.svelte\";\nimport Progress from \"./questionnaire-progress.svelte\";\nimport Skip from \"./questionnaire-skip.svelte\";\nimport Submit from \"./questionnaire-submit.svelte\";\nimport Title from \"./questionnaire-title.svelte\";\nimport Root from \"./questionnaire.svelte\";\n\nexport {\n\tRoot,\n\tProgress,\n\tItem,\n\tTitle,\n\tDescription,\n\tChoices,\n\tChoice,\n\tChoiceDescription,\n\tInput,\n\tError,\n\tActions,\n\tPrevious,\n\tSkip,\n\tNext,\n\tSubmit,\n\t//\n\tRoot as Questionnaire,\n\tProgress as QuestionnaireProgress,\n\tItem as QuestionnaireItem,\n\tTitle as QuestionnaireTitle,\n\tDescription as QuestionnaireDescription,\n\tChoices as QuestionnaireChoices,\n\tChoice as QuestionnaireChoice,\n\tChoiceDescription as QuestionnaireChoiceDescription,\n\tInput as QuestionnaireInput,\n\tError as QuestionnaireError,\n\tActions as QuestionnaireActions,\n\tPrevious as QuestionnairePrevious,\n\tSkip as QuestionnaireSkip,\n\tNext as QuestionnaireNext,\n\tSubmit as QuestionnaireSubmit,\n};\n",
 			"type": "registry:file",
@@ -85,7 +135,7 @@
 			"target": "questionnaire/questionnaire-title.svelte"
 		},
 		{
-			"content": "<script lang=\"ts\">\n\timport { Questionnaire as QuestionnairePrimitive } from \"@valar/svelte-primitives/questionnaire\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tclass: className,\n\t\titem = $bindable(undefined),\n\t\tref = $bindable(null),\n\t\t...restProps\n\t}: QuestionnairePrimitive.RootProps = $props();\n</script>\n\n<QuestionnairePrimitive.Root\n\tbind:item\n\tbind:ref\n\tdata-slot=\"questionnaire\"\n\tclass={cn(\"gap-6 flex w-full min-w-0 flex-col\", className)}\n\t{...restProps}\n/>\n",
+			"content": "<script lang=\"ts\">\n\timport { Questionnaire as QuestionnairePrimitive } from \"@valar/svelte-primitives/questionnaire\";\n\timport { cn } from \"$UTILS$.js\";\n\n\tlet {\n\t\tclass: className,\n\t\titem = $bindable(undefined),\n\t\tref = $bindable(null),\n\t\tmessages,\n\t\t...restProps\n\t}: QuestionnairePrimitive.RootProps = $props();\n\n\t// Valar: Chinese defaults for the texts the primitive generates; `messages` still overrides each one.\n\tconst merged = $derived({\n\t\tprogressLabel: \"问卷进度\",\n\t\tprogress: (current: number, total: number) => `第 ${current} 题，共 ${total} 题`,\n\t\trequiredError: \"请选择一个答案后继续。\",\n\t\toptionalError: \"请选择一个答案或跳过此题。\",\n\t\t...messages,\n\t});\n</script>\n\n<QuestionnairePrimitive.Root\n\tbind:item\n\tbind:ref\n\tdata-slot=\"questionnaire\"\n\tmessages={merged}\n\tclass={cn(\"gap-6 flex w-full min-w-0 flex-col\", className)}\n\t{...restProps}\n/>\n",
 			"type": "registry:file",
 			"target": "questionnaire/questionnaire.svelte"
 		}

@@ -1,12 +1,53 @@
 {
 	"$schema": "http://127.0.0.1:5186/schema/registry-item.json",
 	"name": "collapsible",
+	"title": "Collapsible 折叠区",
 	"type": "registry:ui",
+	"description": "展开或收起单个内容区域。",
 	"devDependencies": [
 		"bits-ui@2.20.0",
 		"@internationalized/date@^3.12.0"
 	],
+	"meta": {
+		"valar": {
+			"keywords": [
+				"折叠",
+				"collapsible",
+				"展开收起",
+				"显示更多"
+			],
+			"whenToUse": [
+				"展开或收起单个区域，如高级设置、文件树"
+			],
+			"whenNotToUse": [
+				{
+					"case": "多段同类内容",
+					"use": "accordion"
+				},
+				{
+					"case": "在浮层中显示内容",
+					"use": "popover"
+				}
+			],
+			"accessibility": [
+				"触发器是按钮，带 aria-expanded"
+			],
+			"responsive": [
+				"窄屏下可收起次要内容"
+			],
+			"related": [
+				"accordion",
+				"trace",
+				"sidebar"
+			]
+		}
+	},
 	"files": [
+		{
+			"content": "# Collapsible 设计规范\n\n- 用于单块可以展开收起的内容（“显示更多”、高级选项）；多块并列的展开内容用 Accordion。\n- `Collapsible.Trigger` 本身就是按钮：要用 Button 样式时通过 `{#snippet child({ props })}` 渲染 Button（检查规则 `valar/trigger-child-snippet`）；只有图标的触发按钮要有 `aria-label`。\n- 触发按钮的文字或图标随状态变化（“显示更多”／“收起”），展开状态用 `bind:open` 控制。\n",
+			"type": "registry:file",
+			"target": "collapsible/RULES.md"
+		},
 		{
 			"content": "<script lang=\"ts\">\n\timport { Collapsible as CollapsiblePrimitive } from \"bits-ui\";\n\n\tlet { ref = $bindable(null), ...restProps }: CollapsiblePrimitive.ContentProps = $props();\n</script>\n\n<CollapsiblePrimitive.Content bind:ref data-slot=\"collapsible-content\" {...restProps} />\n",
 			"type": "registry:file",
