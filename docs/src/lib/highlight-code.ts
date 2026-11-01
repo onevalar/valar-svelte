@@ -9,6 +9,7 @@ const highlighterPromise = createHighlighterCore({
 		import("@shikijs/langs/typescript"),
 		import("@shikijs/langs/svelte"),
 		import("@shikijs/langs/toml"),
+		import("@shikijs/langs/markdown"),
 	],
 	engine: jsEngine,
 });
