@@ -12,6 +12,10 @@ import { compile } from "svelte/compiler";
 import { describe, expect, it } from "vitest";
 import { buttonOverrideClasses } from "../src/lib/features/workbench/button-tuning.js";
 import { COMPONENT_INVENTORY } from "../src/lib/features/workbench/coverage.js";
+import {
+	dialogOverrideClasses,
+	parseDialogSource,
+} from "../src/lib/features/workbench/dialog-tuning.js";
 import { buildWorkbenchRegistry } from "../src/lib/features/workbench/export.js";
 import {
 	COMPONENTS,
@@ -525,5 +529,74 @@ describe("Button write-back into Valar style overrides", () => {
 		expect(styleOverridePayloadSchema.safeParse({ style: "../x", classes: {} }).success).toBe(
 			false
 		);
+	});
+});
+
+describe("Dialog write-back into Valar style overrides", () => {
+	const registry = (style: string) =>
+		JSON.parse(readFileSync(resolve(`static/registry/styles/${style}/dialog.json`), "utf8"));
+	const injected = (style: string, css: string, file: string) => {
+		const map = mergeStyleMaps(
+			parseStyleCss(readFileSync(resolve(`src/lib/registry/styles/style-${style}.css`), "utf8")),
+			parseStyleCss(css)
+		);
+		const source = readFileSync(resolve(`src/lib/registry/ui/dialog/${file}`), "utf8");
+		return injectStyleClasses(source, map)
+			.match(/cn\(\s*"([^"]*)"/)![1]!
+			.split(" ");
+	};
+	const write = (style: string, overrides: Parameters<typeof dialogOverrideClasses>[0]) => {
+		const { context } = parseDialogSource(registry(style).files);
+		return applyStyleOverrides(
+			readFileSync(resolve(`src/lib/registry/styles/valar/style-${style}.css`), "utf8"),
+			styleOverridePayloadSchema.parse({
+				style,
+				classes: dialogOverrideClasses(overrides, context),
+			})
+		);
+	};
+
+	it("reads each style's own baseline from the installed source", () => {
+		const nova = parseDialogSource(registry("nova").files);
+		expect(nova.values).toMatchObject({ padding: 16, gap: 16, overlay: 10, radius: "xl" });
+		expect(nova.context).toEqual({ footerBleed: true, footerRounded: true });
+		const vega = parseDialogSource(registry("vega").files);
+		expect(vega.values).toMatchObject({ padding: 24, gap: 24, overlay: 10 });
+		expect(vega.context).toEqual({ footerBleed: false, footerRounded: false });
+		expect(parseDialogSource(registry("maia").files).values.overlay).toBe(80);
+	});
+
+	it("keeps the bleeding footer aligned with the new padding and swaps motion tiers", () => {
+		const css = write("nova", { padding: 24, duration: "slow", zoom: "90", overlay: 40 });
+		const content = injected("nova", css, "dialog-content.svelte");
+		expect(content).toEqual(expect.arrayContaining(["p-6", "gap-4", "duration-slow"]));
+		expect(content).toEqual(
+			expect.arrayContaining(["data-open:zoom-in-90", "data-closed:zoom-out-90"])
+		);
+		expect(content).not.toContain("p-4");
+		expect(content).not.toContain("data-open:zoom-in-95");
+		const footer = injected("nova", css, "dialog-footer.svelte");
+		expect(footer).toEqual(expect.arrayContaining(["-mx-6", "-mb-6", "p-6"]));
+		expect(footer).not.toContain("-mx-4");
+		const overlay = injected("nova", css, "dialog-overlay.svelte");
+		expect(overlay).toEqual(expect.arrayContaining(["bg-black/40", "duration-slow"]));
+		expect(overlay).not.toContain("bg-black/10");
+		expect(overlay).not.toContain("duration-100");
+		// Vega's footer does not bleed, so padding must not add negative margins there.
+		expect(injected("vega", write("vega", { padding: 20 }), "dialog-footer.svelte")).not.toContain(
+			"-mx-5"
+		);
+	});
+
+	it("rejects colors, arbitrary values and utilities outside each Dialog part", () => {
+		for (const classes of [
+			{ "cn-dialog-content": "p-6 bg-red-500" },
+			{ "cn-dialog-content": "duration-[400ms]" },
+			{ "cn-dialog-overlay": "bg-black/45" },
+			{ "cn-dialog-overlay": "bg-white/40" },
+			{ "cn-dialog-footer": "duration-slow" },
+			{ "cn-dialog-title": "p-4" },
+		])
+			expect(styleOverridePayloadSchema.safeParse({ style: "nova", classes }).success).toBe(false);
 	});
 });

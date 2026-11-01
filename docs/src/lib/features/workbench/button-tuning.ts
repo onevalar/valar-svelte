@@ -1,5 +1,13 @@
 import { z } from "zod";
-import type { StyleOverridePayload } from "./style-overrides.js";
+import {
+	RADIUS_LABELS,
+	RADIUS_LEVELS,
+	radiusCss,
+	readRadiusLevel,
+	spacing,
+	type RadiusLevel,
+	type TunerSpec,
+} from "./tuner.js";
 
 // Button's own parameters. Global tokens (colors, `--radius`, type scale) are read-only here
 // and belong to the theme configuration, so every component stays consistent with them.
@@ -10,28 +18,6 @@ export const BUTTON_SIZES = [
 	{ id: "lg", label: "大", icon: "icon-lg" },
 ] as const;
 export type ButtonSize = (typeof BUTTON_SIZES)[number]["id"];
-
-// Most likely first: when the theme radius is 0 several levels compute equal.
-export const RADIUS_LEVELS = ["lg", "md", "xl", "sm", "2xl", "3xl", "4xl", "full", "none"] as const;
-export type RadiusLevel = (typeof RADIUS_LEVELS)[number];
-export const RADIUS_LABELS: Record<RadiusLevel, string> = {
-	none: "none · 直角",
-	sm: "sm · 0.6 × 基数",
-	md: "md · 0.8 × 基数",
-	lg: "lg · 1 × 基数",
-	xl: "xl · 1.4 × 基数",
-	"2xl": "2xl · 1.8 × 基数",
-	"3xl": "3xl · 2.2 × 基数",
-	"4xl": "4xl · 2.6 × 基数",
-	full: "full · 胶囊",
-};
-export function radiusCss(level: RadiusLevel): string {
-	return level === "none"
-		? "0"
-		: level === "full"
-			? "calc(infinity * 1px)"
-			: `var(--radius-${level})`;
-}
 
 const SIZE_FIELDS = [
 	{ field: "height", label: "高度", min: 16, max: 96 },
@@ -51,11 +37,10 @@ export const BUTTON_NUMBER_PARAMETERS = BUTTON_SIZES.flatMap((size) =>
 		max: field.max,
 	}))
 );
-export const RADIUS_LABEL = "圆角档位";
+const RADIUS_LABEL = "圆角档位";
 
 export type ButtonValues = { radius: RadiusLevel } & Record<SizeKey, number>;
 export type ButtonOverrides = Partial<ButtonValues>;
-export const BUTTON_STORAGE_KEY = "valar.button-styles.v2";
 
 const valuesSchema = z
 	.object({
@@ -66,23 +51,8 @@ const valuesSchema = z
 	})
 	.strict();
 
-export const buttonVersionSchema = z
-	.object({
-		format: z.literal(2),
-		component: z.literal("button"),
-		id: z.string().uuid(),
-		name: z.string().trim().min(1).max(60),
-		createdAt: z.string().datetime(),
-		source: z.object({ style: z.string().regex(/^style-[a-z]+$/) }).strict(),
-		baseline: valuesSchema,
-		overrides: valuesSchema.partial(),
-	})
-	.strict();
-export type ButtonVersion = z.infer<typeof buttonVersionSchema>;
-export const buttonVersionsSchema = z.array(buttonVersionSchema).max(50);
-
 /** Reads the rendered value of each size from unmodified probe buttons. */
-export function readButtonValues(probe: HTMLElement): ButtonValues {
+function readButtonValues(probe: HTMLElement): ButtonValues {
 	const values = {} as ButtonValues;
 	for (const size of BUTTON_SIZES) {
 		const button = probe.querySelector<HTMLElement>(`[data-probe-size="${size.id}"]`)!;
@@ -91,22 +61,12 @@ export function readButtonValues(probe: HTMLElement): ButtonValues {
 		values[`${size.id}.paddingX`] = Math.round(parseFloat(computed.paddingLeft));
 		values[`${size.id}.gap`] = Math.round(parseFloat(computed.columnGap) || 0);
 	}
-	const radius = getComputedStyle(
-		probe.querySelector(`[data-probe-size="default"]`)!
-	).borderTopLeftRadius;
-	const swatch = probe.querySelector<HTMLElement>("[data-probe-radius]")!;
 	values.radius =
-		RADIUS_LEVELS.find((level) => {
-			swatch.style.borderRadius = radiusCss(level);
-			return getComputedStyle(swatch).borderTopLeftRadius === radius;
-		}) ?? "lg";
+		readRadiusLevel(
+			probe.querySelector(`[data-probe-size="default"]`)!,
+			probe.querySelector<HTMLElement>("[data-probe-radius]")!
+		) ?? "lg";
 	return values;
-}
-
-export function buttonChanges(baseline: ButtonValues, values: ButtonValues): ButtonOverrides {
-	return Object.fromEntries(
-		Object.entries(values).filter(([key, value]) => baseline[key as keyof ButtonValues] !== value)
-	) as ButtonOverrides;
 }
 
 /** Live preview inside the docs page. Mirrors exactly what `buttonOverrideClasses` writes. */
@@ -138,10 +98,8 @@ export function buttonOverrideCss(scope: string, overrides: ButtonOverrides): st
 	return rules.join("\n");
 }
 
-const spacing = (px: number) => String(px / 4);
-
 /** Tailwind classes for Valar's style override file. Icon sizes follow their text size. */
-export function buttonOverrideClasses(overrides: ButtonOverrides): StyleOverridePayload["classes"] {
+export function buttonOverrideClasses(overrides: ButtonOverrides): Record<string, string> {
 	const safe = valuesSchema.partial().parse(overrides);
 	const classes: Record<string, string[]> = {};
 	const add = (className: string, utility: string) =>
@@ -169,3 +127,32 @@ export function buttonOverrideClasses(overrides: ButtonOverrides): StyleOverride
 		Object.entries(classes).map(([className, list]) => [className, list.join(" ")])
 	);
 }
+
+export const BUTTON_SPEC: TunerSpec<ButtonValues> = {
+	component: "button",
+	title: "Button",
+	description: "尺寸参数作用于该尺寸的所有变体，图标按钮跟随同档高度",
+	storageKey: "valar.button-styles.v2",
+	group: "尺寸与圆角",
+	parameters: [
+		{
+			kind: "select",
+			key: "radius",
+			label: RADIUS_LABEL,
+			options: RADIUS_LEVELS.map((value) => ({ value, label: RADIUS_LABELS[value] })),
+		},
+		...BUTTON_NUMBER_PARAMETERS.map((p) => ({ kind: "number" as const, ...p })),
+	],
+	valuesSchema: valuesSchema as z.ZodType<ButtonValues>,
+	tokens: [
+		["--radius", "圆角基数"],
+		["--text-sm", "小号字"],
+		["--primary", "主色"],
+		["--background", "背景色"],
+		["--foreground", "文字色"],
+		["--border", "边框色"],
+	],
+	readBaseline: async (probe) => ({ values: readButtonValues(probe), context: undefined }),
+	previewCss: (scope, overrides) => buttonOverrideCss(scope, overrides),
+	overrideClasses: (overrides) => buttonOverrideClasses(overrides),
+};

@@ -261,3 +261,53 @@ test("Button radius level follows the global radius and drafts survive storage f
 		);
 	}
 });
+
+test("Dialog editor reuses the shared shell and previews layout, overlay and motion tier", async ({
+	page,
+}) => {
+	test.setTimeout(60_000);
+	const errors: string[] = [];
+	page.on("pageerror", (error) => errors.push(error.message));
+	await page.goto("/docs/components/dialog", { waitUntil: "networkidle" });
+	const tuner = page.getByRole("region", { name: "Dialog 样式微调", exact: true });
+	const editor = page.getByRole("dialog", { name: "Dialog · 组件参数" });
+	const part = (pane: string, slot: string) =>
+		editor.locator(`[data-tuning-${pane}] [data-slot="dialog-${slot}"]`);
+	const openButton = tuner.getByRole("button", { name: "微调 Dialog", exact: true });
+	await openButton.click();
+	await expect(editor.getByTestId("dialog-dials")).toBeVisible();
+	// Baseline comes from the installed nova source.
+	for (const [label, value] of [
+		["内边距（px）", "16"],
+		["内容间距（px）", "16"],
+		["遮罩不透明度（%）", "10"],
+	])
+		await expect(editor.getByRole("slider", { name: label, exact: true })).toHaveAttribute(
+			"aria-valuenow",
+			value
+		);
+	// Motion values are global tokens: shown with their defaults, never editable here.
+	await expect(editor.getByText("100ms（默认）")).toBeVisible();
+
+	await setNumber(page, "内边距（px）", 28);
+	await setNumber(page, "遮罩不透明度（%）", 50);
+	await editor.getByRole("button", { name: /^动效档位/ }).click();
+	await page.getByRole("option", { name: "慢（全局 token）" }).click();
+	await expect(editor.getByText("已修改 3 项", { exact: true })).toBeVisible();
+	await expect(part("current", "content")).toHaveCSS("padding-top", "28px");
+	// The bleeding footer follows the padding so it still reaches the panel edges.
+	await expect(part("current", "footer")).toHaveCSS("margin-left", "-28px");
+	await expect(part("current", "overlay")).toHaveCSS("background-color", "rgba(0, 0, 0, 0.5)");
+	await expect(part("current", "content")).toHaveCSS("animation-duration", "0.3s");
+	await editor.getByRole("button", { name: "重播进入与退出" }).click();
+	await expect(part("current", "content")).toBeVisible();
+	await editor.getByRole("radio", { name: "并排对比" }).click();
+	await expect(part("before", "content")).toHaveCSS("padding-top", "16px");
+	await editor.getByRole("textbox", { name: "Dialog 版本名称" }).fill("宽松弹窗");
+	await editor.getByRole("button", { name: "保存版本", exact: true }).click();
+	await expect(editor.getByRole("status")).toContainText("已保存「宽松弹窗」");
+	await page.keyboard.press("Escape");
+	await expect(editor).toHaveCount(0);
+	await expect(openButton).toBeFocused();
+	expect(errors).toEqual([]);
+});

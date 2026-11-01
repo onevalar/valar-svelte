@@ -23,14 +23,14 @@
 | 4    | 补 Slider Field、Color Picker       | 完成                        | 见组件补充清单 VCOMP-005／006                     |
 | 5    | 全局 token 配置页（扩展 `/themes`） | 完成                        | 写入 `styles/valar/tokens.json`，仅本地开发站可写 |
 | 6    | 动效、边框宽度 token（第二期）      | 完成                        | 时长四档、曲线三档、边框粗细；见下                |
-| 7    | 把全屏编辑器推广到第二个组件        | 待办                        | 先抽出 Button 编辑器中可复用的部分，不提前抽象    |
+| 7    | 把全屏编辑器推广到第二个组件        | 完成（Dialog）              | 共用外壳 `component-tuner.svelte`；见下           |
 | 8    | 组件自带设计规范（AI 友好）         | 完成（样板：Button、Field） | 见下                                              |
 | 9    | 组件说明卡（借鉴 Arc）              | 完成（20 个常用组件）       | `ui/<组件>/meta.json`，是 10–12 步的唯一数据源    |
 | 10   | 给 AI 读的资料                      | 完成                        | catalog.json、三种 llms.txt、组件页 `.md`         |
 | 11   | Valar 可安装技能包                  | 完成（设计方法待用户编写）  | `skills/valar-svelte`；`guides/` 三个文件为占位   |
 | 12   | 本地 MCP 服务 `valar-svelte mcp`    | 完成（本地版）              | 线上版等用户准备好服务器后再做                    |
 
-**下一步**（2026-11-01，第 1–6、8–12 步已完成）：第 7 步（全屏编辑器推广到第二个组件），在其中加入该组件特有的动效参数（位移、缩放、延迟），档位与曲线只从全局 token 选择；可并行的小项是给其余组件补说明卡和 `RULES.md`。`skills/valar-svelte/guides/` 的组合、文案、动效内容由用户编写，AI 不要动。
+**下一步**（2026-11-01，第 1–12 步均已完成）：按同样做法把组件编辑器接入下一个组件（建议弹层类 Popover／Sheet，或表单类 Input），每接一个只需新增 `<组件>-tuning.ts`（参数说明）和 `<组件>-tuner.svelte`（画布），并在 `style-overrides.ts` 的 `OVERRIDE_RULES` 中为它的 `cn-*` 类登记允许的工具类；可并行的小项是给其余组件补说明卡和 `RULES.md`。`skills/valar-svelte/guides/` 的组合、文案、动效内容由用户编写，AI 不要动。
 
 第 8 步的做法（推广到其他组件时沿用）：
 
@@ -45,9 +45,18 @@
 - 第 11 步：页面组合、文案、动效方法由用户本人编写，AI 只建立文件结构和入口，不代写这些内容。
 - 第 12 步：工具参照 Arc 的 search_components、list_components、get_component、get_install_command、get_skill；只读，数据来自第 9、10 步。先做通过 CLI 在本机启动的版本；线上版需要部署网站和域名，等用户准备好服务器并授权后再做。所有组件免费公开，不做 Arc 的登录与 Pro 令牌机制。
 
+第 7 步的做法（2026-11-01 完成，接入新组件时沿用）：
+
+- **共用外壳**：`docs/src/lib/features/workbench/component-tuner.svelte` 负责全屏编辑器的一切共用部分（顶栏、仅草稿／并排对比、浅深色、DialKit 面板、已修改参数、只读全局 token、命名版本与备份、写回确认）。各组件只提供一份参数说明 `TunerSpec`（类型在 `tuner.ts`）和画布：Button 是 `button-tuning.ts`＋`button-tuner.svelte`（变体矩阵），Dialog 是 `dialog-tuning.ts`＋`dialog-tuner.svelte`（内联渲染真实 Dialog，带“重播进入与退出”）。`parameter-dials.svelte` 按参数说明生成 DialKit 面板；`component-preview-tabs.svelte` 决定哪个示例套上编辑器。
+- **当前值从哪来**：Button 量取页面上真实按钮的尺寸；Dialog 读取当前样式安装出去的 registry 源码（`parseDialogSource`），所以 8 套样式各自显示自己的默认值。
+- **Dialog 参数**：宽度档、内边距、内容间距、圆角档位（含“样式自带”）、遮罩不透明度、动效档位（快／中／慢，只选全局 token 的档位）、出现时缩放（组件自己的动效参数）。改内边距时，带“出血”页脚的样式（如 nova）同步调整页脚负边距，页脚仍贴边。
+- **写回白名单**：`style-overrides.ts` 的 `OVERRIDE_RULES` 按每个 `cn-*` 类规定允许的工具类；颜色、任意值、未登记的类一律拒绝。合并用 `packages/parity` 的 `mergeClasses`，补足 tailwind-merge 识别不了的 `zoom-in-*`、`duration-*`、`ease-*`。
+- **注意**：开发站的写回校验规则在 vite 配置中加载，改了 `style-overrides.ts` 后要重启开发服务（`amp orb service restart docs`），否则新组件写回会提示“参数无效”。
+- 测试：`docs/tests/workbench.test.ts`（Dialog 当前值读取、写回后的安装源码、白名单）、`docs/e2e/workbench.spec.ts`（Dialog 编辑器）、`packages/parity/test/inject-style-classes.test.ts`（`mergeClasses`）。
+
 第 6 步的做法（2026-11-01 完成）：
 
-- **分层**：全局 token 只管“每档多快、用什么曲线、边框多粗”；组件只选档位。组件特有的位移距离、缩放幅度、显示延迟属于组件参数，留给第 7 步的组件编辑器。
+- **分层**：全局 token 只管“每档多快、用什么曲线、边框多粗”；组件只选档位。组件特有的位移距离、缩放幅度、显示延迟属于组件参数，在组件编辑器中调（Dialog 已有“出现时缩放”）。
 - **token**：`motion-duration-fast|normal|slow|interaction`（默认 100／200／300／150ms）、`motion-ease-enter|exit|standard`、`border-width`（1px）。和 `radius` 一样放在主题的 `light` 中、对深浅色都生效；默认值在 `token-overrides.ts` 的 `VALAR_TOKEN_DEFAULTS`，由 `themes.ts` 的 `DEFAULT_BASE_THEMES` 加到每个基础主题（上游主题数据不变），`/themes` 以此为“默认值”比较和恢复。
 - **映射**：`packages/cli/src/tailwind.css` 的 `@theme inline` 把它们映射为 `duration-fast` 等工具类、`transition` 的默认时长与曲线、`border` 的默认粗细，并带回退值，旧项目没有这些变量时外观不变；同一文件在“减少动态效果”时把快／中／慢设为 1ms。CLI 写入 CSS 时不再为这些变量生成 `@theme` 镜像（`update-css-vars.ts`）。
 - **替换写死值**：上游 `styles/style-*.css` 不改。`packages/parity/src/inject-style-classes.ts` 的 `TOKEN_UTILITIES` 是唯一的对照表（`duration-100→duration-fast`、`200→normal`、`300→slow`、两种快出慢停曲线→`ease-enter`、慢起快走→`ease-exit`、`ease-in-out→ease-standard`），由 `applyTokenUtilities` 在 registry 构建和文档站组件展开时应用。保留写死的：`duration-1000`（输入光标闪烁）、`duration-400`（消息滚动按钮退出）、`ease-linear`（进度、侧边栏宽度）。上游的 `ring-*` 焦点环和卡片描边（`ring-1`）属于各样式的特色，不跟随边框 token。
@@ -99,7 +108,7 @@ DialKit 原生缩略图遵循默认的本次会话语义；页面中的命名保
 - 命名版本保存到浏览器 `valar.button-styles.v2`（格式 2，与旧版 v1 不兼容），最多 50 个，同名拒绝覆盖，存储失败保留草稿。
 - 对比可选择“当前组件库样式”或历史版本；JSON 备份可在其他浏览器导入，样式不一致时拒绝导入。备份不是安装包。
 
-实现入口：`button-tuning.ts`（参数与类名映射）、`button-tuner.svelte`、按需加载的 `button-parameter-panel.svelte`、`style-overrides.ts`（写入校验与序列化），写入接口在 `docs/vite.config.ts` 的开发服务器中。
+实现入口：`button-tuning.ts`（参数与类名映射）、`button-tuner.svelte`（画布）、共用外壳 `component-tuner.svelte` 与按需加载的 `parameter-dials.svelte`、`style-overrides.ts`（写入校验与序列化），写入接口在 `docs/vite.config.ts` 的开发服务器中。
 单元测试 `docs/tests/workbench.test.ts` 覆盖写回后的安装源码、连续写回保留和非法输入拒绝；浏览器回归 `docs/e2e/workbench.spec.ts` 覆盖实际初值、跨变体影响范围、圆角档位跟随全局基数、只读 token、生产站无写回入口、版本对比恢复与存储失败。
 
 ## 当前交付边界

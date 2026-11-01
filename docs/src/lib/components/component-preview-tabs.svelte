@@ -1,5 +1,6 @@
 <script lang="ts">
 	import ButtonTuner from "$lib/features/workbench/button-tuner.svelte";
+	import DialogTuner from "$lib/features/workbench/dialog-tuner.svelte";
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { cn } from "$lib/utils.js";
 	import type { PresetConfig } from "@valar/svelte-cli/preset";
@@ -71,11 +72,13 @@
 				"preview relative flex min-h-72 w-full min-w-0 justify-center overflow-x-auto p-4 data-[align=center]:items-center data-[align=end]:items-start data-[align=start]:items-start data-[chromeless=true]:h-auto data-[chromeless=true]:p-0 sm:p-10 sm:data-[align=end]:items-end",
 				previewStyle && `style-${previewStyle}`,
 				previewClassName,
-				name === "button-demo" && "p-0 sm:p-0"
+				(name === "button-demo" || name === "dialog-demo") && "p-0 sm:p-0"
 			)}
 		>
 			{#if name === "button-demo"}
 				<ButtonTuner>{@render PreviewExample()}</ButtonTuner>
+			{:else if name === "dialog-demo"}
+				<DialogTuner>{@render PreviewExample()}</DialogTuner>
 			{:else}
 				{@render PreviewExample()}
 			{/if}

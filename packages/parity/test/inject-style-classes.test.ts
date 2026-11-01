@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
 	applyTokenUtilities,
 	injectStyleClasses,
+	mergeClasses,
 	parseStyleCss,
 } from "../src/inject-style-classes.ts";
 
@@ -232,5 +233,20 @@ describe("applyTokenUtilities", () => {
 		expect(out).toContain("duration-fast");
 		expect(out).toContain("duration-normal ease-standard");
 		expect(out).not.toMatch(/duration-(?:100|200|300)\b/);
+	});
+});
+
+describe("mergeClasses", () => {
+	it("replaces zoom and motion-tier utilities per variant, like tailwind-merge does for others", () => {
+		expect(
+			mergeClasses(
+				"data-open:zoom-in-95 data-closed:zoom-out-95 duration-100 p-4 hover:duration-300",
+				"data-open:zoom-in-90 duration-normal p-6"
+			)
+		).toBe("data-closed:zoom-out-95 hover:duration-300 data-open:zoom-in-90 duration-normal p-6");
+		// Arbitrary variants with `:` inside brackets keep their prefix.
+		expect(mergeClasses("[&:hover]:ease-in-out ease-enter", "[&:hover]:ease-exit")).toBe(
+			"ease-enter [&:hover]:ease-exit"
+		);
 	});
 });

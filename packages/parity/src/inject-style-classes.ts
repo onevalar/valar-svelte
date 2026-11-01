@@ -74,9 +74,47 @@ export function mergeStyleMaps(
 ): Record<string, string> {
 	const merged = { ...base };
 	for (const [className, classes] of Object.entries(override)) {
-		merged[className] = base[className] ? twMerge(base[className], classes) : classes;
+		merged[className] = base[className] ? mergeClasses(base[className], classes) : classes;
 	}
 	return merged;
+}
+
+/**
+ * Utility groups tailwind-merge does not know: tw-animate's zoom and Valar's motion tiers
+ * (`duration-normal`, `ease-enter`). Without this, `zoom-in-95` + `zoom-in-90` both survive
+ * and the winner depends on CSS order.
+ */
+const EXTRA_GROUPS = [/^zoom-in(?:-|$)/, /^zoom-out(?:-|$)/, /^duration-/, /^ease-/];
+
+/** Splits `data-open:zoom-in-95` into its variant prefix and utility, ignoring `:` inside `[]`. */
+function splitVariant(token: string): [string, string] {
+	let depth = 0;
+	for (let i = token.length - 1; i >= 0; i--) {
+		const char = token[i];
+		if (char === "]") depth++;
+		else if (char === "[") depth--;
+		else if (char === ":" && depth === 0) return [token.slice(0, i + 1), token.slice(i + 1)];
+	}
+	return ["", token];
+}
+
+const groupKey = (token: string) => {
+	const [variant, utility] = splitVariant(token);
+	const group = EXTRA_GROUPS.findIndex((pattern) => pattern.test(utility));
+	return group === -1 ? undefined : `${variant}#${group}`;
+};
+
+/** tailwind-merge plus the groups above: later classes replace earlier ones of the same kind. */
+export function mergeClasses(base: string, override: string): string {
+	const replaced = new Set(override.split(/\s+/).flatMap((token) => groupKey(token) ?? []));
+	const kept = base
+		.split(/\s+/)
+		.filter((token) => {
+			const key = groupKey(token);
+			return !key || !replaced.has(key);
+		})
+		.join(" ");
+	return twMerge(kept, override);
 }
 
 function walkStyleRules(css: string, styles: Record<string, string>) {
