@@ -249,4 +249,21 @@ describe("mergeClasses", () => {
 			"ease-enter [&:hover]:ease-exit"
 		);
 	});
+
+	it("replaces slide distances per variant and axis, including important overrides", () => {
+		expect(
+			mergeClasses(
+				"data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 slide-in-from-top slide-in-from-left",
+				"data-[side=bottom]:slide-in-from-top-4 data-[side=right]:data-open:slide-in-from-right-16! slide-in-from-left-3"
+			)
+		).toBe(
+			"data-[side=left]:slide-in-from-right-2 slide-in-from-top data-[side=bottom]:slide-in-from-top-4 data-[side=right]:data-open:slide-in-from-right-16! slide-in-from-left-3"
+		);
+		expect(
+			mergeClasses(
+				"data-[side=right]:data-open:slide-in-from-right-16!",
+				"data-[side=right]:data-open:slide-in-from-right!"
+			)
+		).toBe("data-[side=right]:data-open:slide-in-from-right!");
+	});
 });

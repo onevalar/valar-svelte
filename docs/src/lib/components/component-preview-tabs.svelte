@@ -1,6 +1,13 @@
 <script lang="ts">
 	import ButtonTuner from "$lib/features/workbench/button-tuner.svelte";
 	import DialogTuner from "$lib/features/workbench/dialog-tuner.svelte";
+	import DropdownMenuTuner from "$lib/features/workbench/dropdown-menu-tuner.svelte";
+	import InputTuner from "$lib/features/workbench/input-tuner.svelte";
+	import PopoverTuner from "$lib/features/workbench/popover-tuner.svelte";
+	import SelectTuner from "$lib/features/workbench/select-tuner.svelte";
+	import SheetTuner from "$lib/features/workbench/sheet-tuner.svelte";
+	import TextareaTuner from "$lib/features/workbench/textarea-tuner.svelte";
+	import TooltipTuner from "$lib/features/workbench/tooltip-tuner.svelte";
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { cn } from "$lib/utils.js";
 	import type { PresetConfig } from "@valar/svelte-cli/preset";
@@ -72,13 +79,30 @@
 				"preview relative flex min-h-72 w-full min-w-0 justify-center overflow-x-auto p-4 data-[align=center]:items-center data-[align=end]:items-start data-[align=start]:items-start data-[chromeless=true]:h-auto data-[chromeless=true]:p-0 sm:p-10 sm:data-[align=end]:items-end",
 				previewStyle && `style-${previewStyle}`,
 				previewClassName,
-				(name === "button-demo" || name === "dialog-demo") && "p-0 sm:p-0"
+				["input-demo", "select-demo", "textarea-demo"].includes(name) && "p-0 sm:p-0",
+				(name === "button-demo" || name === "dialog-demo") && "p-0 sm:p-0",
+				(name === "popover-demo" || name === "sheet-demo") && "p-0 sm:p-0",
+				(name === "dropdown-menu-demo" || name === "tooltip-demo") && "p-0 sm:p-0"
 			)}
 		>
 			{#if name === "button-demo"}
 				<ButtonTuner>{@render PreviewExample()}</ButtonTuner>
 			{:else if name === "dialog-demo"}
 				<DialogTuner>{@render PreviewExample()}</DialogTuner>
+			{:else if name === "popover-demo"}
+				<PopoverTuner>{@render PreviewExample()}</PopoverTuner>
+			{:else if name === "sheet-demo"}
+				<SheetTuner>{@render PreviewExample()}</SheetTuner>
+			{:else if name === "input-demo"}
+				<InputTuner>{@render PreviewExample()}</InputTuner>
+			{:else if name === "select-demo"}
+				<SelectTuner>{@render PreviewExample()}</SelectTuner>
+			{:else if name === "textarea-demo"}
+				<TextareaTuner>{@render PreviewExample()}</TextareaTuner>
+			{:else if name === "dropdown-menu-demo"}
+				<DropdownMenuTuner>{@render PreviewExample()}</DropdownMenuTuner>
+			{:else if name === "tooltip-demo"}
+				<TooltipTuner>{@render PreviewExample()}</TooltipTuner>
 			{:else}
 				{@render PreviewExample()}
 			{/if}

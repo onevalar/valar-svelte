@@ -18,7 +18,7 @@ links:
 	let { viewerData } = $props();
 </script>
 
-<ComponentPreview name="textarea-demo" class="[&_[data-align]>*]:max-w-xs">
+<ComponentPreview name="textarea-demo" class="[&_[data-tuning-current]>*]:max-w-xs">
 
 <div></div>
 

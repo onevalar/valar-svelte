@@ -80,11 +80,21 @@ export function mergeStyleMaps(
 }
 
 /**
- * Utility groups tailwind-merge does not know: tw-animate's zoom and Valar's motion tiers
- * (`duration-normal`, `ease-enter`). Without this, `zoom-in-95` + `zoom-in-90` both survive
- * and the winner depends on CSS order.
+ * Utility groups tailwind-merge does not know: tw-animate's zoom and slide distances and
+ * Valar's motion tiers (`duration-normal`, `ease-enter`). Without this, `zoom-in-95` +
+ * `zoom-in-90` both survive and the winner depends on CSS order. Slides are grouped per axis
+ * so a diagonal `slide-in-from-top` + `slide-in-from-left` pair is kept.
  */
-const EXTRA_GROUPS = [/^zoom-in(?:-|$)/, /^zoom-out(?:-|$)/, /^duration-/, /^ease-/];
+const EXTRA_GROUPS = [
+	/^zoom-in(?:-|!|$)/,
+	/^zoom-out(?:-|!|$)/,
+	/^duration-/,
+	/^ease-/,
+	/^slide-in-from-(?:top|bottom)(?:-|!|$)/,
+	/^slide-in-from-(?:left|right|start|end)(?:-|!|$)/,
+	/^slide-out-to-(?:top|bottom)(?:-|!|$)/,
+	/^slide-out-to-(?:left|right|start|end)(?:-|!|$)/,
+];
 
 /** Splits `data-open:zoom-in-95` into its variant prefix and utility, ignoring `:` inside `[]`. */
 function splitVariant(token: string): [string, string] {

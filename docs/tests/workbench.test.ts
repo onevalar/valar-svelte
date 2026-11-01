@@ -4,6 +4,7 @@ import postcss from "postcss";
 import ts from "typescript";
 import { registryItemSchema, type CssSchema, type RegistryItem } from "@valar/svelte-cli/schema";
 import {
+	applyTokenUtilities,
 	injectStyleClasses,
 	mergeStyleMaps,
 	parseStyleCss,
@@ -11,12 +12,18 @@ import {
 import { compile } from "svelte/compiler";
 import { describe, expect, it } from "vitest";
 import { buttonOverrideClasses } from "../src/lib/features/workbench/button-tuning.js";
+import { heightTier } from "../src/lib/features/workbench/control-tiers.js";
 import { COMPONENT_INVENTORY } from "../src/lib/features/workbench/coverage.js";
 import {
 	dialogOverrideClasses,
 	parseDialogSource,
 } from "../src/lib/features/workbench/dialog-tuning.js";
+import {
+	dropdownMenuOverrideClasses,
+	parseDropdownMenuSource,
+} from "../src/lib/features/workbench/dropdown-menu-tuning.js";
 import { buildWorkbenchRegistry } from "../src/lib/features/workbench/export.js";
+import { inputOverrideClasses } from "../src/lib/features/workbench/input-tuning.js";
 import {
 	COMPONENTS,
 	PARAMETERS,
@@ -25,11 +32,25 @@ import {
 	parseWorkbenchPreset,
 	presetSchema,
 } from "../src/lib/features/workbench/model.js";
+import { selectOverrideClasses } from "../src/lib/features/workbench/select-tuning.js";
+import {
+	parsePopoverSource,
+	popoverOverrideClasses,
+} from "../src/lib/features/workbench/popover-tuning.js";
+import {
+	parseSheetSource,
+	sheetOverrideClasses,
+} from "../src/lib/features/workbench/sheet-tuning.js";
 import {
 	applyStyleOverrides,
 	styleOverridePayloadSchema,
 } from "../src/lib/features/workbench/style-overrides.js";
 import { createWorkbenchCss } from "../src/lib/features/workbench/styles.js";
+import {
+	parseTooltipSource,
+	tooltipOverrideClasses,
+} from "../src/lib/features/workbench/tooltip-tuning.js";
+import { textareaOverrideClasses } from "../src/lib/features/workbench/textarea-tuning.js";
 
 function originals(): RegistryItem[] {
 	return COMPONENTS.map(({ id }) =>
@@ -596,6 +617,487 @@ describe("Dialog write-back into Valar style overrides", () => {
 			{ "cn-dialog-overlay": "bg-white/40" },
 			{ "cn-dialog-footer": "duration-slow" },
 			{ "cn-dialog-title": "p-4" },
+		])
+			expect(styleOverridePayloadSchema.safeParse({ style: "nova", classes }).success).toBe(false);
+	});
+});
+
+describe("Popover and Sheet write-back into Valar style overrides", () => {
+	const registry = (style: string, component: string) =>
+		JSON.parse(readFileSync(resolve(`static/registry/styles/${style}/${component}.json`), "utf8"));
+	/** The component as `add` installs it: upstream style + Valar overrides, motion tokens. */
+	const installed = (style: string, component: string, css: string) => {
+		const map = mergeStyleMaps(
+			parseStyleCss(readFileSync(resolve(`src/lib/registry/styles/style-${style}.css`), "utf8")),
+			parseStyleCss(css)
+		);
+		const dir = resolve(`src/lib/registry/ui/${component}`);
+		return readdirSync(dir).map((name) => ({
+			target: name,
+			content: applyTokenUtilities(injectStyleClasses(readFileSync(`${dir}/${name}`, "utf8"), map)),
+		}));
+	};
+	const classes = (files: { target: string; content: string }[], name: string) =>
+		files
+			.find((file) => file.target === name)!
+			.content.match(/cn\(\s*"([^"]*)"/)![1]!
+			.split(" ");
+	const write = (style: string, css: string, payload: Record<string, string>) =>
+		applyStyleOverrides(css, styleOverridePayloadSchema.parse({ style, classes: payload }));
+	const empty = (style: string) =>
+		readFileSync(resolve(`src/lib/registry/styles/valar/style-${style}.css`), "utf8");
+
+	it("reads each style's own Popover and Sheet baseline from the installed source", () => {
+		expect(parsePopoverSource(registry("nova", "popover").files).values).toEqual({
+			padding: 10,
+			gap: 10,
+			radius: "lg",
+			duration: "fast",
+			zoom: "95",
+			slide: "8",
+		});
+		expect(parsePopoverSource(registry("vega", "popover").files).values).toMatchObject({
+			padding: 16,
+			gap: 16,
+			radius: "md",
+		});
+		expect(parsePopoverSource(registry("lyra", "popover").files).values.radius).toBe("none");
+		expect(parseSheetSource(registry("nova", "sheet").files).values).toEqual({
+			width: "sm",
+			padding: 16,
+			gap: 16,
+			overlay: 10,
+			duration: "normal",
+			slide: "40",
+		});
+		expect(parseSheetSource(registry("luma", "sheet").files).values).toMatchObject({
+			padding: 24,
+			gap: 0,
+			overlay: 30,
+		});
+		expect(parseSheetSource(registry("sera", "sheet").files).values.padding).toBe(32);
+	});
+
+	it("replaces Popover's layout, zoom, slide and tier in the installed source", () => {
+		const files = installed(
+			"vega",
+			"popover",
+			write(
+				"vega",
+				empty("vega"),
+				popoverOverrideClasses({
+					padding: 12,
+					slide: "16",
+					zoom: "90",
+					duration: "normal",
+				})
+			)
+		);
+		const content = classes(files, "popover-content.svelte");
+		expect(content).toEqual(
+			expect.arrayContaining([
+				"p-3",
+				"gap-4",
+				"duration-normal",
+				"data-open:zoom-in-90",
+				"data-closed:zoom-out-90",
+				"data-[side=bottom]:slide-in-from-top-4",
+				"data-[side=left]:slide-in-from-right-4",
+			])
+		);
+		for (const stale of [
+			"p-4",
+			"duration-fast",
+			"data-open:zoom-in-95",
+			"data-[side=top]:slide-in-from-bottom-2",
+		])
+			expect(content).not.toContain(stale);
+		expect(parsePopoverSource(files).values).toEqual({
+			padding: 12,
+			gap: 16,
+			radius: "md",
+			duration: "normal",
+			zoom: "90",
+			slide: "16",
+		});
+	});
+
+	it("makes Sheet's slide and overlay tier beat the component literals, and rewrites them", () => {
+		const first = write(
+			"nova",
+			empty("nova"),
+			sheetOverrideClasses({
+				slide: "64",
+				duration: "slow",
+				overlay: 40,
+				padding: 24,
+				width: "lg",
+			})
+		);
+		const files = installed("nova", "sheet", first);
+		const content = classes(files, "sheet-content.svelte");
+		expect(content).toEqual(
+			expect.arrayContaining([
+				"data-[side=right]:data-open:slide-in-from-right-16!",
+				"data-[side=top]:data-closed:slide-out-to-top-16!",
+				"data-[side=left]:sm:max-w-lg",
+				"data-[side=right]:sm:max-w-lg",
+				"duration-slow",
+			])
+		);
+		expect(content).not.toContain("data-[side=right]:sm:max-w-sm");
+		expect(content).not.toContain("duration-normal");
+		const overlay = classes(files, "sheet-overlay.svelte");
+		expect(overlay).toEqual(expect.arrayContaining(["bg-black/40", "duration-slow!"]));
+		expect(overlay).not.toContain("bg-black/10");
+		expect(classes(files, "sheet-header.svelte")).toContain("p-6");
+		expect(classes(files, "sheet-footer.svelte")).toContain("p-6");
+		expect(parseSheetSource(files).values).toEqual({
+			width: "lg",
+			padding: 24,
+			gap: 16,
+			overlay: 40,
+			duration: "slow",
+			slide: "64",
+		});
+		// A later write replaces the earlier distance instead of stacking a second one.
+		const second = installed(
+			"nova",
+			"sheet",
+			write("nova", first, sheetOverrideClasses({ slide: "full" }))
+		);
+		const slides = classes(second, "sheet-content.svelte").filter((token) => token.endsWith("!"));
+		expect(slides).toContain("data-[side=right]:data-open:slide-in-from-right!");
+		expect(slides).not.toContain("data-[side=right]:data-open:slide-in-from-right-16!");
+		expect(parseSheetSource(second).values).toMatchObject({
+			slide: "full",
+			overlay: 40,
+		});
+	});
+
+	it("rejects colors, arbitrary values and utilities outside each Popover and Sheet part", () => {
+		for (const classes of [
+			{ "cn-popover-content": "p-4 bg-red-500" },
+			{ "cn-popover-content": "w-96" },
+			{ "cn-popover-content": "data-[side=bottom]:slide-in-from-top-[13px]" },
+			{
+				"cn-sheet-content": "data-[side=right]:data-open:slide-in-from-right-16",
+			},
+			{
+				"cn-sheet-content": "data-[side=right]:data-open:slide-in-from-right-12!",
+			},
+			{ "cn-sheet-content": "p-6" },
+			{ "cn-sheet-overlay": "duration-slow" },
+			{ "cn-sheet-overlay": "bg-black/45" },
+			{ "cn-sheet-header": "gap-4" },
+			{ "cn-sheet-title": "p-4" },
+		])
+			expect(styleOverridePayloadSchema.safeParse({ style: "nova", classes }).success).toBe(false);
+	});
+});
+
+describe("Input, Select and Textarea editors share Button's levels", () => {
+	const styleMap = (style: string, overrides = "") =>
+		mergeStyleMaps(
+			parseStyleCss(readFileSync(resolve(`src/lib/registry/styles/style-${style}.css`), "utf8")),
+			parseStyleCss(overrides)
+		);
+	// Pixel height of a `h-*` utility (optionally behind a variant) in one `cn-*` class.
+	const height = (map: Record<string, string>, className: string, variant = "") =>
+		Number(
+			new RegExp(`(?:^|\\s)${variant.replace(/[[\]]/g, "\\$&")}h-(\\d+(?:\\.5)?)(?:\\s|$)`).exec(
+				map[className]!
+			)![1]
+		) * 4;
+	const buttonHeights = (map: Record<string, string>) => ({
+		xs: height(map, "cn-button-size-xs"),
+		sm: height(map, "cn-button-size-sm"),
+		default: height(map, "cn-button-size-default"),
+		lg: height(map, "cn-button-size-lg"),
+	});
+	const installed = (style: string, css: string, file: string) =>
+		injectStyleClasses(
+			readFileSync(resolve(`src/lib/registry/ui/${file}`), "utf8"),
+			styleMap(style, css)
+		)
+			.match(/cn\(\s*"([^"]*)"/)![1]!
+			.split(" ");
+	const write = (style: string, classes: Record<string, string>, existing?: string) =>
+		applyStyleOverrides(
+			existing ?? readFileSync(resolve(`src/lib/registry/styles/valar/style-${style}.css`), "utf8"),
+			styleOverridePayloadSchema.parse({ style, classes })
+		);
+
+	it("reads heights as Button tiers in each style and keeps off-tier values as the style's own", () => {
+		for (const [style, px] of [
+			["nova", 32],
+			["vega", 36],
+		] as const) {
+			const map = styleMap(style);
+			const tiers = buttonHeights(map);
+			expect(height(map, "cn-input")).toBe(px);
+			expect(heightTier(height(map, "cn-input"), tiers, "default")).toBe("default");
+			expect(heightTier(height(map, "cn-select-trigger", "data-[size=sm]:"), tiers, "sm")).toBe(
+				"sm"
+			);
+		}
+		// After Button's default size was written back to 44px, nova's 32px Input matches no tier.
+		const tuned = styleMap("nova", write("nova", buttonOverrideClasses({ "default.height": 44 })));
+		expect(heightTier(32, buttonHeights(tuned), "default")).toBe("style");
+		expect(heightTier(44, buttonHeights(tuned), "default")).toBe("default");
+		expect(heightTier(36, buttonHeights(tuned), "default")).toBe("lg");
+		// Equal tiers resolve to the component's own size name.
+		const equal = { xs: 24, sm: 32, default: 32, lg: 36 };
+		expect(heightTier(32, equal, "default")).toBe("default");
+		expect(heightTier(32, equal, "sm")).toBe("sm");
+	});
+
+	it("writes tier heights and radius levels into the installed sources", () => {
+		const context = { buttonHeights: buttonHeights(styleMap("nova")) };
+		const input = write(
+			"nova",
+			inputOverrideClasses({ height: "lg", radius: "xl", paddingX: 12 }, context)
+		);
+		const both = write(
+			"nova",
+			selectOverrideClasses(
+				{ "sm.height": "default", radius: "none", paddingStart: 12, "default.height": "style" },
+				context
+			),
+			input
+		);
+		const inputClasses = installed("nova", both, "input/input.svelte");
+		expect(inputClasses).toEqual(expect.arrayContaining(["h-9", "rounded-xl", "px-3", "file:h-6"]));
+		for (const old of ["h-8", "rounded-lg", "px-2.5"]) expect(inputClasses).not.toContain(old);
+		const trigger = installed("nova", both, "select/select-trigger.svelte");
+		expect(trigger).toEqual(
+			expect.arrayContaining([
+				"data-[size=sm]:h-8",
+				"data-[size=default]:h-8",
+				"rounded-none",
+				"data-[size=sm]:rounded-none",
+				"pl-3",
+				"pr-2",
+			])
+		);
+		expect(trigger).not.toContain("data-[size=sm]:h-7");
+		expect(trigger).not.toContain("data-[size=sm]:rounded-[min(var(--radius-md),10px)]");
+		// "样式自带" is never written.
+		expect(selectOverrideClasses({ radius: "style", "sm.height": "style" }, context)).toEqual({});
+		const textarea = installed(
+			"vega",
+			write("vega", textareaOverrideClasses({ radius: "xl", paddingY: 12 })),
+			"textarea/textarea.svelte"
+		);
+		expect(textarea).toEqual(expect.arrayContaining(["rounded-xl", "py-3", "px-2.5", "min-h-16"]));
+		expect(textarea).not.toContain("rounded-md");
+		expect(textarea).not.toContain("py-2");
+	});
+
+	it("rejects colors, arbitrary values and utilities the editors do not produce", () => {
+		for (const classes of [
+			{ "cn-input": "h-9 bg-red-500" },
+			{ "cn-input": "h-[40px]" },
+			{ "cn-input": "rounded-[12px]" },
+			{ "cn-select-trigger": "data-[size=lg]:h-9" },
+			{ "cn-select-trigger": "pr-4" },
+			{ "cn-select-trigger": "h-9" },
+			{ "cn-textarea": "min-h-20" },
+			{ "cn-textarea": "h-9" },
+			{ "cn-select-content": "rounded-xl" },
+		])
+			expect(styleOverridePayloadSchema.safeParse({ style: "nova", classes }).success).toBe(false);
+	});
+});
+
+/** Installed source of one UI file for `style` with the given Valar override CSS. */
+function installed(component: string, style: string, css: string, file: string): string {
+	const map = mergeStyleMaps(
+		parseStyleCss(readFileSync(resolve(`src/lib/registry/styles/style-${style}.css`), "utf8")),
+		parseStyleCss(css)
+	);
+	return injectStyleClasses(
+		readFileSync(resolve(`src/lib/registry/ui/${component}/${file}`), "utf8"),
+		map
+	);
+}
+const classList = (source: string) => source.match(/cn\(\s*"([^"]*)"/)![1]!.split(" ");
+const registryFiles = (component: string, style: string) =>
+	JSON.parse(readFileSync(resolve(`static/registry/styles/${style}/${component}.json`), "utf8"))
+		.files as { target: string; content: string }[];
+const emptyOverrides = (style: string) =>
+	readFileSync(resolve(`src/lib/registry/styles/valar/style-${style}.css`), "utf8");
+
+describe("Dropdown Menu write-back into Valar style overrides", () => {
+	const write = (style: string, overrides: Parameters<typeof dropdownMenuOverrideClasses>[0]) => {
+		const { context } = parseDropdownMenuSource(registryFiles("dropdown-menu", style));
+		return applyStyleOverrides(
+			emptyOverrides(style),
+			styleOverridePayloadSchema.parse({
+				style,
+				classes: dropdownMenuOverrideClasses(overrides, context),
+			})
+		);
+	};
+	const part = (style: string, css: string, file: string) =>
+		classList(installed("dropdown-menu", style, css, `dropdown-menu-${file}.svelte`));
+
+	it("reads each style's own baseline from the installed source", () => {
+		const nova = parseDropdownMenuSource(registryFiles("dropdown-menu", "nova"));
+		expect(nova.values).toEqual({
+			padding: 4,
+			minWidth: 128,
+			radius: "lg",
+			itemPaddingX: 6,
+			itemPaddingY: 4,
+			itemGap: 6,
+			itemRadius: "md",
+			duration: "fast",
+			zoom: "95",
+		});
+		expect(nova.context).toMatchObject({ inset: 28, choicePaddingY: 4, separatorBleed: true });
+		const vega = parseDropdownMenuSource(registryFiles("dropdown-menu", "vega"));
+		expect(vega.values).toMatchObject({
+			radius: "md",
+			itemPaddingX: 8,
+			itemPaddingY: 6,
+			itemGap: 8,
+			itemRadius: "sm",
+		});
+		expect(vega.context.inset).toBe(32);
+		// Lyra has no panel padding but its separators still use -mx-1: they do not bleed.
+		const lyra = parseDropdownMenuSource(registryFiles("dropdown-menu", "lyra"));
+		expect(lyra.values.padding).toBe(0);
+		expect(lyra.context.separatorBleed).toBe(false);
+		expect(parseDropdownMenuSource(registryFiles("dropdown-menu", "luma")).values).toMatchObject({
+			padding: 6,
+			minWidth: 192,
+			radius: "3xl",
+		});
+	});
+
+	it("writes panel, item, inset and separator utilities that stay aligned", () => {
+		const css = write("nova", {
+			padding: 8,
+			minWidth: 160,
+			itemPaddingX: 10,
+			itemGap: 8,
+			duration: "slow",
+			zoom: "90",
+		});
+		const content = part("nova", css, "content");
+		expect(content).toEqual(
+			expect.arrayContaining(["p-2", "min-w-40", "duration-slow", "data-open:zoom-in-90"])
+		);
+		for (const stale of ["p-1", "min-w-32", "duration-100", "data-open:zoom-in-95"])
+			expect(content).not.toContain(stale);
+		expect(part("nova", css, "sub-content")).toEqual(
+			expect.arrayContaining(["p-2", "duration-slow", "data-closed:zoom-out-90", "min-w-[96px]"])
+		);
+		// Inset rows keep lining up with icon rows: 10px padding + 16px icon + 8px gap = 34px.
+		const item = part("nova", css, "item");
+		expect(item).toEqual(expect.arrayContaining(["px-2.5", "gap-2", "data-inset:pl-8.5", "py-1"]));
+		expect(item).not.toContain("data-inset:pl-7");
+		const checkbox = part("nova", css, "checkbox-item");
+		// Checkbox rows move only their leading padding; the indicator side stays.
+		expect(checkbox).toEqual(expect.arrayContaining(["pl-2.5", "pr-8", "data-inset:pl-8.5"]));
+		expect(part("nova", css, "label")).toEqual(
+			expect.arrayContaining(["px-2.5", "data-inset:pl-8.5"])
+		);
+		expect(part("nova", css, "separator")).toContain("-mx-2");
+		expect(part("nova", css, "separator")).not.toContain("-mx-1");
+		// Mira's checkbox rows sit 2px taller than plain rows; the offset survives.
+		const mira = write("mira", { itemPaddingY: 8 });
+		expect(part("mira", mira, "item")).toContain("py-2");
+		expect(part("mira", mira, "checkbox-item")).toContain("py-2.5");
+		// Lyra's separators do not bleed, so panel padding leaves them alone.
+		expect(part("lyra", write("lyra", { padding: 8 }), "separator")).toContain("-mx-1");
+	});
+
+	it("rejects colors, arbitrary values and utilities outside each Dropdown Menu part", () => {
+		for (const classes of [
+			{ "cn-dropdown-menu-content": "p-2 bg-red-500" },
+			{ "cn-dropdown-menu-content": "min-w-[200px]" },
+			{ "cn-dropdown-menu-sub-content": "min-w-40" },
+			{ "cn-dropdown-menu-item": "text-sm" },
+			{ "cn-dropdown-menu-checkbox-item": "pr-2" },
+			{ "cn-dropdown-menu-label": "py-2" },
+			{ "cn-dropdown-menu-separator": "my-2" },
+			{ "cn-dropdown-menu-shortcut": "px-2" },
+		])
+			expect(styleOverridePayloadSchema.safeParse({ style: "nova", classes }).success).toBe(false);
+	});
+});
+
+describe("Tooltip write-back into Valar style overrides", () => {
+	const write = (style: string, overrides: Parameters<typeof tooltipOverrideClasses>[0]) =>
+		applyStyleOverrides(
+			emptyOverrides(style),
+			styleOverridePayloadSchema.parse({ style, classes: tooltipOverrideClasses(overrides) })
+		);
+
+	it("reads each style's own baseline, including the show delay", () => {
+		expect(parseTooltipSource(registryFiles("tooltip", "nova")).values).toEqual({
+			paddingX: 12,
+			paddingY: 6,
+			radius: "md",
+			delay: 0,
+			duration: "style",
+			zoom: "95",
+		});
+		expect(parseTooltipSource(registryFiles("tooltip", "maia")).values.radius).toBe("2xl");
+		expect(parseTooltipSource(registryFiles("tooltip", "lyra")).values.radius).toBe("none");
+		// A written delay is read back from the flattened provider.
+		const provider = installed(
+			"tooltip",
+			"nova",
+			write("nova", { delay: 350 }),
+			"tooltip-provider.svelte"
+		);
+		expect(
+			parseTooltipSource([{ target: "tooltip/tooltip-provider.svelte", content: provider }]).values
+				.delay
+		).toBe(350);
+	});
+
+	it("installs the written delay as the Provider default; callers still override it", () => {
+		const css = write("nova", { delay: 300, paddingX: 16, duration: "normal", zoom: "90" });
+		const provider = installed("tooltip", "nova", css, "tooltip-provider.svelte");
+		expect(evaluateProps(provider, {}, "delayDuration")).toBe(300);
+		expect(evaluateProps(provider, { delayDuration: 0 }, "delayDuration")).toBe(0);
+		expect(() => compile(provider, { generate: "client" })).not.toThrow();
+		// Without a write-back the installed default stays upstream's 0.
+		const untouched = installed(
+			"tooltip",
+			"nova",
+			emptyOverrides("nova"),
+			"tooltip-provider.svelte"
+		);
+		expect(evaluateProps(untouched, {}, "delayDuration")).toBe(0);
+		const content = classList(installed("tooltip", "nova", css, "tooltip-content.svelte"));
+		expect(content).toEqual(
+			expect.arrayContaining([
+				"px-4",
+				"py-1.5",
+				"duration-normal",
+				"data-open:zoom-in-90",
+				"data-[state=delayed-open]:zoom-in-90",
+				"data-closed:zoom-out-90",
+			])
+		);
+		for (const stale of ["px-3", "data-open:zoom-in-95", "data-[state=delayed-open]:zoom-in-95"])
+			expect(content).not.toContain(stale);
+	});
+
+	it("rejects colors, type sizes, arbitrary delays and other Tooltip parts", () => {
+		for (const classes of [
+			{ "cn-tooltip-content": "px-4 bg-red-500" },
+			{ "cn-tooltip-content": "text-sm" },
+			{ "cn-tooltip-content": "duration-[400ms]" },
+			{ "cn-tooltip-provider": "delay-[300ms]" },
+			{ "cn-tooltip-provider": "delay-300 px-2" },
+			{ "cn-tooltip-provider": "delay-99999" },
+			{ "cn-tooltip-arrow": "size-3" },
 		])
 			expect(styleOverridePayloadSchema.safeParse({ style: "nova", classes }).success).toBe(false);
 	});

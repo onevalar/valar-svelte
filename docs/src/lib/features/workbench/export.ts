@@ -33,7 +33,7 @@ function applyBehaviorDefaults(file: RegistryItemFile, preset: WorkbenchPreset):
 		);
 	} else if (file.target === "tooltip/tooltip-provider.svelte") {
 		replace(
-			"delayDuration = 0, ...restProps",
+			"delayDuration = styleDelay, ...restProps",
 			`delayDuration = ${v["tooltip.delayDuration"]}, ...restProps`
 		);
 	} else if (file.target === "tooltip/tooltip-content.svelte") {
