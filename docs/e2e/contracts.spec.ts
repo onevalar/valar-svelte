@@ -115,11 +115,11 @@ test.describe("phone layout and touch navigation", () => {
 		hasTouch: true,
 		deviceScaleFactor: 2,
 	});
-	test("shared docs layouts fit narrow screens and search survives a reduced viewport", async ({
-		page,
-	}) => {
-		test.setTimeout(120_000);
-		for (const width of [320, 390, 768]) {
+	// Keep every route/width assertion, but don't monopolize one CI worker with
+	// all 24 navigations before the remaining independent contracts can run.
+	for (const width of [320, 390, 768]) {
+		test(`shared docs layouts fit a ${width}px screen`, async ({ page }) => {
+			test.setTimeout(120_000);
 			await page.setViewportSize({ width, height: 740 });
 			for (const route of [
 				"slider",
@@ -137,8 +137,11 @@ test.describe("phone layout and touch navigation", () => {
 					width + 1
 				);
 			}
-		}
+		});
+	}
+	test("touch navigation and search survive a reduced viewport", async ({ page }) => {
 		await page.setViewportSize({ width: 390, height: 844 });
+		await page.goto("/docs/components/data-table", { waitUntil: "networkidle" });
 		await page.getByRole("button", { name: "Toggle menu Menu", exact: true }).tap();
 		const link = page.getByRole("link", { name: "Formsnap", exact: true });
 		const href = await link.getAttribute("href");

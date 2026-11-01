@@ -76,8 +76,13 @@ jobs:
           node-version-file: .nvmrc
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter docs exec playwright install --with-deps chromium
-      - run: pnpm build
+      # Chromium is only needed after the build. Require both commands to succeed
+      # and retain their individual timings without another large browser cache.
+      - name: Build site and prepare Chromium
+        run: >-
+          pnpm exec concurrently --kill-others-on-fail --success all --timings --names build,chromium
+          "pnpm build"
+          "pnpm --filter docs exec playwright install --with-deps chromium"
       - run: pnpm --filter docs test:e2e --reporter=list
 
   # Keep the original required check name. Never use workflow-level paths-ignore:
