@@ -30,7 +30,32 @@
 | 11   | Valar 可安装技能包                  | 完成（设计方法待用户编写）  | `skills/valar-svelte`；`guides/` 三个文件为占位   |
 | 12   | 本地 MCP 服务 `valar-svelte mcp`    | 完成（本地版）              | 线上版等用户准备好服务器后再做                    |
 
-**下一步**（2026-11-01，第 1–12 步均已完成）：按同样做法把组件编辑器接入下一个组件（建议弹层类 Popover／Sheet，或表单类 Input），每接一个只需新增 `<组件>-tuning.ts`（参数说明）和 `<组件>-tuner.svelte`（画布），并在 `style-overrides.ts` 的 `OVERRIDE_RULES` 中为它的 `cn-*` 类登记允许的工具类；可并行的小项是给其余组件补说明卡和 `RULES.md`。`skills/valar-svelte/guides/` 的组合、文案、动效内容由用户编写，AI 不要动。
+**下一步**（2026-11-01，第 1–12 步均已完成，最新提交 `e3c095c`）：按下面的“后续任务”从 A1 开始。`skills/valar-svelte/guides/` 的组合、文案、动效内容由用户编写，AI 不要动。
+
+### 后续任务（按顺序；完成一项就在此更新状态）
+
+| 编号 | 任务                                 | 状态 | 说明                                                                                                                          |
+| ---- | ------------------------------------ | ---- | ----------------------------------------------------------------------------------------------------------------------------- |
+| A1   | 组件编辑器接入 Popover、Sheet        | 待办 | 与 Dialog 同类（遮罩、动效档位、出现时缩放／滑入距离），照 `dialog-tuning.ts` 做；Sheet 的滑入距离属于组件参数                |
+| A2   | 接入 Dropdown Menu、Tooltip          | 待办 | 弹层类收尾；Tooltip 的显示延迟属于组件参数                                                                                    |
+| A3   | 接入 Input、Select、Textarea         | 待办 | 高度、圆角档位应与 Button 同一套档位，避免组件之间割裂；当前值量取方式参照 Button                                             |
+| B1   | 给弹层与表单组件补说明卡 `meta.json` | 待办 | 可与 A 并行；目前 21 个组件有卡，缺卡清单见构建日志或 `catalog.json` 的 `missingCards`；做法见“第 9–12 步的做法”              |
+| B2   | 给弹层与表单组件补 `RULES.md`        | 待办 | 目前只有 Button、Field；做法见“第 8 步的做法”                                                                                 |
+| B3   | 其余组件补说明卡和 `RULES.md`        | 待办 | B1、B2 之后                                                                                                                   |
+| C1   | 用户编写 `guides/` 三份方法          | 用户 | 页面组合、文案、动效；AI 不代写                                                                                               |
+| C2   | 线上版 MCP（HTTP）                   | 用户 | 等用户准备好服务器并授权部署后再做                                                                                            |
+| C3   | 决定 `/workbench` Studio 去留        | 用户 | 已知问题：Studio 的 `global.motionDuration`（默认 180ms）会覆盖全局动效 token；保留则需改为跟随 token，撤掉则删入口与回归测试 |
+
+**每接入一个组件的清单**（A1–A3 都按此做，全部做完才算完成）：
+
+1. `docs/src/lib/features/workbench/<组件>-tuning.ts`：导出 `TunerSpec`（类型见 `tuner.ts`）——参数、取值校验、`readBaseline`（读当前值；Dialog 读 registry 源码，Button 量取页面元素）、`previewCss`（实时预览）、`overrideClasses`（写回的工具类）、只读 token 列表、独立的 `storageKey`。全局 token 只能选档位，不能在此修改数值。
+2. `<组件>-tuner.svelte`：只写画布，外壳用 `<ComponentTuner spec={…}>`；参照 `dialog-tuner.svelte`。
+3. `docs/src/lib/components/component-preview-tabs.svelte`：让该组件文档页的首个示例套上编辑器。
+4. `style-overrides.ts` 的 `OVERRIDE_RULES`：为该组件每个 `cn-*` 类登记允许的工具类（颜色和任意值不允许）。改完必须重启开发服务 `amp orb service restart docs`。
+5. 测试：`docs/tests/workbench.test.ts` 加当前值读取（至少两套样式，如 nova、vega）、写回后的安装源码、白名单拒绝用例；`docs/e2e/workbench.spec.ts` 加编辑器用例（打开、调参生效、并排对比、保存版本、Esc 归还焦点）。
+6. 实测：开发站真实写回一次并检查 `static/registry/styles/<样式>/<组件>.json`，之后用 `git checkout` 恢复 `styles/valar/style-*.css` 与 registry 文件；截图检查 1440、390 宽度和深色。
+7. 全量检查：`pnpm test`、`pnpm check`、`NODE_OPTIONS=--max-old-space-size=3072 CI=true pnpm build`、docs 目录下 `CI=true pnpm exec playwright test`。
+8. 更新本表状态和“第 7 步的做法”中的组件列表；未经用户同意不提交推送。
 
 第 8 步的做法（推广到其他组件时沿用）：
 
@@ -113,7 +138,7 @@ DialKit 原生缩略图遵循默认的本次会话语义；页面中的命名保
 
 ## 当前交付边界
 
-入口：站点主导航 **Studio**，路径 `/workbench`。
+入口：路径 `/workbench`（2026-10-31 起已不在主导航中）。
 
 本轮先打通 Button、Dialog、Tooltip、Accordion 的完整流程，共 65 个全局／组件参数。
 这是首批接入，不是四个组件全部 API 参数化，也不是 66 个组件全部完成。
