@@ -6,6 +6,11 @@ import {
 	RADIUS_LABELS,
 	RADIUS_LEVELS,
 	radiusCss,
+	readSlide,
+	slideClasses,
+	slideCss,
+	SLIDE_DISTANCES,
+	SLIDE_OPTIONS,
 	sourceWord,
 	spacing,
 	STYLE_VALUE,
@@ -21,15 +26,6 @@ import {
  * character (padding, gap, zoom and slide distance on open). Width and side offset are props
  * that callers set per use (`class="w-80"`, `sideOffset`), so they are not style parameters.
  */
-/** Slide distance in px; written as tw-animate spacing steps (4px each). */
-export const POPOVER_SLIDES = ["0", "4", "8", "12", "16"] as const;
-/** The panel slides in from the trigger: opening below it starts slightly above, and so on. */
-const SLIDE_FROM = {
-	bottom: "top",
-	top: "bottom",
-	left: "right",
-	right: "left",
-} as const;
 
 const valuesSchema = z
 	.object({
@@ -38,7 +34,7 @@ const valuesSchema = z
 		radius: z.enum(RADIUS_CHOICES),
 		duration: z.enum(MOTION_TIERS),
 		zoom: z.enum(ZOOM_LEVELS),
-		slide: z.enum(POPOVER_SLIDES),
+		slide: z.enum(SLIDE_DISTANCES),
 	})
 	.strict();
 export type PopoverValues = z.infer<typeof valuesSchema>;
@@ -65,9 +61,7 @@ export function parsePopoverSource(files: { target: string; content: string }[])
 			duration: (sourceWord("duration-(fast|normal|slow)", content) ??
 				"fast") as PopoverValues["duration"],
 			zoom: (/data-open:zoom-in-(\d+)/.exec(content)?.[1] ?? "100") as PopoverValues["zoom"],
-			slide: String(
-				Number(/data-\[side=bottom\]:slide-in-from-top-(\d+)/.exec(content)?.[1] ?? 0) * 4
-			) as PopoverValues["slide"],
+			slide: readSlide(content),
 		},
 		context: null,
 	};
@@ -91,15 +85,7 @@ function popoverCss(select: string, overrides: PopoverOverrides): string {
 		content.push(
 			`--tw-enter-scale: ${Number(safe.zoom) / 100}; --tw-exit-scale: ${Number(safe.zoom) / 100};`
 		);
-	if (safe.slide !== undefined) {
-		const distance = `calc(${spacing(Number(safe.slide))} * var(--spacing))`;
-		rules.push(
-			`${select}[data-side="bottom"] { --tw-enter-translate-y: calc(${distance} * -1); }`,
-			`${select}[data-side="top"] { --tw-enter-translate-y: ${distance}; }`,
-			`${select}[data-side="left"] { --tw-enter-translate-x: ${distance}; }`,
-			`${select}[data-side="right"] { --tw-enter-translate-x: calc(${distance} * -1); }`
-		);
-	}
+	if (safe.slide !== undefined) rules.push(...slideCss((side) => `${select}${side}`, safe.slide));
 	if (content.length) rules.unshift(`${select} { ${content.join(" ")} }`);
 	return rules.join("\n");
 }
@@ -116,9 +102,7 @@ export function popoverOverrideClasses(overrides: PopoverOverrides): Record<stri
 	if (safe.duration !== undefined) content.push(`duration-${safe.duration}`);
 	if (safe.zoom !== undefined)
 		content.push(`data-open:zoom-in-${safe.zoom}`, `data-closed:zoom-out-${safe.zoom}`);
-	if (safe.slide !== undefined)
-		for (const [side, from] of Object.entries(SLIDE_FROM))
-			content.push(`data-[side=${side}]:slide-in-from-${from}-${spacing(Number(safe.slide))}`);
+	if (safe.slide !== undefined) content.push(...slideClasses(safe.slide));
 	return content.length ? { "cn-popover-content": content.join(" ") } : {};
 }
 
@@ -180,10 +164,7 @@ export const POPOVER_SPEC: TunerSpec<PopoverValues, null> = {
 			kind: "select",
 			key: "slide",
 			label: "出现时滑入距离",
-			options: POPOVER_SLIDES.map((value) => ({
-				value,
-				label: value === "0" ? "0 · 不滑动" : `${value}px`,
-			})),
+			options: SLIDE_OPTIONS,
 		},
 	],
 	valuesSchema,

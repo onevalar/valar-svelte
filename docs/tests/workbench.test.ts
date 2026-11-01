@@ -32,11 +32,11 @@ import {
 	parseWorkbenchPreset,
 	presetSchema,
 } from "../src/lib/features/workbench/model.js";
-import { selectOverrideClasses } from "../src/lib/features/workbench/select-tuning.js";
 import {
 	parsePopoverSource,
 	popoverOverrideClasses,
 } from "../src/lib/features/workbench/popover-tuning.js";
+import { selectOverrideClasses } from "../src/lib/features/workbench/select-tuning.js";
 import {
 	parseSheetSource,
 	sheetOverrideClasses,
@@ -46,11 +46,11 @@ import {
 	styleOverridePayloadSchema,
 } from "../src/lib/features/workbench/style-overrides.js";
 import { createWorkbenchCss } from "../src/lib/features/workbench/styles.js";
+import { textareaOverrideClasses } from "../src/lib/features/workbench/textarea-tuning.js";
 import {
 	parseTooltipSource,
 	tooltipOverrideClasses,
 } from "../src/lib/features/workbench/tooltip-tuning.js";
-import { textareaOverrideClasses } from "../src/lib/features/workbench/textarea-tuning.js";
 
 function originals(): RegistryItem[] {
 	return COMPONENTS.map(({ id }) =>
@@ -954,6 +954,7 @@ describe("Dropdown Menu write-back into Valar style overrides", () => {
 			itemRadius: "md",
 			duration: "fast",
 			zoom: "95",
+			slide: "8",
 		});
 		expect(nova.context).toMatchObject({ inset: 28, choicePaddingY: 4, separatorBleed: true });
 		const vega = parseDropdownMenuSource(registryFiles("dropdown-menu", "vega"));
@@ -984,15 +985,38 @@ describe("Dropdown Menu write-back into Valar style overrides", () => {
 			itemGap: 8,
 			duration: "slow",
 			zoom: "90",
+			slide: "16",
 		});
 		const content = part("nova", css, "content");
 		expect(content).toEqual(
-			expect.arrayContaining(["p-2", "min-w-40", "duration-slow", "data-open:zoom-in-90"])
+			expect.arrayContaining([
+				"p-2",
+				"min-w-40",
+				"duration-slow",
+				"data-open:zoom-in-90",
+				"data-[side=bottom]:slide-in-from-top-4",
+				"data-[side=left]:slide-in-from-right-4",
+			])
 		);
-		for (const stale of ["p-1", "min-w-32", "duration-100", "data-open:zoom-in-95"])
+		for (const stale of [
+			"p-1",
+			"min-w-32",
+			"duration-100",
+			"data-open:zoom-in-95",
+			"data-[side=bottom]:slide-in-from-top-2",
+		])
 			expect(content).not.toContain(stale);
 		expect(part("nova", css, "sub-content")).toEqual(
-			expect.arrayContaining(["p-2", "duration-slow", "data-closed:zoom-out-90", "min-w-[96px]"])
+			expect.arrayContaining([
+				"p-2",
+				"duration-slow",
+				"data-closed:zoom-out-90",
+				"min-w-[96px]",
+				"data-[side=right]:slide-in-from-left-4",
+			])
+		);
+		expect(part("nova", css, "sub-content")).not.toContain(
+			"data-[side=right]:slide-in-from-left-2"
 		);
 		// Inset rows keep lining up with icon rows: 10px padding + 16px icon + 8px gap = 34px.
 		const item = part("nova", css, "item");
@@ -1018,6 +1042,8 @@ describe("Dropdown Menu write-back into Valar style overrides", () => {
 		for (const classes of [
 			{ "cn-dropdown-menu-content": "p-2 bg-red-500" },
 			{ "cn-dropdown-menu-content": "min-w-[200px]" },
+			{ "cn-dropdown-menu-content": "data-[side=bottom]:slide-in-from-top-[13px]" },
+			{ "cn-dropdown-menu-sub-content": "data-[side=bottom]:slide-in-from-top-6" },
 			{ "cn-dropdown-menu-sub-content": "min-w-40" },
 			{ "cn-dropdown-menu-item": "text-sm" },
 			{ "cn-dropdown-menu-checkbox-item": "pr-2" },

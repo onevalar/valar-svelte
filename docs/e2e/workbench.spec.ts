@@ -588,7 +588,16 @@ test("Dropdown Menu editor previews panel, item spacing and motion tier on a rea
 	await setNumber(page, "菜单项横向内边距（px）", 10);
 	await editor.getByRole("button", { name: /^动效档位/ }).click();
 	await page.getByRole("option", { name: "慢（全局 token）" }).click();
-	await expect(editor.getByText("已修改 3 项", { exact: true })).toBeVisible();
+	await expect(editor.getByRole("button", { name: /^出现时滑入距离/ })).toContainText("8px");
+	await editor.getByRole("button", { name: /^出现时滑入距离/ }).click();
+	await page.getByRole("option", { name: "16px" }).click();
+	await expect(editor.getByText("已修改 4 项", { exact: true })).toBeVisible();
+	// The menu opens below its trigger, so it starts 16px above and slides down.
+	expect(
+		await part("current", "content").evaluate((element) =>
+			getComputedStyle(element).getPropertyValue("--tw-enter-translate-y")
+		)
+	).toMatch(/^calc\(calc\(4 \* .+\) \* -1\)$/);
 	await expect(part("current", "content")).toHaveCSS("padding-top", "8px");
 	await expect(part("current", "content")).toHaveCSS("animation-duration", "0.3s");
 	await expect(part("current", "item").first()).toHaveCSS("padding-left", "10px");

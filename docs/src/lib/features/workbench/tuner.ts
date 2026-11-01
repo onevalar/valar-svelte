@@ -53,6 +53,39 @@ export const tierVar = (tier: MotionTier) =>
 /** Enter and exit scale levels (`zoom-in-*`, `zoom-out-*`). */
 export const ZOOM_LEVELS = ["90", "95", "100"] as const;
 
+/** Slide distance on open, in px (tw-animate spacing steps of 4px), for side-anchored panels. */
+export const SLIDE_DISTANCES = ["0", "4", "8", "12", "16"] as const;
+export type SlideDistance = (typeof SLIDE_DISTANCES)[number];
+export const SLIDE_OPTIONS = SLIDE_DISTANCES.map((value) => ({
+	value,
+	label: value === "0" ? "0 · 不滑动" : `${value}px`,
+}));
+/** The panel slides in from the trigger: opening below it starts slightly above, and so on. */
+const SLIDE_FROM = { bottom: "top", top: "bottom", left: "right", right: "left" } as const;
+
+/** Reads the slide distance from a flattened class string (bottom side; all sides match). */
+export const readSlide = (classes: string) =>
+	String(
+		Number(/data-\[side=bottom\]:slide-in-from-top-(\d+)/.exec(classes)?.[1] ?? 0) * 4
+	) as SlideDistance;
+
+/** Write-back classes for every side. */
+export const slideClasses = (distance: SlideDistance) =>
+	Object.entries(SLIDE_FROM).map(
+		([side, from]) => `data-[side=${side}]:slide-in-from-${from}-${spacing(Number(distance))}`
+	);
+
+/** Live preview rules on tw-animate's enter variables; `select` must accept a `[data-side]` suffix. */
+export function slideCss(select: (suffix: string) => string, distance: SlideDistance): string[] {
+	const px = `calc(${spacing(Number(distance))} * var(--spacing))`;
+	return [
+		`${select('[data-side="bottom"]')} { --tw-enter-translate-y: calc(${px} * -1); }`,
+		`${select('[data-side="top"]')} { --tw-enter-translate-y: ${px}; }`,
+		`${select('[data-side="left"]')} { --tw-enter-translate-x: ${px}; }`,
+		`${select('[data-side="right"]')} { --tw-enter-translate-x: calc(${px} * -1); }`,
+	];
+}
+
 /** First capture group of `pattern` matched as a whole utility in a flattened class string. */
 export const sourceWord = (pattern: string, source: string) =>
 	new RegExp(`(?<![\\w:/-])${pattern}(?![\\w-])`).exec(source)?.[1];

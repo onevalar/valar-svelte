@@ -38,7 +38,7 @@ const SELECT_TRIGGER_UTILITY = new RegExp(
 	`^(?:data-\\[size=(?:default|sm)\\]:h-${N}|pl-${N}|(?:data-\\[size=sm\\]:)?rounded-${RADIUS})$`
 );
 const ZOOM = "(?:90|95|100)";
-const MENU_PANEL_UTILITY = `p-${N}|rounded-${RADIUS}|duration-${TIER}|data-open:zoom-in-${ZOOM}|data-closed:zoom-out-${ZOOM}`;
+const MENU_PANEL_UTILITY = `p-${N}|rounded-${RADIUS}|duration-${TIER}|data-open:zoom-in-${ZOOM}|data-closed:zoom-out-${ZOOM}|data-\\[side=${SIDE}\\]:slide-in-from-${SIDE}-[0-4]`;
 const DROPDOWN_MENU_CONTENT_UTILITY = new RegExp(`^(?:${MENU_PANEL_UTILITY}|min-w-${N})$`);
 const DROPDOWN_MENU_SUB_CONTENT_UTILITY = new RegExp(`^(?:${MENU_PANEL_UTILITY})$`);
 const DROPDOWN_MENU_ITEM_UTILITY = new RegExp(

@@ -6,6 +6,11 @@ import {
 	RADIUS_LABELS,
 	RADIUS_LEVELS,
 	radiusCss,
+	readSlide,
+	slideClasses,
+	slideCss,
+	SLIDE_DISTANCES,
+	SLIDE_OPTIONS,
 	sourceWord,
 	spacing,
 	STYLE_VALUE,
@@ -18,7 +23,7 @@ import {
 /**
  * Dropdown Menu's own parameters. Colors, `--radius` and the motion tier values are global
  * tokens; the menu only picks levels (radius levels, duration tier) and sets its own layout
- * (panel padding and minimum width, item padding and gap) and zoom on open.
+ * (panel padding and minimum width, item padding and gap) and zoom and slide distance on open.
  */
 
 const valuesSchema = z
@@ -32,6 +37,7 @@ const valuesSchema = z
 		itemRadius: z.enum(RADIUS_CHOICES),
 		duration: z.enum(MOTION_TIERS),
 		zoom: z.enum(ZOOM_LEVELS),
+		slide: z.enum(SLIDE_DISTANCES),
 	})
 	.strict();
 export type DropdownMenuValues = z.infer<typeof valuesSchema>;
@@ -90,6 +96,7 @@ export function parseDropdownMenuSource(files: { target: string; content: string
 			duration: (sourceWord("duration-(fast|normal|slow)", content) ??
 				"fast") as DropdownMenuValues["duration"],
 			zoom: (/data-open:zoom-in-(\d+)/.exec(content)?.[1] ?? "100") as DropdownMenuValues["zoom"],
+			slide: readSlide(content),
 		},
 		context: {
 			itemPaddingX,
@@ -114,6 +121,7 @@ type Derived = {
 		radius?: RadiusLevel;
 		duration?: DropdownMenuValues["duration"];
 		zoom?: DropdownMenuValues["zoom"];
+		slide?: DropdownMenuValues["slide"];
 	};
 	minWidth?: number;
 	separator?: number;
@@ -140,6 +148,7 @@ function derive(overrides: DropdownMenuOverrides, context: DropdownMenuContext):
 			radius: level(safe.radius),
 			duration: safe.duration,
 			zoom: safe.zoom,
+			slide: safe.slide,
 		},
 		minWidth: safe.minWidth,
 		separator: safe.padding !== undefined && context.separatorBleed ? safe.padding : undefined,
@@ -185,6 +194,8 @@ function menuCss(
 			`--tw-enter-scale: ${Number(panel.zoom) / 100}; --tw-exit-scale: ${Number(panel.zoom) / 100};`
 		);
 	rule(PANELS, panelDecls);
+	if (panel.slide)
+		for (const slot of PANELS) rules.push(...slideCss((side) => select([slot], side), panel.slide));
 	if (minWidth !== undefined) rule(["dropdown-menu-content"], [`min-width: ${minWidth}px;`]);
 	if (separator !== undefined)
 		rule(["dropdown-menu-separator"], [`margin-inline: -${separator}px;`]);
@@ -221,6 +232,7 @@ export function dropdownMenuOverrideClasses(
 	if (panel.duration) panelClasses.push(`duration-${panel.duration}`);
 	if (panel.zoom)
 		panelClasses.push(`data-open:zoom-in-${panel.zoom}`, `data-closed:zoom-out-${panel.zoom}`);
+	if (panel.slide) panelClasses.push(...slideClasses(panel.slide));
 	const shared: string[] = [];
 	if (item.gap !== undefined) shared.push(`gap-${spacing(item.gap)}`);
 	if (item.radius) shared.push(`rounded-${item.radius}`);
@@ -307,6 +319,7 @@ export const DROPDOWN_MENU_SPEC: TunerSpec<DropdownMenuValues, DropdownMenuConte
 				{ value: "100", label: "100% · 不缩放" },
 			],
 		},
+		{ kind: "select", key: "slide", label: "出现时滑入距离", options: SLIDE_OPTIONS },
 	],
 	valuesSchema,
 	tokens: [
