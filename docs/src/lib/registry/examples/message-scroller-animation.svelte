@@ -103,6 +103,7 @@
 				</Select.Content>
 			</Select.Root>
 			<Button
+				aria-label="Send Message"
 				type="button"
 				size="icon"
 				class="ml-auto"
@@ -111,12 +112,10 @@
 					if (!nextMessage || isBusy) {
 						return;
 					}
-
 					void chat.sendMessage(nextMessage);
 				}}
 			>
 				<ArrowUpIcon />
-				<span class="sr-only">Send Message</span>
 			</Button>
 		</Card.Footer>
 	</Card.Root>

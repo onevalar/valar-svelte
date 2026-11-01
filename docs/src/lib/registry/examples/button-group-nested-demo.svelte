@@ -9,7 +9,7 @@
 
 <ButtonGroup.Root>
 	<ButtonGroup.Root>
-		<Button variant="outline" size="icon">
+		<Button aria-label="Add" variant="outline" size="icon">
 			<PlusIcon />
 		</Button>
 	</ButtonGroup.Root>

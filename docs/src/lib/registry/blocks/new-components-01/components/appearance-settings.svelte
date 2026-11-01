@@ -12,20 +12,20 @@
 
 	const accents = [
 		{
-			name: "Blue",
-			value: "blue",
+			name: "Accent 1",
+			value: "chart-2",
 		},
 		{
-			name: "Amber",
-			value: "amber",
+			name: "Accent 2",
+			value: "chart-3",
 		},
 		{
-			name: "Green",
-			value: "green",
+			name: "Accent 3",
+			value: "chart-4",
 		},
 		{
-			name: "Rose",
-			value: "rose",
+			name: "Accent 4",
+			value: "chart-5",
 		},
 	];
 </script>
@@ -67,12 +67,12 @@
 				<Field.Description>Select the accent color to use.</Field.Description>
 			</Field.Content>
 			<Field.Set aria-label="Accent">
-				<RadioGroup.Root class="flex flex-wrap gap-2" value="blue">
+				<RadioGroup.Root class="flex flex-wrap gap-2" value="chart-2">
 					{#each accents as accent (accent.value)}
 						<Label
 							for={accent.value}
 							data-theme={accent.value}
-							class="flex size-6 items-center justify-center rounded-full data-[theme=amber]:bg-amber-600 data-[theme=blue]:bg-blue-700 data-[theme=green]:bg-green-600 data-[theme=rose]:bg-rose-600"
+							class="flex size-6 items-center justify-center rounded-full data-[theme=chart-2]:bg-chart-2 data-[theme=chart-3]:bg-chart-3 data-[theme=chart-4]:bg-chart-4 data-[theme=chart-5]:bg-chart-5"
 						>
 							<RadioGroup.Item
 								id={accent.value}
@@ -80,7 +80,9 @@
 								aria-label={accent.name}
 								class="peer sr-only"
 							/>
-							<CheckIcon class="hidden size-4 stroke-white peer-data-[state=checked]:block" />
+							<CheckIcon
+								class="hidden size-4 stroke-primary-foreground peer-data-[state=checked]:block dark:stroke-foreground"
+							/>
 						</Label>
 					{/each}
 				</RadioGroup.Root>
@@ -100,10 +102,10 @@
 					class="w-14! font-mono"
 					maxlength={3}
 				/>
-				<Button variant="outline" size="icon-sm" type="button">
+				<Button aria-label="Decrease" variant="outline" size="icon-sm" type="button">
 					<MinusIcon />
 				</Button>
-				<Button variant="outline" size="icon-sm" type="button">
+				<Button aria-label="Increase" variant="outline" size="icon-sm" type="button">
 					<PlusIcon />
 				</Button>
 			</ButtonGroup.Root>

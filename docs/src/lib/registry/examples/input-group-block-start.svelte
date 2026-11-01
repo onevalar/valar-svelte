@@ -27,9 +27,8 @@
 			<InputGroup.Addon align="block-start">
 				<FileCodeIcon class="text-muted-foreground" />
 				<InputGroup.Text class="font-mono">script.js</InputGroup.Text>
-				<InputGroup.Button size="icon-xs" class="ml-auto">
+				<InputGroup.Button aria-label="Copy" size="icon-xs" class="ml-auto">
 					<CopyIcon />
-					<span class="sr-only">Copy</span>
 				</InputGroup.Button>
 			</InputGroup.Addon>
 		</InputGroup.Root>

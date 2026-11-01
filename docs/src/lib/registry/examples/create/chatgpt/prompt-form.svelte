@@ -26,7 +26,6 @@
 											variant="ghost"
 											size="icon-sm"
 											onclick={() => (dictateEnabled = !dictateEnabled)}
-											class="rounded-4xl"
 											{...props}
 											{...triggerProps}
 										>
@@ -178,7 +177,7 @@
 								variant="ghost"
 								size="icon-sm"
 								onclick={() => (dictateEnabled = !dictateEnabled)}
-								class="ml-auto rounded-4xl"
+								class="ml-auto"
 								{...props}
 							>
 								<IconPlaceholder
@@ -193,7 +192,7 @@
 					</Tooltip.Trigger>
 					<Tooltip.Content>Dictate</Tooltip.Content>
 				</Tooltip.Root>
-				<InputGroup.Button size="icon-sm" variant="default" class="rounded-4xl">
+				<InputGroup.Button aria-label="Send" size="icon-sm" variant="default">
 					<IconPlaceholder
 						lucide="ArrowUpIcon"
 						tabler="IconArrowUp"

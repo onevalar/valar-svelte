@@ -25,7 +25,7 @@
 			>Set the minimum balance required before a payout is triggered.</Card.Description
 		>
 		<Card.Action>
-			<Button variant="ghost" size="icon-sm" class="bg-muted">
+			<Button aria-label="Close" variant="ghost" size="icon-sm" class="bg-muted">
 				<IconPlaceholder
 					lucide="XIcon"
 					tabler="IconX"

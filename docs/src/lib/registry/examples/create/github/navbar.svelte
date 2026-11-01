@@ -251,7 +251,7 @@
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
-					<Button variant="ghost" size="icon" class="ml-auto rounded-full" {...props}>
+					<Button variant="ghost" size="icon" class="ml-auto" {...props}>
 						<Avatar.Root>
 							<Avatar.Image src="/favicon.svg" alt="Valar" />
 							<Avatar.Fallback>SC</Avatar.Fallback>

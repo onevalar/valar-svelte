@@ -139,6 +139,7 @@
 				</ToggleGroup.Item>
 			</ToggleGroup.Root>
 			<Button
+				aria-label="Send Message"
 				type="button"
 				size="icon"
 				class="ml-auto"
@@ -146,7 +147,6 @@
 				onclick={sendNextMessage}
 			>
 				<ArrowUpIcon />
-				<span class="sr-only">Send Message</span>
 			</Button>
 		</Card.Footer>
 	</Card.Root>

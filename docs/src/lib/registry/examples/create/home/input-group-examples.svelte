@@ -39,7 +39,7 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						{#snippet child({ props })}
-							<InputGroup.Button class="rounded-full" size="icon-xs" aria-label="Info" {...props}>
+							<InputGroup.Button size="icon-xs" aria-label="Info" {...props}>
 								<IconPlaceholder
 									lucide="InfoIcon"
 									tabler="IconInfoCircle"
@@ -153,12 +153,7 @@
 		<InputGroup.Root>
 			<InputGroup.Textarea placeholder="Ask, Search or Chat..." />
 			<InputGroup.Addon align="block-end">
-				<InputGroup.Button
-					variant="outline"
-					class="rounded-full style-lyra:rounded-none"
-					size="icon-xs"
-					aria-label="Add"
-				>
+				<InputGroup.Button variant="outline" size="icon-xs" aria-label="Add">
 					<IconPlaceholder
 						lucide="PlusIcon"
 						tabler="IconPlus"
@@ -183,11 +178,7 @@
 				</DropdownMenu.Root>
 				<InputGroup.Text class="ml-auto">52% used</InputGroup.Text>
 				<Separator orientation="vertical" class="data-vertical:h-4 data-vertical:self-auto" />
-				<InputGroup.Button
-					variant="default"
-					class="rounded-full style-lyra:rounded-none"
-					size="icon-xs"
-				>
+				<InputGroup.Button aria-label="Send" variant="default" size="icon-xs">
 					<IconPlaceholder
 						lucide="ArrowUpIcon"
 						tabler="IconArrowUp"

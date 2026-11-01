@@ -123,7 +123,6 @@
 				<InputGroup.Button
 					size="icon-sm"
 					variant="outline"
-					class="rounded-full"
 					aria-label="Attach files"
 					onclick={() => input?.click()}
 				>
@@ -194,7 +193,6 @@
 					type="submit"
 					size="icon-sm"
 					variant="default"
-					class="rounded-full"
 					disabled={!canSend}
 					aria-label="Send"
 				>

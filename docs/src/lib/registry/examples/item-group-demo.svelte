@@ -28,7 +28,7 @@
 		<Item.Root variant="outline">
 			<Item.Media>
 				<Avatar.Root>
-					<Avatar.Image src={person.avatar} class="grayscale" />
+					<Avatar.Image src={person.avatar} alt={person.username} class="grayscale" />
 					<Avatar.Fallback>{person.username.charAt(0)}</Avatar.Fallback>
 				</Avatar.Root>
 			</Item.Media>
@@ -37,7 +37,7 @@
 				<Item.Description>{person.email}</Item.Description>
 			</Item.Content>
 			<Item.Actions>
-				<Button variant="ghost" size="icon" class="rounded-full">
+				<Button aria-label="Invite" variant="ghost" size="icon">
 					<Plus />
 				</Button>
 			</Item.Actions>

@@ -22,7 +22,7 @@
 		</div>
 		<div class="flex items-center gap-2">
 			<Button variant="destructive">Delete</Button>
-			<Button size="icon">
+			<Button aria-label="Next" size="icon">
 				<IconPlaceholder
 					lucide="ArrowRightIcon"
 					tabler="IconArrowRight"

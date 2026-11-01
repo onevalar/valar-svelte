@@ -148,6 +148,7 @@ That's usually enough for v1. Fancy diff animations or per-paragraph fade-ins ca
 					/>
 					<InputGroup.Addon align="block-end" class="p-2">
 						<InputGroup.Button
+							aria-label="Send"
 							variant="default"
 							size="icon-sm"
 							type="submit"
@@ -165,6 +166,7 @@ That's usually enough for v1. Fancy diff animations or per-paragraph fade-ins ca
 							<span class="sr-only">Send</span>
 						</InputGroup.Button>
 						<InputGroup.Button
+							aria-label="Stop"
 							size="icon-sm"
 							type="button"
 							data-hidden={!isBusy}

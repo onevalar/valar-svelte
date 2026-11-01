@@ -17,14 +17,14 @@
 				<Table.Cell class="font-medium">Design homepage</Table.Cell>
 				<Table.Cell>
 					<span
-						class="inline-flex items-center rounded-full bg-green-500/10 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400"
+						class="inline-flex items-center rounded-full bg-chart-2/10 px-2 py-1 text-xs font-medium text-chart-2"
 					>
 						Completed
 					</span>
 				</Table.Cell>
 				<Table.Cell class="text-right">
 					<span
-						class="inline-flex items-center rounded-full bg-blue-500/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400"
+						class="inline-flex items-center rounded-full bg-primary px-2 py-1 text-xs font-medium text-primary-foreground"
 					>
 						High
 					</span>
@@ -34,14 +34,14 @@
 				<Table.Cell class="font-medium">Implement API</Table.Cell>
 				<Table.Cell>
 					<span
-						class="inline-flex items-center rounded-full bg-yellow-500/10 px-2 py-1 text-xs font-medium text-yellow-700 dark:text-yellow-400"
+						class="inline-flex items-center rounded-full bg-primary/10 px-2 py-1 text-xs font-medium text-primary"
 					>
 						In Progress
 					</span>
 				</Table.Cell>
 				<Table.Cell class="text-right">
 					<span
-						class="inline-flex items-center rounded-full bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-400"
+						class="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground"
 					>
 						Medium
 					</span>
@@ -51,14 +51,14 @@
 				<Table.Cell class="font-medium">Write tests</Table.Cell>
 				<Table.Cell>
 					<span
-						class="inline-flex items-center rounded-full bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-400"
+						class="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground"
 					>
 						Pending
 					</span>
 				</Table.Cell>
 				<Table.Cell class="text-right">
 					<span
-						class="inline-flex items-center rounded-full bg-gray-500/10 px-2 py-1 text-xs font-medium text-gray-700 dark:text-gray-400"
+						class="inline-flex items-center rounded-full bg-muted px-2 py-1 text-xs font-medium text-muted-foreground"
 					>
 						Low
 					</span>

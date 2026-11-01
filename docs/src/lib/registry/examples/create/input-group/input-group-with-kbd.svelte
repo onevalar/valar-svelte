@@ -54,21 +54,19 @@
 			<InputGroup.Root>
 				<InputGroup.Input id="input-username-26" value="Valar" />
 				<InputGroup.Addon align="inline-end">
-					<div
-						class="flex size-4 items-center justify-center rounded-full bg-green-500 dark:bg-green-800"
-					>
+					<div class="flex size-4 items-center justify-center rounded-full bg-chart-2">
 						<IconPlaceholder
 							lucide="CheckIcon"
 							tabler="IconCheck"
 							hugeicons="Tick02Icon"
 							phosphor="CheckIcon"
 							remixicon="RiCheckLine"
-							class="size-3 text-white"
+							class="size-3 text-primary-foreground dark:text-foreground"
 						/>
 					</div>
 				</InputGroup.Addon>
 			</InputGroup.Root>
-			<Field.Description class="text-green-700">This username is available.</Field.Description>
+			<Field.Description class="text-chart-2">This username is available.</Field.Description>
 		</Field.Field>
 		<InputGroup.Root>
 			<InputGroup.Input id="input-search-docs-27" placeholder="Search documentation..." />

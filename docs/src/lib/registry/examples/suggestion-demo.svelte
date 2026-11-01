@@ -92,19 +92,14 @@
 					class="p-3"
 				/>
 				<InputGroup.Addon align="block-end">
-					<InputGroup.Button
-						size="icon-sm"
-						variant="outline"
-						class="rounded-full"
-						aria-label="Attach files"
-					>
+					<InputGroup.Button size="icon-sm" variant="outline" aria-label="Attach files">
 						<PlusIcon />
 					</InputGroup.Button>
 					<InputGroup.Button
 						type="submit"
 						size="icon-sm"
 						variant="default"
-						class="ml-auto rounded-full"
+						class="ml-auto"
 						disabled={!canSend}
 						aria-label="Send"
 					>

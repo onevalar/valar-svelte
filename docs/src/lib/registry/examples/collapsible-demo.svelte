@@ -11,7 +11,7 @@
 		<h4 class="text-sm font-semibold">Order #4189</h4>
 		<Collapsible.Trigger>
 			{#snippet child({ props })}
-				<Button {...props} variant="ghost" size="icon" class="size-8">
+				<Button {...props} variant="ghost" size="icon-sm">
 					<ChevronsUpDownIcon />
 					<span class="sr-only">Toggle details</span>
 				</Button>

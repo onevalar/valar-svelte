@@ -11,7 +11,7 @@
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
-					<Button variant="outline" class="h-12 justify-start px-2 md:max-w-[200px]" {...props}>
+					<Button size="lg" variant="outline" class="justify-start md:max-w-[200px]" {...props}>
 						<Avatar.Root>
 							<Avatar.Image src="/favicon.svg" alt="Shadcn" />
 							<Avatar.Fallback class="rounded-lg">CN</Avatar.Fallback>
@@ -80,7 +80,7 @@
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
 				{#snippet child({ props })}
-					<Button variant="ghost" size="icon" class="rounded-full" {...props}>
+					<Button variant="ghost" size="icon" {...props}>
 						<Avatar.Root>
 							<Avatar.Image src="/favicon.svg" alt="Valar" />
 							<Avatar.Fallback>LR</Avatar.Fallback>

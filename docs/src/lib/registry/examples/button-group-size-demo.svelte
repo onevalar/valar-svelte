@@ -9,7 +9,7 @@
 		<Button variant="outline" size="sm">Small</Button>
 		<Button variant="outline" size="sm">Button</Button>
 		<Button variant="outline" size="sm">Group</Button>
-		<Button variant="outline" size="icon-sm">
+		<Button aria-label="Add" variant="outline" size="icon-sm">
 			<Plus />
 		</Button>
 	</ButtonGroup.Root>
@@ -17,7 +17,7 @@
 		<Button variant="outline">Default</Button>
 		<Button variant="outline">Button</Button>
 		<Button variant="outline">Group</Button>
-		<Button variant="outline" size="icon">
+		<Button aria-label="Add" variant="outline" size="icon">
 			<Plus />
 		</Button>
 	</ButtonGroup.Root>
@@ -25,7 +25,7 @@
 		<Button variant="outline" size="lg">Large</Button>
 		<Button variant="outline" size="lg">Button</Button>
 		<Button variant="outline" size="lg">Group</Button>
-		<Button variant="outline" size="icon-lg">
+		<Button aria-label="Add" variant="outline" size="icon-lg">
 			<Plus />
 		</Button>
 	</ButtonGroup.Root>

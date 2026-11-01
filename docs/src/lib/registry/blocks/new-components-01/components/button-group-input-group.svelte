@@ -11,7 +11,7 @@
 
 <ButtonGroup.Root class="[--radius:9999rem]">
 	<ButtonGroup.Root>
-		<Button variant="outline" size="icon">
+		<Button aria-label="Add" variant="outline" size="icon">
 			<Plus />
 		</Button>
 	</ButtonGroup.Root>
@@ -30,7 +30,7 @@
 								onclick={() => (voiceEnabled = !voiceEnabled)}
 								size="icon-xs"
 								data-active={voiceEnabled}
-								class="data-[active=true]:bg-orange-100 data-[active=true]:text-orange-700 dark:data-[active=true]:bg-orange-800 dark:data-[active=true]:text-orange-100"
+								class="data-[active=true]:bg-primary/10 data-[active=true]:text-primary"
 								aria-pressed={voiceEnabled}
 							>
 								<AudioLines />

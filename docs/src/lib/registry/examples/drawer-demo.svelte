@@ -87,7 +87,7 @@
 			</RadioGroup.Root>
 		</div>
 		<Drawer.Footer>
-			<Button onclick={handleConfirm} class="h-[34px]">Confirm Delivery Time</Button>
+			<Button onclick={handleConfirm}>Confirm Delivery Time</Button>
 			<Drawer.Close class={buttonVariants({ variant: "outline" })}>Cancel</Drawer.Close>
 		</Drawer.Footer>
 	</Drawer.Content>

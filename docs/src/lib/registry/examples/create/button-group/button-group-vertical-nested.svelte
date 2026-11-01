@@ -8,7 +8,7 @@
 <Example title="Vertical Nested">
 	<ButtonGroup orientation="vertical" aria-label="Design tools palette">
 		<ButtonGroup orientation="vertical">
-			<Button variant="outline" size="icon">
+			<Button aria-label="Search" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="SearchIcon"
 					tabler="IconSearch"
@@ -17,7 +17,7 @@
 					remixicon="RiSearchLine"
 				/>
 			</Button>
-			<Button variant="outline" size="icon">
+			<Button aria-label="Copy" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="CopyIcon"
 					tabler="IconCopy"
@@ -26,7 +26,7 @@
 					remixicon="RiFileCopyLine"
 				/>
 			</Button>
-			<Button variant="outline" size="icon">
+			<Button aria-label="Share" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="ShareIcon"
 					tabler="IconShare"
@@ -37,7 +37,7 @@
 			</Button>
 		</ButtonGroup>
 		<ButtonGroup orientation="vertical">
-			<Button variant="outline" size="icon">
+			<Button aria-label="Flip horizontal" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="FlipHorizontalIcon"
 					tabler="IconFlipHorizontal"
@@ -46,7 +46,7 @@
 					remixicon="RiFlipHorizontalLine"
 				/>
 			</Button>
-			<Button variant="outline" size="icon">
+			<Button aria-label="Flip vertical" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="FlipVerticalIcon"
 					tabler="IconFlipVertical"
@@ -55,7 +55,7 @@
 					remixicon="RiFlipVerticalLine"
 				/>
 			</Button>
-			<Button variant="outline" size="icon">
+			<Button aria-label="Rotate" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="RotateCwIcon"
 					tabler="IconRotateClockwise2"
@@ -66,7 +66,7 @@
 			</Button>
 		</ButtonGroup>
 		<ButtonGroup>
-			<Button variant="outline" size="icon">
+			<Button aria-label="Delete" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="TrashIcon"
 					tabler="IconTrash"

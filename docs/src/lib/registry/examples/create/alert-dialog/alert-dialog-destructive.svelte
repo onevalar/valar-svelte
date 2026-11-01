@@ -10,7 +10,9 @@
 <Example title="Destructive" class="items-center">
 	<AlertDialog.Root bind:open>
 		<AlertDialog.Trigger>
-			<Button variant="destructive">Delete Chat</Button>
+			{#snippet child({ props })}
+				<Button {...props} variant="destructive">Delete Chat</Button>
+			{/snippet}
 		</AlertDialog.Trigger>
 		<AlertDialog.Content size="sm">
 			<AlertDialog.Header>

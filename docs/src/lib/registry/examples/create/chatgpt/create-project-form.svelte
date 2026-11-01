@@ -130,9 +130,9 @@
 									<div class="flex flex-wrap gap-2">
 										{#each ["var(--foreground)", "#fa423e", "#f59e0b", "#8b5cf6", "#ec4899", "#10b981", "#6366f1", "#14b8a6", "#f97316", "#fbbc04"] as color (color)}
 											<Button
+												aria-label={color}
 												size="icon"
 												variant="ghost"
-												class="rounded-full p-1"
 												style={`--color: ${color}`}
 												data-checked={selectedColor === color}
 												onclick={() => {
@@ -142,7 +142,6 @@
 												<span
 													class="size-5 rounded-full bg-(--color) ring-2 ring-transparent ring-offset-2 ring-offset-(--color) group-data-[checked=true]/button:ring-(--color) group-data-[checked=true]/button:ring-offset-background"
 												></span>
-												<span class="sr-only">{color}</span>
 											</Button>
 										{/each}
 									</div>

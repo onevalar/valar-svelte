@@ -275,42 +275,41 @@
 				</div>
 				<div class="ms-auto flex items-center gap-2 lg:ms-0">
 					<Button
+						aria-label="Go to first page"
+						size="icon-sm"
 						variant="outline"
-						class="hidden h-8 w-8 p-0 lg:flex"
+						class="hidden lg:flex"
 						onclick={() => table.setPageIndex(0)}
 						disabled={!table.getCanPreviousPage()}
 					>
-						<span class="sr-only">Go to first page</span>
 						<ChevronsLeftIcon />
 					</Button>
 					<Button
+						aria-label="Go to previous page"
 						variant="outline"
-						class="size-8"
-						size="icon"
+						size="icon-sm"
 						onclick={() => table.previousPage()}
 						disabled={!table.getCanPreviousPage()}
 					>
-						<span class="sr-only">Go to previous page</span>
 						<ChevronLeftIcon />
 					</Button>
 					<Button
+						aria-label="Go to next page"
 						variant="outline"
-						class="size-8"
-						size="icon"
+						size="icon-sm"
 						onclick={() => table.nextPage()}
 						disabled={!table.getCanNextPage()}
 					>
-						<span class="sr-only">Go to next page</span>
 						<ChevronRightIcon />
 					</Button>
 					<Button
+						aria-label="Go to last page"
 						variant="outline"
-						class="hidden size-8 lg:flex"
-						size="icon"
+						class="hidden lg:flex"
+						size="icon-sm"
 						onclick={() => table.setPageIndex(table.getPageCount() - 1)}
 						disabled={!table.getCanNextPage()}
 					>
-						<span class="sr-only">Go to last page</span>
 						<ChevronsRightIcon />
 					</Button>
 				</div>

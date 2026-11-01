@@ -45,7 +45,7 @@
 		<InputGroup.Root>
 			<InputGroup.Input placeholder="Go to file" />
 			<InputGroup.Addon align="inline-start">
-				<InputGroup.Button variant="ghost" size="icon-xs">
+				<InputGroup.Button aria-label="Search" variant="ghost" size="icon-xs">
 					<IconPlaceholder
 						lucide="SearchIcon"
 						tabler="IconSearch"

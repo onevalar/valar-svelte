@@ -6,7 +6,7 @@
 
 <Example title="Icon Only">
 	<div class="flex flex-wrap items-center gap-2">
-		<Button size="icon-xs">
+		<Button size="icon-xs" aria-label="Next">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -15,7 +15,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-xs" variant="secondary">
+		<Button size="icon-xs" aria-label="Next" variant="secondary">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -24,7 +24,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-xs" variant="outline">
+		<Button size="icon-xs" aria-label="Next" variant="outline">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -33,7 +33,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-xs" variant="ghost">
+		<Button size="icon-xs" aria-label="Next" variant="ghost">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -42,7 +42,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-xs" variant="destructive">
+		<Button size="icon-xs" aria-label="Next" variant="destructive">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -51,63 +51,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-xs" variant="link">
-			<IconPlaceholder
-				lucide="ArrowRightIcon"
-				tabler="IconArrowRight"
-				hugeicons="ArrowRight02Icon"
-				phosphor="ArrowRightIcon"
-				remixicon="RiArrowRightLine"
-			/>
-		</Button>
-	</div>
-	<div class="flex flex-wrap items-center gap-2">
-		<Button size="icon-sm">
-			<IconPlaceholder
-				lucide="ArrowRightIcon"
-				tabler="IconArrowRight"
-				hugeicons="ArrowRight02Icon"
-				phosphor="ArrowRightIcon"
-				remixicon="RiArrowRightLine"
-			/>
-		</Button>
-		<Button size="icon-sm" variant="secondary">
-			<IconPlaceholder
-				lucide="ArrowRightIcon"
-				tabler="IconArrowRight"
-				hugeicons="ArrowRight02Icon"
-				phosphor="ArrowRightIcon"
-				remixicon="RiArrowRightLine"
-			/>
-		</Button>
-		<Button size="icon-sm" variant="outline">
-			<IconPlaceholder
-				lucide="ArrowRightIcon"
-				tabler="IconArrowRight"
-				hugeicons="ArrowRight02Icon"
-				phosphor="ArrowRightIcon"
-				remixicon="RiArrowRightLine"
-			/>
-		</Button>
-		<Button size="icon-sm" variant="ghost">
-			<IconPlaceholder
-				lucide="ArrowRightIcon"
-				tabler="IconArrowRight"
-				hugeicons="ArrowRight02Icon"
-				phosphor="ArrowRightIcon"
-				remixicon="RiArrowRightLine"
-			/>
-		</Button>
-		<Button size="icon-sm" variant="destructive">
-			<IconPlaceholder
-				lucide="ArrowRightIcon"
-				tabler="IconArrowRight"
-				hugeicons="ArrowRight02Icon"
-				phosphor="ArrowRightIcon"
-				remixicon="RiArrowRightLine"
-			/>
-		</Button>
-		<Button size="icon-sm" variant="link">
+		<Button size="icon-xs" aria-label="Next" variant="link">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -118,7 +62,7 @@
 		</Button>
 	</div>
 	<div class="flex flex-wrap items-center gap-2">
-		<Button size="icon">
+		<Button size="icon-sm" aria-label="Next">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -127,7 +71,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon" variant="secondary">
+		<Button size="icon-sm" aria-label="Next" variant="secondary">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -136,7 +80,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon" variant="outline">
+		<Button size="icon-sm" aria-label="Next" variant="outline">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -145,7 +89,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon" variant="ghost">
+		<Button size="icon-sm" aria-label="Next" variant="ghost">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -154,7 +98,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon" variant="destructive">
+		<Button size="icon-sm" aria-label="Next" variant="destructive">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -163,7 +107,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon" variant="link">
+		<Button size="icon-sm" aria-label="Next" variant="link">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -174,7 +118,7 @@
 		</Button>
 	</div>
 	<div class="flex flex-wrap items-center gap-2">
-		<Button size="icon-lg">
+		<Button size="icon" aria-label="Next">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -183,7 +127,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-lg" variant="secondary">
+		<Button size="icon" aria-label="Next" variant="secondary">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -192,7 +136,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-lg" variant="outline">
+		<Button size="icon" aria-label="Next" variant="outline">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -201,7 +145,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-lg" variant="ghost">
+		<Button size="icon" aria-label="Next" variant="ghost">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -210,7 +154,7 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-lg" variant="destructive">
+		<Button size="icon" aria-label="Next" variant="destructive">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"
@@ -219,7 +163,63 @@
 				remixicon="RiArrowRightLine"
 			/>
 		</Button>
-		<Button size="icon-lg" variant="link">
+		<Button size="icon" aria-label="Next" variant="link">
+			<IconPlaceholder
+				lucide="ArrowRightIcon"
+				tabler="IconArrowRight"
+				hugeicons="ArrowRight02Icon"
+				phosphor="ArrowRightIcon"
+				remixicon="RiArrowRightLine"
+			/>
+		</Button>
+	</div>
+	<div class="flex flex-wrap items-center gap-2">
+		<Button size="icon-lg" aria-label="Next">
+			<IconPlaceholder
+				lucide="ArrowRightIcon"
+				tabler="IconArrowRight"
+				hugeicons="ArrowRight02Icon"
+				phosphor="ArrowRightIcon"
+				remixicon="RiArrowRightLine"
+			/>
+		</Button>
+		<Button size="icon-lg" aria-label="Next" variant="secondary">
+			<IconPlaceholder
+				lucide="ArrowRightIcon"
+				tabler="IconArrowRight"
+				hugeicons="ArrowRight02Icon"
+				phosphor="ArrowRightIcon"
+				remixicon="RiArrowRightLine"
+			/>
+		</Button>
+		<Button size="icon-lg" aria-label="Next" variant="outline">
+			<IconPlaceholder
+				lucide="ArrowRightIcon"
+				tabler="IconArrowRight"
+				hugeicons="ArrowRight02Icon"
+				phosphor="ArrowRightIcon"
+				remixicon="RiArrowRightLine"
+			/>
+		</Button>
+		<Button size="icon-lg" aria-label="Next" variant="ghost">
+			<IconPlaceholder
+				lucide="ArrowRightIcon"
+				tabler="IconArrowRight"
+				hugeicons="ArrowRight02Icon"
+				phosphor="ArrowRightIcon"
+				remixicon="RiArrowRightLine"
+			/>
+		</Button>
+		<Button size="icon-lg" aria-label="Next" variant="destructive">
+			<IconPlaceholder
+				lucide="ArrowRightIcon"
+				tabler="IconArrowRight"
+				hugeicons="ArrowRight02Icon"
+				phosphor="ArrowRightIcon"
+				remixicon="RiArrowRightLine"
+			/>
+		</Button>
+		<Button size="icon-lg" aria-label="Next" variant="link">
 			<IconPlaceholder
 				lucide="ArrowRightIcon"
 				tabler="IconArrowRight"

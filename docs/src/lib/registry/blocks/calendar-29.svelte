@@ -59,7 +59,12 @@
 		<Popover.Root bind:open>
 			<Popover.Trigger id="{id}-date-picker">
 				{#snippet child({ props })}
-					<Button {...props} variant="ghost" class="absolute end-2 top-1/2 size-6 -translate-y-1/2">
+					<Button
+						size="icon-xs"
+						{...props}
+						variant="ghost"
+						class="absolute end-2 top-1/2 -translate-y-1/2"
+					>
 						<CalendarIcon class="size-3.5" />
 						<span class="sr-only">Select date</span>
 					</Button>

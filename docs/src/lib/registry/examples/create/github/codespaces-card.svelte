@@ -233,7 +233,7 @@
 									<Field.Label for="https-url" class="sr-only">HTTPS URL</Field.Label>
 									<InputGroup.Root>
 										<InputGroup.Addon align="inline-end">
-											<InputGroup.Button variant="ghost" size="icon-xs">
+											<InputGroup.Button aria-label="Copy HTTPS URL" variant="ghost" size="icon-xs">
 												<IconPlaceholder
 													lucide="CopyIcon"
 													tabler="IconCopy"
@@ -257,7 +257,7 @@
 									<Field.Label for="ssh-url" class="sr-only">SSH URL</Field.Label>
 									<InputGroup.Root>
 										<InputGroup.Addon align="inline-end">
-											<InputGroup.Button variant="ghost" size="icon-xs">
+											<InputGroup.Button aria-label="Copy SSH URL" variant="ghost" size="icon-xs">
 												<IconPlaceholder
 													lucide="CopyIcon"
 													tabler="IconCopy"
@@ -281,7 +281,11 @@
 									<Field.Label for="cli-command" class="sr-only">CLI Command</Field.Label>
 									<InputGroup.Root>
 										<InputGroup.Addon align="inline-end">
-											<InputGroup.Button variant="ghost" size="icon-xs">
+											<InputGroup.Button
+												aria-label="Copy CLI command"
+												variant="ghost"
+												size="icon-xs"
+											>
 												<IconPlaceholder
 													lucide="CopyIcon"
 													tabler="IconCopy"

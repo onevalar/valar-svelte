@@ -18,15 +18,9 @@
 			{/each}
 			<Attachment.Root size="sm" class="w-48">
 				<Attachment.Content><Attachment.Title>Valar Svelte</Attachment.Title></Attachment.Content>
-				<Attachment.Trigger>
+				<Attachment.Trigger aria-label="Open Valar Svelte">
 					{#snippet child({ props })}
-						<a
-							href="https://ui.Valar.com"
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="Open Valar Svelte"
-							{...props}
-						></a>
+						<a href="https://ui.Valar.com" target="_blank" rel="noopener noreferrer" {...props}></a>
 					{/snippet}
 				</Attachment.Trigger>
 			</Attachment.Root>
@@ -58,14 +52,9 @@
 					<Attachment.Title>Compound components in React</Attachment.Title>
 					<Attachment.Description>ui.Valar.com/docs</Attachment.Description>
 				</Attachment.Content>
-				<Attachment.Trigger>
+				<Attachment.Trigger aria-label="Open Compound components in React">
 					{#snippet child({ props })}
-						<a
-							href="https://ui.Valar.com/docs"
-							target="_blank"
-							rel="noopener noreferrer"
-							aria-label="Open Compound components in React"
-							{...props}
+						<a href="https://ui.Valar.com/docs" target="_blank" rel="noopener noreferrer" {...props}
 						></a>
 					{/snippet}
 				</Attachment.Trigger>

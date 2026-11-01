@@ -18,7 +18,7 @@
 					<InputGroup.Addon class="text-muted-foreground">W</InputGroup.Addon>
 					<InputGroup.Addon align="inline-end" class="text-muted-foreground">px</InputGroup.Addon>
 				</InputGroup.Root>
-				<Button variant="outline" size="icon">
+				<Button aria-label="Decrease" variant="outline" size="icon">
 					<IconPlaceholder
 						lucide="MinusIcon"
 						tabler="IconMinus"
@@ -27,7 +27,7 @@
 						remixicon="RiSubtractLine"
 					/>
 				</Button>
-				<Button variant="outline" size="icon">
+				<Button aria-label="Increase" variant="outline" size="icon">
 					<IconPlaceholder
 						lucide="PlusIcon"
 						tabler="IconPlus"

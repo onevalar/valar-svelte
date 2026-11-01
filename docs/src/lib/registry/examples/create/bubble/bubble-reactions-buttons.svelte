@@ -23,7 +23,12 @@
 		<Bubble.Root align="end">
 			<Bubble.Content>This is a one line message.</Bubble.Content>
 			<Bubble.Reactions align="start">
-				<Button variant="ghost" size="icon-xs" onclick={() => toast("Confetti!")}>🎉</Button>
+				<Button
+					aria-label="React with confetti"
+					variant="ghost"
+					size="icon-xs"
+					onclick={() => toast("Confetti!")}>🎉</Button
+				>
 			</Bubble.Reactions>
 		</Bubble.Root>
 		<Bubble.Root variant="tinted">

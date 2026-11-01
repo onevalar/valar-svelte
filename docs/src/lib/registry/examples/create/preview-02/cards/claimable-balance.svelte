@@ -10,7 +10,7 @@
 		<Card.Description>Claimable Balance</Card.Description>
 		<Card.Title class="text-5xl tabular-nums">$0.00</Card.Title>
 		<Badge variant="outline">
-			<span class="size-2 rounded-full bg-yellow-500"></span>
+			<span class="size-2 rounded-full bg-chart-3"></span>
 			Pending Setup
 		</Badge>
 	</Card.Header>

@@ -99,7 +99,7 @@ Use the `href` prop to render a link as a badge.
 
 ## Custom Colors
 
-You can customize the colors of a badge by adding custom classes such as `bg-green-50 dark:bg-green-800` to the `Badge` component.
+You can customize the colors of a badge by adding semantic token classes such as `bg-chart-2/10 text-chart-2` to the `Badge` component.
 
 <ComponentPreview name="badge-colors">
 

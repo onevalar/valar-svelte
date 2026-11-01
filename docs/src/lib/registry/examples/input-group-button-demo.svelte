@@ -49,10 +49,14 @@
 		<InputGroup.Addon class="ps-1.5 text-muted-foreground">https://</InputGroup.Addon>
 		<InputGroup.Input id="input-secure-19" />
 		<InputGroup.Addon align="inline-end">
-			<InputGroup.Button onclick={() => (isFavorite = !isFavorite)} size="icon-xs">
+			<InputGroup.Button
+				aria-label="Favorite"
+				onclick={() => (isFavorite = !isFavorite)}
+				size="icon-xs"
+			>
 				<IconStar
 					data-favorite={isFavorite}
-					class="data-[favorite=true]:fill-blue-600 data-[favorite=true]:stroke-blue-600"
+					class="data-[favorite=true]:fill-primary data-[favorite=true]:stroke-primary"
 				/>
 			</InputGroup.Button>
 		</InputGroup.Addon>

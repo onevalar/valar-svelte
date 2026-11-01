@@ -12,7 +12,7 @@
 		<Card.Description>Payout Preferences</Card.Description>
 		<Card.Title>Receiving Method</Card.Title>
 		<Card.Action>
-			<Button variant="ghost" size="icon-sm" class="bg-muted">
+			<Button aria-label="Close" variant="ghost" size="icon-sm" class="bg-muted">
 				<IconPlaceholder
 					lucide="XIcon"
 					tabler="IconX"

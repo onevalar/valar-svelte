@@ -176,6 +176,7 @@
 									/>
 								</div>
 								<InputGroup.Button
+									aria-label="Send"
 									type="submit"
 									variant="default"
 									size="icon-sm"
@@ -183,7 +184,6 @@
 									class="ml-auto"
 								>
 									<ArrowUpIcon />
-									<span class="sr-only">Send</span>
 								</InputGroup.Button>
 							</InputGroup.Addon>
 						</InputGroup.Root>

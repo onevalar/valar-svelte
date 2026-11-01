@@ -24,7 +24,7 @@
 	<Popover.Root>
 		<Popover.Trigger id="date-picker-range">
 			{#snippet child({ props })}
-				<Button {...props} variant="outline" class="justify-start px-2.5 font-normal">
+				<Button {...props} variant="outline" class="justify-start font-normal">
 					<CalendarIcon data-icon="inline-start" />
 					{#if value?.start}
 						{#if value.end}

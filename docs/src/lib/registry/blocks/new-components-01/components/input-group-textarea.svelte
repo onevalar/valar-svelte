@@ -28,10 +28,10 @@
 				</svg>
 				script.js
 			</InputGroup.Text>
-			<InputGroup.Button class="ms-auto" size="icon-xs">
+			<InputGroup.Button aria-label="Refresh" class="ms-auto" size="icon-xs">
 				<RefreshCwIcon />
 			</InputGroup.Button>
-			<InputGroup.Button variant="ghost" size="icon-xs">
+			<InputGroup.Button aria-label="Copy" variant="ghost" size="icon-xs">
 				<CopyIcon />
 			</InputGroup.Button>
 		</InputGroup.Addon>

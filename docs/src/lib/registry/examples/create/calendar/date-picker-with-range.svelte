@@ -29,7 +29,7 @@
 						{...props}
 						variant="outline"
 						id="date-picker-range"
-						class="justify-start px-2.5 font-normal"
+						class="justify-start font-normal"
 					>
 						<IconPlaceholder
 							lucide="CalendarIcon"

@@ -10,7 +10,7 @@
 	<Popover.Root>
 		<Popover.Trigger>
 			{#snippet child({ props })}
-				<Button {...props} variant="outline" class="px-2.5 font-normal">
+				<Button {...props} variant="outline" class="font-normal">
 					<IconPlaceholder
 						lucide="CalendarIcon"
 						tabler="IconCalendar"

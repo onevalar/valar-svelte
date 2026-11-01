@@ -8,7 +8,7 @@
 <Example title="Vertical">
 	<div class="flex gap-6">
 		<ButtonGroup orientation="vertical" aria-label="Media controls" class="h-fit">
-			<Button variant="outline" size="icon">
+			<Button aria-label="Increase" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="PlusIcon"
 					tabler="IconPlus"
@@ -17,7 +17,7 @@
 					remixicon="RiAddLine"
 				/>
 			</Button>
-			<Button variant="outline" size="icon">
+			<Button aria-label="Decrease" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="MinusIcon"
 					tabler="IconMinus"

@@ -5,5 +5,5 @@
 <Avatar.Root>
 	<Avatar.Image src="/favicon.svg" alt="Valar" />
 	<Avatar.Fallback>CN</Avatar.Fallback>
-	<Avatar.Badge class="bg-green-600 dark:bg-green-800" />
+	<Avatar.Badge class="bg-chart-2" />
 </Avatar.Root>

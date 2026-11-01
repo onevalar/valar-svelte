@@ -69,7 +69,10 @@
 										<strong>{feature.highlight}</strong> {feature.endText}
 									{/if}
 									{#if feature.hasBadge}
-										<Badge variant="secondary" class="bg-blue-100 text-blue-700 hover:bg-blue-100">
+										<Badge
+											variant="secondary"
+											class="bg-primary/10 text-primary hover:bg-primary/10"
+										>
 											Requires Observability Plus
 										</Badge>
 									{/if}

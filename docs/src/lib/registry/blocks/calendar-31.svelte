@@ -40,9 +40,8 @@
 					year: "numeric",
 				})}
 			</div>
-			<Button variant="ghost" size="icon" class="size-6" title="Add Event">
+			<Button aria-label="Add Event" variant="ghost" size="icon-xs" title="Add Event">
 				<PlusIcon />
-				<span class="sr-only">Add Event</span>
 			</Button>
 		</div>
 		<div class="flex w-full flex-col gap-2">

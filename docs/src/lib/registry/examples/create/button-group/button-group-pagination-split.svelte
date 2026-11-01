@@ -15,7 +15,7 @@
 			<Button variant="outline" size="sm">5</Button>
 		</ButtonGroup>
 		<ButtonGroup>
-			<Button variant="outline" size="icon-xs">
+			<Button aria-label="Previous page" variant="outline" size="icon-xs">
 				<IconPlaceholder
 					lucide="ArrowLeftIcon"
 					tabler="IconArrowLeft"
@@ -24,7 +24,7 @@
 					remixicon="RiArrowLeftLine"
 				/>
 			</Button>
-			<Button variant="outline" size="icon-xs">
+			<Button aria-label="Next page" variant="outline" size="icon-xs">
 				<IconPlaceholder
 					lucide="ArrowRightIcon"
 					tabler="IconArrowRight"

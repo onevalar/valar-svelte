@@ -59,9 +59,11 @@
 {#if isDesktop}
 	<Popover.Root bind:open>
 		<Popover.Trigger>
-			<Button variant="outline" class="w-[150px] justify-start">
-				{selectedStatus ? selectedStatus.label : "+ Set status"}
-			</Button>
+			{#snippet child({ props })}
+				<Button {...props} variant="outline" class="w-[150px] justify-start">
+					{selectedStatus ? selectedStatus.label : "+ Set status"}
+				</Button>
+			{/snippet}
 		</Popover.Trigger>
 		<Popover.Content class="w-[200px] p-0" align="start">
 			<Command.Root>
@@ -82,11 +84,14 @@
 {:else}
 	<Drawer.Root bind:open>
 		<Drawer.Trigger>
-			<Button variant="outline" class="w-[150px] justify-start">
-				{selectedStatus ? selectedStatus.label : "+ Set status"}
-			</Button>
+			{#snippet child({ props })}
+				<Button {...props} variant="outline" class="w-[150px] justify-start">
+					{selectedStatus ? selectedStatus.label : "+ Set status"}
+				</Button>
+			{/snippet}
 		</Drawer.Trigger>
 		<Drawer.Content>
+			<Drawer.Title class="sr-only">Set status</Drawer.Title>
 			<div class="mt-4 border-t">
 				<Command.Root>
 					<Command.Input placeholder="Filter status..." />

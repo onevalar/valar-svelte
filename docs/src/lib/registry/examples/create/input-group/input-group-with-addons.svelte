@@ -59,7 +59,7 @@
 						hugeicons="RecordIcon"
 						phosphor="RecordIcon"
 						remixicon="RiRecordCircleLine"
-						class="animate-pulse text-red-500"
+						class="animate-pulse text-destructive"
 					/>
 				</InputGroup.Addon>
 			</InputGroup.Root>
@@ -110,7 +110,7 @@
 						phosphor="StarIcon"
 						remixicon="RiStarLine"
 					/>
-					<InputGroup.Button size="icon-xs" onclick={() => {}}>
+					<InputGroup.Button aria-label="Copy" size="icon-xs" onclick={() => {}}>
 						<IconPlaceholder
 							lucide="CopyIcon"
 							tabler="IconCopy"
@@ -127,7 +127,7 @@
 						hugeicons="RecordIcon"
 						phosphor="RecordIcon"
 						remixicon="RiRecordCircleLine"
-						class="animate-pulse text-red-500"
+						class="animate-pulse text-destructive"
 					/>
 				</InputGroup.Addon>
 			</InputGroup.Root>

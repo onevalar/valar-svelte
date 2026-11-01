@@ -36,7 +36,7 @@
 			<InputGroup.Root>
 				<InputGroup.Input id="input-button-17" />
 				<InputGroup.Addon align="inline-end">
-					<InputGroup.Button size="icon-xs">
+					<InputGroup.Button aria-label="Copy" size="icon-xs">
 						<IconPlaceholder
 							lucide="CopyIcon"
 							tabler="IconCopy"
@@ -50,7 +50,7 @@
 			<InputGroup.Root>
 				<InputGroup.Input id="input-button-18" />
 				<InputGroup.Addon align="inline-end">
-					<InputGroup.Button variant="secondary" size="icon-xs">
+					<InputGroup.Button aria-label="Delete" variant="secondary" size="icon-xs">
 						<IconPlaceholder
 							lucide="TrashIcon"
 							tabler="IconTrash"

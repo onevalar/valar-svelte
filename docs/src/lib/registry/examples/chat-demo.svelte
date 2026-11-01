@@ -360,6 +360,7 @@ New visitors now get the theme from their OS. The toggle also has a **System** o
 								</DropdownMenu.Content>
 							</DropdownMenu.Root>
 							<InputGroup.Button
+								aria-label="Send"
 								type="submit"
 								variant="default"
 								size="icon-sm"
@@ -367,7 +368,6 @@ New visitors now get the theme from their OS. The toggle also has a **System** o
 								class="ml-auto"
 							>
 								<ArrowUpIcon />
-								<span class="sr-only">Send</span>
 							</InputGroup.Button>
 						</InputGroup.Addon>
 					</InputGroup.Root>

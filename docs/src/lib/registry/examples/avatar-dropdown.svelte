@@ -7,7 +7,7 @@
 <DropdownMenu.Root>
 	<DropdownMenu.Trigger>
 		{#snippet child({ props })}
-			<Button {...props} variant="ghost" size="icon" class="rounded-full">
+			<Button {...props} variant="ghost" size="icon">
 				<Avatar.Root>
 					<Avatar.Image src="/favicon.svg" alt="Valar" />
 					<Avatar.Fallback>CN</Avatar.Fallback>

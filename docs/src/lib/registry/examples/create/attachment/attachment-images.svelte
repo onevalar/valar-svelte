@@ -58,15 +58,9 @@
 		<Attachment.Actions>
 			<AttachmentRemove label={`Remove ${image.name}`} />
 		</Attachment.Actions>
-		<Attachment.Trigger>
+		<Attachment.Trigger aria-label={`Open ${image.name}`}>
 			{#snippet child({ props })}
-				<a
-					href={image.src}
-					target="_blank"
-					rel="noreferrer"
-					aria-label={`Open ${image.name}`}
-					{...props}
-				></a>
+				<a href={image.src} target="_blank" rel="noreferrer" {...props}></a>
 			{/snippet}
 		</Attachment.Trigger>
 	</Attachment.Root>

@@ -9,7 +9,7 @@
 	<Item.Root variant="outline">
 		<Item.Media>
 			<Avatar.Root class="size-10">
-				<Avatar.Image src="https://github.com/evilrabbit.png" />
+				<Avatar.Image src="https://github.com/evilrabbit.png" alt="Evil Rabbit" />
 				<Avatar.Fallback>ER</Avatar.Fallback>
 			</Avatar.Root>
 		</Item.Media>
@@ -18,7 +18,7 @@
 			<Item.Description>Last seen 5 months ago</Item.Description>
 		</Item.Content>
 		<Item.Actions>
-			<Button size="icon" variant="outline" class="rounded-full" aria-label="Invite">
+			<Button size="icon" variant="outline" aria-label="Invite">
 				<Plus />
 			</Button>
 		</Item.Actions>

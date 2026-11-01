@@ -10,7 +10,9 @@
 <Example title="In Dialog" class="items-center">
 	<Dialog.Root>
 		<Dialog.Trigger>
-			<Button variant="outline">Open Dialog</Button>
+			{#snippet child({ props })}
+				<Button {...props} variant="outline">Open Dialog</Button>
+			{/snippet}
 		</Dialog.Trigger>
 		<Dialog.Content>
 			<Dialog.Header>
@@ -20,7 +22,9 @@
 			<Dialog.Footer>
 				<AlertDialog.Root bind:open={alertOpen}>
 					<AlertDialog.Trigger>
-						<Button>Open Alert Dialog</Button>
+						{#snippet child({ props })}
+							<Button {...props}>Open Alert Dialog</Button>
+						{/snippet}
 					</AlertDialog.Trigger>
 					<AlertDialog.Content size="sm">
 						<AlertDialog.Header>

@@ -8,7 +8,7 @@
 	<Empty.Header>
 		<Empty.Media variant="default">
 			<Avatar.Root class="size-12">
-				<Avatar.Image src="/favicon.svg" class="grayscale" />
+				<Avatar.Image src="/favicon.svg" alt="Offline user" class="grayscale" />
 				<Avatar.Fallback>LR</Avatar.Fallback>
 			</Avatar.Root>
 		</Empty.Media>

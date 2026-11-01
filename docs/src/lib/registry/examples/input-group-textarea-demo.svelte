@@ -24,10 +24,10 @@
 				<IconBrandJavascript />
 				script.js
 			</InputGroup.Text>
-			<InputGroup.Button class="ms-auto" size="icon-xs">
+			<InputGroup.Button aria-label="Refresh" class="ms-auto" size="icon-xs">
 				<IconRefresh />
 			</InputGroup.Button>
-			<InputGroup.Button variant="ghost" size="icon-xs">
+			<InputGroup.Button aria-label="Copy" variant="ghost" size="icon-xs">
 				<IconCopy />
 			</InputGroup.Button>
 		</InputGroup.Addon>

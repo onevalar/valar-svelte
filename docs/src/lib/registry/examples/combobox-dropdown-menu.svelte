@@ -91,7 +91,7 @@
 					</DropdownMenu.SubContent>
 				</DropdownMenu.Sub>
 				<DropdownMenu.Separator />
-				<DropdownMenu.Item class="text-red-600">
+				<DropdownMenu.Item variant="destructive">
 					<TrashIcon class="me-2 size-4" />
 					Delete
 					<DropdownMenu.Shortcut>⌘⌫</DropdownMenu.Shortcut>

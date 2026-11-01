@@ -45,15 +45,9 @@
 					/>
 				</Attachment.Action>
 			</Attachment.Actions>
-			<Attachment.Trigger>
+			<Attachment.Trigger aria-label="Open contract-review.pdf">
 				{#snippet child({ props })}
-					<a
-						href="#/"
-						target="_blank"
-						rel="noreferrer"
-						aria-label="Open contract-review.pdf"
-						{...props}
-					></a>
+					<a href="#/" target="_blank" rel="noreferrer" {...props}></a>
 				{/snippet}
 			</Attachment.Trigger>
 		</Attachment.Root>

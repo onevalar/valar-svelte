@@ -6,10 +6,10 @@
 </script>
 
 <ButtonGroup.Root orientation="vertical" aria-label="Media controls" class="h-fit">
-	<Button variant="outline" size="icon">
+	<Button aria-label="Increase" variant="outline" size="icon">
 		<Plus />
 	</Button>
-	<Button variant="outline" size="icon">
+	<Button aria-label="Decrease" variant="outline" size="icon">
 		<Minus />
 	</Button>
 </ButtonGroup.Root>

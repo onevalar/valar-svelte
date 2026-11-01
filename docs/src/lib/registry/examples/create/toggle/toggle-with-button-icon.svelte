@@ -8,7 +8,7 @@
 <Example title="With Button Icon">
 	<div class="flex flex-col gap-4">
 		<div class="flex items-center gap-2">
-			<Button variant="outline" size="icon-sm">
+			<Button aria-label="Bold" variant="outline" size="icon-sm">
 				<IconPlaceholder
 					lucide="BoldIcon"
 					tabler="IconBold"
@@ -28,7 +28,7 @@
 			</Toggle>
 		</div>
 		<div class="flex items-center gap-2">
-			<Button variant="outline" size="icon">
+			<Button aria-label="Italic" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="ItalicIcon"
 					tabler="IconItalic"
@@ -48,7 +48,7 @@
 			</Toggle>
 		</div>
 		<div class="flex items-center gap-2">
-			<Button variant="outline" size="icon-lg">
+			<Button aria-label="Underline" variant="outline" size="icon-lg">
 				<IconPlaceholder
 					lucide="UnderlineIcon"
 					tabler="IconUnderline"

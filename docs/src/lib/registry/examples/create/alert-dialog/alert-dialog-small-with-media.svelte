@@ -10,7 +10,9 @@
 <Example title="Small With Media" class="items-center">
 	<AlertDialog.Root bind:open>
 		<AlertDialog.Trigger>
-			<Button variant="outline">Small (Media)</Button>
+			{#snippet child({ props })}
+				<Button {...props} variant="outline">Small (Media)</Button>
+			{/snippet}
 		</AlertDialog.Trigger>
 		<AlertDialog.Content size="sm">
 			<AlertDialog.Header>

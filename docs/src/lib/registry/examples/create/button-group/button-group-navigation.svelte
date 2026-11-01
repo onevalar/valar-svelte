@@ -28,7 +28,7 @@
 			</Button>
 		</ButtonGroup>
 		<ButtonGroup aria-label="Single navigation button">
-			<Button variant="outline" size="icon">
+			<Button aria-label="Go back" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="ArrowLeftIcon"
 					tabler="IconArrowLeft"

@@ -42,7 +42,7 @@
 				<Item.Content>
 					<Item.Title>
 						{item.month}
-						<Badge variant="secondary" class="bg-green-100 text-green-700 hover:bg-green-100">
+						<Badge variant="secondary" class="bg-chart-2/10 text-chart-2 hover:bg-chart-2/10">
 							{item.status}
 						</Badge>
 					</Item.Title>

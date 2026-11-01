@@ -148,15 +148,9 @@ Remember to add the `data-icon="inline-start"` or `data-icon="inline-end"` attri
 
 </ComponentPreview>
 
-## Rounded
+## Radius
 
-Use the `rounded-full` class to make the button rounded.
-
-<ComponentPreview name="button-rounded">
-
-<div></div>
-
-</ComponentPreview>
+Button radius follows the global radius token and the radius level set in the Button editor. Change it there instead of adding `rounded-*` classes, which the `valar/button-size-via-prop` lint rule reports.
 
 ## Spinner
 

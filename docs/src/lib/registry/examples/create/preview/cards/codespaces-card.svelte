@@ -220,7 +220,7 @@
 								<Field.Label for="https-url" class="sr-only">HTTPS URL</Field.Label>
 								<InputGroup.Root>
 									<InputGroup.Addon align="inline-end">
-										<InputGroup.Button variant="ghost" size="icon-xs">
+										<InputGroup.Button aria-label="Copy HTTPS URL" variant="ghost" size="icon-xs">
 											<IconPlaceholder
 												lucide="CopyIcon"
 												tabler="IconCopy"
@@ -244,7 +244,7 @@
 								<Field.Label for="ssh-url" class="sr-only">SSH URL</Field.Label>
 								<InputGroup.Root>
 									<InputGroup.Addon align="inline-end">
-										<InputGroup.Button variant="ghost" size="icon-xs">
+										<InputGroup.Button aria-label="Copy SSH URL" variant="ghost" size="icon-xs">
 											<IconPlaceholder
 												lucide="CopyIcon"
 												tabler="IconCopy"
@@ -254,7 +254,11 @@
 											/>
 										</InputGroup.Button>
 									</InputGroup.Addon>
-									<InputGroup.Input id="ssh-url" value="git@github.com:onevalar/valar-svelte.git" readonly />
+									<InputGroup.Input
+										id="ssh-url"
+										value="git@github.com:onevalar/valar-svelte.git"
+										readonly
+									/>
 								</InputGroup.Root>
 								<Field.Description>Use a password-protected SSH key.</Field.Description>
 							</Field.Field>
@@ -264,7 +268,7 @@
 								<Field.Label for="cli-command" class="sr-only">CLI Command</Field.Label>
 								<InputGroup.Root>
 									<InputGroup.Addon align="inline-end">
-										<InputGroup.Button variant="ghost" size="icon-xs">
+										<InputGroup.Button aria-label="Copy CLI command" variant="ghost" size="icon-xs">
 											<IconPlaceholder
 												lucide="CopyIcon"
 												tabler="IconCopy"
@@ -274,7 +278,11 @@
 											/>
 										</InputGroup.Button>
 									</InputGroup.Addon>
-									<InputGroup.Input id="cli-command" value="gh repo clone onevalar/valar-svelte" readonly />
+									<InputGroup.Input
+										id="cli-command"
+										value="gh repo clone onevalar/valar-svelte"
+										readonly
+									/>
 								</InputGroup.Root>
 								<Field.Description>
 									Work fast with our official CLI.

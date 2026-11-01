@@ -10,7 +10,7 @@
 	<Avatar.Root>
 		<Avatar.Image src="https://github.com/evilrabbit.png" alt="@evilrabbit" />
 		<Avatar.Fallback>ER</Avatar.Fallback>
-		<Avatar.Badge class="bg-green-600 dark:bg-green-800" />
+		<Avatar.Badge class="bg-chart-2" />
 	</Avatar.Root>
 	<Avatar.Group class="grayscale">
 		<Avatar.Root>

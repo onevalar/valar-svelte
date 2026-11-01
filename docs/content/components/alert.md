@@ -99,7 +99,7 @@ Use `Alert.Action` to add a button or other action element to the alert.
 
 ## Custom Colors
 
-You can customize the alert colors by adding custom classes such as `bg-amber-50 dark:bg-amber-950` to the `Alert.Root` component.
+You can customize the alert colors by adding semantic token classes such as `bg-chart-2/10 text-chart-2` to the `Alert.Root` component.
 
 <ComponentPreview name="alert-colors">
 

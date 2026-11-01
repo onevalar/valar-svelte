@@ -18,6 +18,6 @@
 			/>
 			Like
 		</Button>
-		<Button variant="outline" size="icon" class="w-12">1.2K</Button>
+		<Button variant="outline">1.2K</Button>
 	</ButtonGroup>
 </Example>

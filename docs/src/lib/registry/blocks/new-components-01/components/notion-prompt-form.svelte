@@ -136,7 +136,7 @@
 		</span>
 	{:else}
 		<Avatar class="size-4">
-			<AvatarImage src={item.image} />
+			<AvatarImage src={item.image} alt={item.title} />
 			<AvatarFallback>{item.title[0]}</AvatarFallback>
 		</Avatar>
 	{/if}
@@ -158,7 +158,7 @@
 											{...props}
 											variant="outline"
 											size={!hasMentions ? "sm" : "icon-sm"}
-											class="rounded-full transition-transform"
+											class="transition-transform"
 										>
 											<AtIcon />
 											{!hasMentions && "Add context"}
@@ -201,7 +201,7 @@
 							<InputGroup.Button
 								size="sm"
 								variant="secondary"
-								class="rounded-full !ps-2"
+								class="!ps-2"
 								onclick={() => {
 									mentions = mentions.filter((m) => m !== mention);
 								}}
@@ -218,12 +218,7 @@
 				<Tooltip.Root>
 					<Tooltip.Trigger>
 						{#snippet child({ props })}
-							<InputGroup.Button
-								{...props}
-								size="icon-sm"
-								class="rounded-full"
-								aria-label="Attach file"
-							>
+							<InputGroup.Button {...props} size="icon-sm" aria-label="Attach file">
 								<PaperclipIcon />
 							</InputGroup.Button>
 						{/snippet}
@@ -236,7 +231,7 @@
 							{#snippet child({ props })}
 								<DropdownMenu.Trigger {...props}>
 									{#snippet child({ props })}
-										<InputGroup.Button {...props} size="sm" class="rounded-full">
+										<InputGroup.Button {...props} size="sm">
 											{selectedModel.name}
 										</InputGroup.Button>
 									{/snippet}
@@ -264,7 +259,7 @@
 									{#if model.badge}
 										<Badge
 											variant="secondary"
-											class="h-5 rounded-sm bg-blue-100 px-1 text-xs text-blue-800 dark:bg-blue-900 dark:text-blue-100"
+											class="h-5 rounded-sm bg-primary/10 px-1 text-xs text-primary"
 										>
 											{model.badge}
 										</Badge>
@@ -277,7 +272,7 @@
 				<DropdownMenu.Root bind:open={scopeMenuOpen}>
 					<DropdownMenu.Trigger>
 						{#snippet child({ props })}
-							<InputGroup.Button {...props} size="sm" class="rounded-full">
+							<InputGroup.Button {...props} size="sm">
 								<GlobeIcon /> All Sources
 							</InputGroup.Button>
 						{/snippet}
@@ -309,7 +304,7 @@
 							<DropdownMenu.Sub>
 								<DropdownMenu.SubTrigger>
 									<Avatar class="size-4">
-										<AvatarImage src="/favicon.svg" />
+										<AvatarImage src="/favicon.svg" alt="Valar" />
 										<AvatarFallback>CN</AvatarFallback>
 									</Avatar>
 									Valar
@@ -329,7 +324,7 @@
 														}}
 													>
 														<Avatar class="size-4">
-															<AvatarImage src={user.image} />
+															<AvatarImage src={user.image} alt={user.title} />
 															<AvatarFallback>
 																{user.title[0]}
 															</AvatarFallback>
@@ -360,12 +355,7 @@
 						</DropdownMenu.Group>
 					</DropdownMenu.Content>
 				</DropdownMenu.Root>
-				<InputGroup.Button
-					aria-label="Send"
-					class="ms-auto rounded-full"
-					variant="default"
-					size="icon-sm"
-				>
+				<InputGroup.Button aria-label="Send" class="ms-auto" variant="default" size="icon-sm">
 					<ArrowUpIcon />
 				</InputGroup.Button>
 			</InputGroup.Addon>

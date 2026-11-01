@@ -7,7 +7,9 @@
 <Example title="Group Chat Dialog" class="items-center justify-center">
 	<AlertDialog.Root>
 		<AlertDialog.Trigger>
-			<Button>Start Group Chat</Button>
+			{#snippet child({ props })}
+				<Button {...props}>Start Group Chat</Button>
+			{/snippet}
 		</AlertDialog.Trigger>
 		<AlertDialog.Content>
 			<AlertDialog.Header>

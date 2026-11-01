@@ -67,7 +67,6 @@
 					type="submit"
 					size="icon-sm"
 					variant="outline"
-					class="rounded-full"
 					disabled={canSend}
 					aria-label="Attach"
 				>
@@ -138,7 +137,6 @@
 					type="submit"
 					size="icon-sm"
 					variant="default"
-					class="rounded-full"
 					disabled={!canSend}
 					aria-label="Send"
 				>

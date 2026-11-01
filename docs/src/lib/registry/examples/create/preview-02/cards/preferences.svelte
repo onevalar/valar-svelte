@@ -21,7 +21,7 @@
 		<Card.Title>Preferences</Card.Title>
 		<Card.Description>Manage your account settings and notifications.</Card.Description>
 		<Card.Action>
-			<Button variant="ghost" size="icon-sm" class="bg-muted">
+			<Button aria-label="Close" variant="ghost" size="icon-sm" class="bg-muted">
 				<IconPlaceholder
 					lucide="XIcon"
 					tabler="IconX"

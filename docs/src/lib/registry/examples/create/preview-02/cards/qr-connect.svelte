@@ -9,7 +9,7 @@
 	let dataUrl = $state("");
 
 	onMount(() => {
-		QRCode.toDataURL(connectUrl, { width: 160, margin: 1 }).then((url) => {
+		QRCode.toDataURL(connectUrl, { width: 160, margin: 4 }).then((url) => {
 			dataUrl = url;
 		});
 	});
@@ -17,7 +17,7 @@
 
 <Card.Root>
 	<Card.Content class="flex justify-center pt-6">
-		<div class="rounded-xl border bg-white p-4">
+		<div class="rounded-xl border p-4">
 			{#if dataUrl}
 				<img src={dataUrl} alt="" width="160" height="160" class="block" />
 			{:else}

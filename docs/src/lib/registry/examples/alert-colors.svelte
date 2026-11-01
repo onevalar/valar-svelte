@@ -3,9 +3,7 @@
 	import * as Alert from "$lib/registry/ui/alert/index.js";
 </script>
 
-<Alert.Root
-	class="max-w-md border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900 dark:bg-amber-950 dark:text-amber-50"
->
+<Alert.Root class="max-w-md border-chart-2/40 bg-chart-2/10 text-chart-2">
 	<TriangleAlertIcon />
 	<Alert.Title>Your subscription will expire in 3 days.</Alert.Title>
 	<Alert.Description>

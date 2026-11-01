@@ -45,9 +45,14 @@
 <Drawer.Root direction={isMobile.current ? "bottom" : "right"}>
 	<Drawer.Trigger>
 		{#snippet child({ props })}
-			<Button variant="link" class="w-fit px-0 text-start text-foreground" {...props}>
+			<!-- A text link aligned with the column title, so no button padding. -->
+			<button
+				type="button"
+				class="w-fit rounded-sm text-start text-foreground underline-offset-4 outline-none hover:underline focus-visible:ring-[3px] focus-visible:ring-ring/50"
+				{...props}
+			>
 				{item.header}
-			</Button>
+			</button>
 		{/snippet}
 	</Drawer.Trigger>
 	<Drawer.Content>

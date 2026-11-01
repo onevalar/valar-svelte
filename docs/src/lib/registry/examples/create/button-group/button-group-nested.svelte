@@ -10,7 +10,7 @@
 <Example title="Nested">
 	<ButtonGroup>
 		<ButtonGroup>
-			<Button variant="outline" size="icon">
+			<Button aria-label="Add" variant="outline" size="icon">
 				<IconPlaceholder
 					lucide="PlusIcon"
 					tabler="IconPlus"

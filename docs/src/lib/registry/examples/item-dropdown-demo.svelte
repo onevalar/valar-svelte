@@ -39,7 +39,7 @@
 					<Item.Root size="xs" class="w-full p-2">
 						<Item.Media>
 							<Avatar.Root class="size-[--spacing(6.5)]">
-								<Avatar.Image src={person.avatar} class="grayscale" />
+								<Avatar.Image src={person.avatar} alt={person.username} class="grayscale" />
 								<Avatar.Fallback>{person.username.charAt(0)}</Avatar.Fallback>
 							</Avatar.Root>
 						</Item.Media>

@@ -7,7 +7,7 @@
 <ButtonGroup.Root>
 	<Button variant="secondary">Button</Button>
 	<ButtonGroup.Separator />
-	<Button variant="secondary" size="icon">
+	<Button aria-label="Add" variant="secondary" size="icon">
 		<Plus />
 	</Button>
 </ButtonGroup.Root>

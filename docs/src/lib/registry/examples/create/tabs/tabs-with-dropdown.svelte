@@ -17,7 +17,7 @@
 			<DropdownMenu.Root>
 				<DropdownMenu.Trigger>
 					{#snippet child({ props })}
-						<Button variant="ghost" size="icon" class="size-8" {...props}>
+						<Button variant="ghost" size="icon-sm" {...props}>
 							<IconPlaceholder
 								lucide="MoreHorizontalIcon"
 								tabler="IconDots"

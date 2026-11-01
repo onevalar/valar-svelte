@@ -27,7 +27,7 @@
 			<Tooltip.Root>
 				<Tooltip.Trigger>
 					{#snippet child({ props })}
-						<InputGroup.Button {...props} class="rounded-full" size="icon-xs">
+						<InputGroup.Button {...props} size="icon-xs">
 							<InfoIcon />
 						</InputGroup.Button>
 					{/snippet}
@@ -39,7 +39,7 @@
 	<InputGroup.Root>
 		<InputGroup.Textarea placeholder="Ask, Search or Chat..." />
 		<InputGroup.Addon align="block-end">
-			<InputGroup.Button variant="outline" class="rounded-full" size="icon-xs">
+			<InputGroup.Button aria-label="Add" variant="outline" size="icon-xs">
 				<PlusIcon />
 			</InputGroup.Button>
 			<DropdownMenu.Root>
@@ -56,9 +56,8 @@
 			</DropdownMenu.Root>
 			<InputGroup.Text class="ms-auto">52% used</InputGroup.Text>
 			<Separator orientation="vertical" class="data-vertical:h-4 data-vertical:self-auto" />
-			<InputGroup.Button variant="default" class="rounded-full" size="icon-xs" disabled>
+			<InputGroup.Button aria-label="Send" variant="default" size="icon-xs" disabled>
 				<ArrowUpIcon />
-				<span class="sr-only">Send</span>
 			</InputGroup.Button>
 		</InputGroup.Addon>
 	</InputGroup.Root>

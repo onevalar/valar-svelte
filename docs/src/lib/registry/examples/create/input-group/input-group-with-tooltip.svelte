@@ -21,7 +21,7 @@
 					<Tooltip.Root>
 						<Tooltip.Trigger>
 							{#snippet child({ props })}
-								<InputGroup.Button {...props} class="rounded-full" size="icon-xs">
+								<InputGroup.Button {...props} size="icon-xs">
 									<IconPlaceholder
 										lucide="InfoIcon"
 										tabler="IconInfoCircle"
@@ -75,7 +75,7 @@
 					<Popover.Trigger>
 						{#snippet child({ props })}
 							<InputGroup.Addon {...props}>
-								<InputGroup.Button variant="secondary" size="icon-xs">
+								<InputGroup.Button aria-label="Info" variant="secondary" size="icon-xs">
 									<IconPlaceholder
 										lucide="InfoIcon"
 										tabler="IconInfoCircle"
@@ -99,7 +99,7 @@
 				<InputGroup.Addon class="pl-1 text-muted-foreground">https://</InputGroup.Addon>
 				<InputGroup.Input id="input-secure-19" />
 				<InputGroup.Addon align="inline-end">
-					<InputGroup.Button size="icon-xs" onclick={() => {}}>
+					<InputGroup.Button aria-label="Favorite" size="icon-xs" onclick={() => {}}>
 						<IconPlaceholder
 							lucide="StarIcon"
 							tabler="IconStar"

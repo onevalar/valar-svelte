@@ -64,7 +64,7 @@
 		<Card.Title>Q2 Dividend Income</Card.Title>
 		<Card.Description>Quarterly dividend payouts across your portfolio holdings.</Card.Description>
 		<Card.Action>
-			<Button variant="ghost" size="icon-sm" class="bg-muted">
+			<Button aria-label="Close" variant="ghost" size="icon-sm" class="bg-muted">
 				<IconPlaceholder
 					lucide="XIcon"
 					tabler="IconX"

@@ -27,7 +27,7 @@
 		<Card.Title>Transfer Funds</Card.Title>
 		<Card.Description>Move money between your connected accounts.</Card.Description>
 		<Card.Action>
-			<Button variant="ghost" size="icon-sm" class="bg-muted">
+			<Button aria-label="Close" variant="ghost" size="icon-sm" class="bg-muted">
 				<IconPlaceholder
 					lucide="XIcon"
 					tabler="IconX"

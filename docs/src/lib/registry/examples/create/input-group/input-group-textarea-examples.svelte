@@ -65,7 +65,7 @@
 				<InputGroup.Textarea id="textarea-header-footer-30" placeholder="Enter your text here..." />
 				<InputGroup.Addon align="block-end">
 					<InputGroup.Text>0/280 characters</InputGroup.Text>
-					<InputGroup.Button variant="default" size="icon-xs" class="ml-auto rounded-full">
+					<InputGroup.Button aria-label="Send" variant="default" size="icon-xs" class="ml-auto">
 						<IconPlaceholder
 							lucide="ArrowUpIcon"
 							tabler="IconArrowUp"
@@ -73,7 +73,6 @@
 							phosphor="ArrowUpIcon"
 							remixicon="RiArrowUpLine"
 						/>
-						<span class="sr-only">Send</span>
 					</InputGroup.Button>
 				</InputGroup.Addon>
 			</InputGroup.Root>
@@ -111,7 +110,7 @@
 						/>
 						script.js
 					</InputGroup.Text>
-					<InputGroup.Button size="icon-xs" class="ml-auto">
+					<InputGroup.Button aria-label="Refresh" size="icon-xs" class="ml-auto">
 						<IconPlaceholder
 							lucide="RefreshCwIcon"
 							tabler="IconRefresh"
@@ -120,7 +119,7 @@
 							remixicon="RiRefreshLine"
 						/>
 					</InputGroup.Button>
-					<InputGroup.Button size="icon-xs" variant="ghost">
+					<InputGroup.Button aria-label="Copy" size="icon-xs" variant="ghost">
 						<IconPlaceholder
 							lucide="CopyIcon"
 							tabler="IconCopy"
