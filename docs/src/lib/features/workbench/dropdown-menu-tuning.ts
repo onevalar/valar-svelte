@@ -1,10 +1,16 @@
 import { z } from "zod";
-import { MOTION_DURATION_DEFAULTS } from "./token-overrides.js";
 import {
+	MOTION_TIER_LABELS,
+	MOTION_TIERS,
+	RADIUS_CHOICES,
 	RADIUS_LABELS,
 	RADIUS_LEVELS,
 	radiusCss,
+	sourceWord,
 	spacing,
+	STYLE_VALUE,
+	tierVar,
+	ZOOM_LEVELS,
 	type RadiusLevel,
 	type TunerSpec,
 } from "./tuner.js";
@@ -14,28 +20,18 @@ import {
  * tokens; the menu only picks levels (radius levels, duration tier) and sets its own layout
  * (panel padding and minimum width, item padding and gap) and zoom on open.
  */
-export const DROPDOWN_MENU_TIERS = ["fast", "normal", "slow"] as const;
-const TIER_LABELS = {
-	fast: "快（全局 token）",
-	normal: "中（全局 token）",
-	slow: "慢（全局 token）",
-};
-export const DROPDOWN_MENU_ZOOMS = ["90", "95", "100"] as const;
-/** Keeps the style's own radius when it is not a plain level. */
-const STYLE_RADIUS = "style";
-const RADIUS_OPTIONS = [STYLE_RADIUS, ...RADIUS_LEVELS] as const;
 
 const valuesSchema = z
 	.object({
 		padding: z.number().int().min(0).max(12).multipleOf(2),
 		minWidth: z.number().int().min(96).max(320).multipleOf(16),
-		radius: z.enum(RADIUS_OPTIONS),
+		radius: z.enum(RADIUS_CHOICES),
 		itemPaddingX: z.number().int().min(4).max(20).multipleOf(2),
 		itemPaddingY: z.number().int().min(2).max(12).multipleOf(2),
 		itemGap: z.number().int().min(4).max(16).multipleOf(2),
-		itemRadius: z.enum(RADIUS_OPTIONS),
-		duration: z.enum(DROPDOWN_MENU_TIERS),
-		zoom: z.enum(DROPDOWN_MENU_ZOOMS),
+		itemRadius: z.enum(RADIUS_CHOICES),
+		duration: z.enum(MOTION_TIERS),
+		zoom: z.enum(ZOOM_LEVELS),
 	})
 	.strict();
 export type DropdownMenuValues = z.infer<typeof valuesSchema>;
@@ -56,9 +52,6 @@ export type DropdownMenuContext = {
 };
 
 const N = String.raw`(\d+(?:\.\d+)?)`;
-const word = (pattern: string, source: string) =>
-	new RegExp(`(?<![\\w:/-])${pattern}(?![\\w-])`).exec(source)?.[1];
-
 /** Reads the current values from the installed (flattened) Dropdown Menu source of one style. */
 export function parseDropdownMenuSource(files: { target: string; content: string }[]): {
 	values: DropdownMenuValues;
@@ -74,12 +67,12 @@ export function parseDropdownMenuSource(files: { target: string; content: string
 	const choice = classes("dropdown-menu-checkbox-item.svelte");
 	const separator = classes("dropdown-menu-separator.svelte");
 	const px = (pattern: string, source: string, fallback: number) => {
-		const value = word(pattern, source);
+		const value = sourceWord(pattern, source);
 		return value === undefined ? fallback : Number(value) * 4;
 	};
 	const radius = (source: string) =>
-		(word(`rounded-(${RADIUS_LEVELS.join("|")})`, source) as RadiusLevel | undefined) ??
-		STYLE_RADIUS;
+		(sourceWord(`rounded-(${RADIUS_LEVELS.join("|")})`, source) as RadiusLevel | undefined) ??
+		STYLE_VALUE;
 	const padding = px(`p-${N}`, content, 0);
 	const itemPaddingX = px(`px-${N}`, item, 8);
 	const itemPaddingY = px(`py-${N}`, item, 6);
@@ -94,7 +87,7 @@ export function parseDropdownMenuSource(files: { target: string; content: string
 			itemPaddingY,
 			itemGap,
 			itemRadius: radius(item),
-			duration: (word("duration-(fast|normal|slow)", content) ??
+			duration: (sourceWord("duration-(fast|normal|slow)", content) ??
 				"fast") as DropdownMenuValues["duration"],
 			zoom: (/data-open:zoom-in-(\d+)/.exec(content)?.[1] ?? "100") as DropdownMenuValues["zoom"],
 		},
@@ -115,9 +108,6 @@ const registryMenus = import.meta.glob<{ files: { target: string; content: strin
 	{ import: "default" }
 );
 
-const tierVar = (tier: (typeof DROPDOWN_MENU_TIERS)[number]) =>
-	`var(--motion-duration-${tier}, ${MOTION_DURATION_DEFAULTS[`motion-duration-${tier}`]})`;
-
 type Derived = {
 	panel: {
 		padding?: number;
@@ -135,7 +125,7 @@ type Derived = {
 function derive(overrides: DropdownMenuOverrides, context: DropdownMenuContext): Derived {
 	const safe = valuesSchema.partial().parse(overrides);
 	const level = (value: DropdownMenuValues["radius"] | undefined) =>
-		value === undefined || value === STYLE_RADIUS ? undefined : value;
+		value === undefined || value === STYLE_VALUE ? undefined : value;
 	const inset =
 		safe.itemPaddingX !== undefined || safe.itemGap !== undefined
 			? context.inset +
@@ -269,7 +259,7 @@ export function dropdownMenuOverrideClasses(
 }
 
 const radiusOptions = [
-	{ value: STYLE_RADIUS, label: "样式自带" },
+	{ value: STYLE_VALUE, label: "样式自带" },
 	...RADIUS_LEVELS.map((value) => ({ value, label: RADIUS_LABELS[value] })),
 ];
 
@@ -305,7 +295,7 @@ export const DROPDOWN_MENU_SPEC: TunerSpec<DropdownMenuValues, DropdownMenuConte
 			kind: "select",
 			key: "duration",
 			label: "动效档位",
-			options: DROPDOWN_MENU_TIERS.map((value) => ({ value, label: TIER_LABELS[value] })),
+			options: MOTION_TIERS.map((value) => ({ value, label: MOTION_TIER_LABELS[value] })),
 		},
 		{
 			kind: "select",

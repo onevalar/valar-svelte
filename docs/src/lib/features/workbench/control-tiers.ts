@@ -1,5 +1,14 @@
 import { BUTTON_SIZES, type ButtonSize } from "./button-tuning.js";
-import { RADIUS_LABELS, RADIUS_LEVELS, readRadiusLevel, type RadiusLevel } from "./tuner.js";
+import {
+	RADIUS_CHOICES,
+	RADIUS_LABELS,
+	RADIUS_LEVELS,
+	readRadiusLevel,
+	STYLE_VALUE,
+	type RadiusLevel,
+} from "./tuner.js";
+
+export { STYLE_VALUE };
 
 /**
  * Levels shared by the form-control editors (Input, Select, Textarea) so they stay aligned with
@@ -7,10 +16,9 @@ import { RADIUS_LABELS, RADIUS_LEVELS, readRadiusLevel, type RadiusLevel } from 
  * Button's radius levels. A value that matches no level reads as "style" (样式自带) and is
  * never written back.
  */
-export const STYLE_VALUE = "style";
 export const HEIGHT_TIERS = [...BUTTON_SIZES.map((size) => size.id), STYLE_VALUE] as const;
 export type HeightTier = (typeof HEIGHT_TIERS)[number];
-export const CONTROL_RADII = [STYLE_VALUE, ...RADIUS_LEVELS] as const;
+export const CONTROL_RADII = RADIUS_CHOICES;
 export type ControlRadius = (typeof CONTROL_RADII)[number];
 
 export const HEIGHT_OPTIONS = [

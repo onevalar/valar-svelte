@@ -1,10 +1,16 @@
 import { z } from "zod";
-import { MOTION_DURATION_DEFAULTS } from "./token-overrides.js";
 import {
+	MOTION_TIER_LABELS,
+	MOTION_TIERS,
+	RADIUS_CHOICES,
 	RADIUS_LABELS,
 	RADIUS_LEVELS,
 	radiusCss,
+	sourceWord,
 	spacing,
+	STYLE_VALUE,
+	tierVar,
+	ZOOM_LEVELS,
 	type RadiusLevel,
 	type TunerSpec,
 } from "./tuner.js";
@@ -15,17 +21,8 @@ import {
  * character (padding, gap, zoom and slide distance on open). Width and side offset are props
  * that callers set per use (`class="w-80"`, `sideOffset`), so they are not style parameters.
  */
-export const POPOVER_TIERS = ["fast", "normal", "slow"] as const;
-const TIER_LABELS = {
-	fast: "快（全局 token）",
-	normal: "中（全局 token）",
-	slow: "慢（全局 token）",
-};
-export const POPOVER_ZOOMS = ["90", "95", "100"] as const;
 /** Slide distance in px; written as tw-animate spacing steps (4px each). */
 export const POPOVER_SLIDES = ["0", "4", "8", "12", "16"] as const;
-const STYLE_RADIUS = "style";
-const RADIUS_OPTIONS = [STYLE_RADIUS, ...RADIUS_LEVELS] as const;
 /** The panel slides in from the trigger: opening below it starts slightly above, and so on. */
 const SLIDE_FROM = {
 	bottom: "top",
@@ -38,17 +35,14 @@ const valuesSchema = z
 	.object({
 		padding: z.number().int().min(4).max(32).multipleOf(2),
 		gap: z.number().int().min(4).max(32).multipleOf(2),
-		radius: z.enum(RADIUS_OPTIONS),
-		duration: z.enum(POPOVER_TIERS),
-		zoom: z.enum(POPOVER_ZOOMS),
+		radius: z.enum(RADIUS_CHOICES),
+		duration: z.enum(MOTION_TIERS),
+		zoom: z.enum(ZOOM_LEVELS),
 		slide: z.enum(POPOVER_SLIDES),
 	})
 	.strict();
 export type PopoverValues = z.infer<typeof valuesSchema>;
 export type PopoverOverrides = Partial<PopoverValues>;
-
-const word = (pattern: string, source: string) =>
-	new RegExp(`(?<![\\w:/-])${pattern}(?![\\w-])`).exec(source)?.[1];
 
 /** Reads the current values from the installed (flattened) Popover source of one style. */
 export function parsePopoverSource(files: { target: string; content: string }[]): {
@@ -57,16 +51,18 @@ export function parsePopoverSource(files: { target: string; content: string }[])
 } {
 	const content = files.find((f) => f.target.endsWith("popover-content.svelte"))?.content ?? "";
 	const px = (pattern: string, fallback: number) => {
-		const value = word(pattern, content);
+		const value = sourceWord(pattern, content);
 		return value === undefined ? fallback : Number(value) * 4;
 	};
-	const radius = word(`rounded-(${RADIUS_LEVELS.join("|")})`, content) as RadiusLevel | undefined;
+	const radius = sourceWord(`rounded-(${RADIUS_LEVELS.join("|")})`, content) as
+		| RadiusLevel
+		| undefined;
 	return {
 		values: {
 			padding: px(String.raw`p-(\d+(?:\.5)?)`, 16),
 			gap: px(String.raw`gap-(\d+(?:\.5)?)`, 16),
-			radius: radius ?? STYLE_RADIUS,
-			duration: (word("duration-(fast|normal|slow)", content) ??
+			radius: radius ?? STYLE_VALUE,
+			duration: (sourceWord("duration-(fast|normal|slow)", content) ??
 				"fast") as PopoverValues["duration"],
 			zoom: (/data-open:zoom-in-(\d+)/.exec(content)?.[1] ?? "100") as PopoverValues["zoom"],
 			slide: String(
@@ -81,9 +77,6 @@ const registryPopovers = import.meta.glob<{
 	files: { target: string; content: string }[];
 }>("/src/__registry__/json/styles/*/popover.json", { import: "default" });
 
-const tierVar = (tier: (typeof POPOVER_TIERS)[number]) =>
-	`var(--motion-duration-${tier}, ${MOTION_DURATION_DEFAULTS[`motion-duration-${tier}`]})`;
-
 /** Live preview; mirrors `popoverOverrideClasses` (tw-animate's slide variables included). */
 function popoverCss(select: string, overrides: PopoverOverrides): string {
 	const safe = valuesSchema.partial().parse(overrides);
@@ -91,7 +84,7 @@ function popoverCss(select: string, overrides: PopoverOverrides): string {
 	const rules: string[] = [];
 	if (safe.padding !== undefined) content.push(`padding: ${safe.padding}px;`);
 	if (safe.gap !== undefined) content.push(`gap: ${safe.gap}px;`);
-	if (safe.radius !== undefined && safe.radius !== STYLE_RADIUS)
+	if (safe.radius !== undefined && safe.radius !== STYLE_VALUE)
 		content.push(`border-radius: ${radiusCss(safe.radius)};`);
 	if (safe.duration !== undefined) content.push(`animation-duration: ${tierVar(safe.duration)};`);
 	if (safe.zoom !== undefined)
@@ -118,7 +111,7 @@ export function popoverOverrideClasses(overrides: PopoverOverrides): Record<stri
 	const content: string[] = [];
 	if (safe.padding !== undefined) content.push(`p-${spacing(safe.padding)}`);
 	if (safe.gap !== undefined) content.push(`gap-${spacing(safe.gap)}`);
-	if (safe.radius !== undefined && safe.radius !== STYLE_RADIUS)
+	if (safe.radius !== undefined && safe.radius !== STYLE_VALUE)
 		content.push(`rounded-${safe.radius}`);
 	if (safe.duration !== undefined) content.push(`duration-${safe.duration}`);
 	if (safe.zoom !== undefined)
@@ -157,7 +150,7 @@ export const POPOVER_SPEC: TunerSpec<PopoverValues, null> = {
 			key: "radius",
 			label: "圆角档位",
 			options: [
-				{ value: STYLE_RADIUS, label: "样式自带" },
+				{ value: STYLE_VALUE, label: "样式自带" },
 				...RADIUS_LEVELS.map((value) => ({
 					value,
 					label: RADIUS_LABELS[value],
@@ -168,9 +161,9 @@ export const POPOVER_SPEC: TunerSpec<PopoverValues, null> = {
 			kind: "select",
 			key: "duration",
 			label: "动效档位",
-			options: POPOVER_TIERS.map((value) => ({
+			options: MOTION_TIERS.map((value) => ({
 				value,
-				label: TIER_LABELS[value],
+				label: MOTION_TIER_LABELS[value],
 			})),
 		},
 		{

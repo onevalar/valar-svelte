@@ -1,6 +1,12 @@
 import { z } from "zod";
-import { MOTION_DURATION_DEFAULTS } from "./token-overrides.js";
-import { spacing, type TunerSpec } from "./tuner.js";
+import {
+	MOTION_TIER_LABELS,
+	MOTION_TIERS,
+	sourceWord,
+	spacing,
+	tierVar,
+	type TunerSpec,
+} from "./tuner.js";
 
 /**
  * Sheet's own parameters. Colors and the motion tier values are global tokens; Sheet only
@@ -20,12 +26,6 @@ const WIDTH_REM: Record<(typeof SHEET_WIDTHS)[number], number> = {
 	xl: 36,
 	"2xl": 42,
 };
-export const SHEET_TIERS = ["fast", "normal", "slow"] as const;
-const TIER_LABELS = {
-	fast: "快（全局 token）",
-	normal: "中（全局 token）",
-	slow: "慢（全局 token）",
-};
 /** Slide distance in px (written as tw-animate spacing steps of 4px); `full` = whole panel. */
 export const SHEET_SLIDES = ["16", "24", "40", "64", "96", "full"] as const;
 export const SHEET_SIDES = ["right", "left", "bottom", "top"] as const;
@@ -44,15 +44,12 @@ const valuesSchema = z
 		padding: z.number().int().min(8).max(48).multipleOf(2),
 		gap: z.number().int().min(0).max(40).multipleOf(2),
 		overlay: z.number().int().min(0).max(80).multipleOf(10),
-		duration: z.enum(SHEET_TIERS),
+		duration: z.enum(MOTION_TIERS),
 		slide: z.enum(SHEET_SLIDES),
 	})
 	.strict();
 export type SheetValues = z.infer<typeof valuesSchema>;
 export type SheetOverrides = Partial<SheetValues>;
-
-const word = (pattern: string, source: string) =>
-	new RegExp(`(?<![\\w:/-])${pattern}(?![\\w-])`).exec(source)?.[1];
 
 /** Reads the current values from the installed (flattened) Sheet source of one style. */
 export function parseSheetSource(files: { target: string; content: string }[]): {
@@ -64,7 +61,7 @@ export function parseSheetSource(files: { target: string; content: string }[]): 
 	const header = file("sheet-header.svelte");
 	const overlay = file("sheet-overlay.svelte");
 	const px = (pattern: string, source: string, fallback: number) => {
-		const value = word(pattern, source);
+		const value = sourceWord(pattern, source);
 		return value === undefined ? fallback : Number(value) * 4;
 	};
 	// An important override (from a write-back) wins over the component's own literal.
@@ -79,7 +76,7 @@ export function parseSheetSource(files: { target: string; content: string }[]): 
 			padding: px(String.raw`p-(\d+(?:\.5)?)`, header, 16),
 			gap: px(String.raw`gap-(\d+(?:\.5)?)`, content, 0),
 			overlay: Number(/bg-black\/(\d+)/.exec(overlay)?.[1] ?? 0),
-			duration: (word("duration-(fast|normal|slow)", content) ??
+			duration: (sourceWord("duration-(fast|normal|slow)", content) ??
 				"normal") as SheetValues["duration"],
 			slide: (slide
 				? slide[1] === undefined
@@ -94,9 +91,6 @@ export function parseSheetSource(files: { target: string; content: string }[]): 
 const registrySheets = import.meta.glob<{
 	files: { target: string; content: string }[];
 }>("/src/__registry__/json/styles/*/sheet.json", { import: "default" });
-
-const tierVar = (tier: (typeof SHEET_TIERS)[number]) =>
-	`var(--motion-duration-${tier}, ${MOTION_DURATION_DEFAULTS[`motion-duration-${tier}`]})`;
 
 /**
  * Live preview; mirrors `sheetOverrideClasses`. The slide rules are important and live in the
@@ -220,9 +214,9 @@ export const SHEET_SPEC: TunerSpec<SheetValues, null> = {
 			kind: "select",
 			key: "duration",
 			label: "动效档位",
-			options: SHEET_TIERS.map((value) => ({
+			options: MOTION_TIERS.map((value) => ({
 				value,
-				label: TIER_LABELS[value],
+				label: MOTION_TIER_LABELS[value],
 			})),
 		},
 		{

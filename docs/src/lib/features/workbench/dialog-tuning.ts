@@ -1,10 +1,16 @@
 import { z } from "zod";
-import { MOTION_DURATION_DEFAULTS } from "./token-overrides.js";
 import {
+	MOTION_TIER_LABELS,
+	MOTION_TIERS,
+	RADIUS_CHOICES,
 	RADIUS_LABELS,
 	RADIUS_LEVELS,
 	radiusCss,
+	sourceWord,
 	spacing,
+	STYLE_VALUE,
+	tierVar,
+	ZOOM_LEVELS,
 	type RadiusLevel,
 	type TunerSpec,
 } from "./tuner.js";
@@ -22,26 +28,16 @@ const WIDTH_REM: Record<(typeof DIALOG_WIDTHS)[number], number> = {
 	xl: 36,
 	"2xl": 42,
 };
-export const DIALOG_TIERS = ["fast", "normal", "slow"] as const;
-const TIER_LABELS = {
-	fast: "快（全局 token）",
-	normal: "中（全局 token）",
-	slow: "慢（全局 token）",
-};
-export const DIALOG_ZOOMS = ["90", "95", "100"] as const;
-/** Some styles use a radius that is not a plain level (e.g. rhea's capped 4xl); keep it. */
-const STYLE_RADIUS = "style";
-const RADIUS_OPTIONS = [STYLE_RADIUS, ...RADIUS_LEVELS] as const;
 
 const valuesSchema = z
 	.object({
 		width: z.enum(DIALOG_WIDTHS),
 		padding: z.number().int().min(8).max(48).multipleOf(2),
 		gap: z.number().int().min(4).max(40).multipleOf(2),
-		radius: z.enum(RADIUS_OPTIONS),
+		radius: z.enum(RADIUS_CHOICES),
 		overlay: z.number().int().min(0).max(80).multipleOf(10),
-		duration: z.enum(DIALOG_TIERS),
-		zoom: z.enum(DIALOG_ZOOMS),
+		duration: z.enum(MOTION_TIERS),
+		zoom: z.enum(ZOOM_LEVELS),
 	})
 	.strict();
 export type DialogValues = z.infer<typeof valuesSchema>;
@@ -49,9 +45,6 @@ export type DialogOverrides = Partial<DialogValues>;
 
 /** Facts about the style the write-back needs: does the footer bleed to the dialog edges? */
 export type DialogContext = { footerBleed: boolean; footerRounded: boolean };
-
-const word = (pattern: string, source: string) =>
-	new RegExp(`(?<![\\w:/-])${pattern}(?![\\w-])`).exec(source)?.[1];
 
 /** Reads the current values from the installed (flattened) Dialog source of one style. */
 export function parseDialogSource(files: { target: string; content: string }[]): {
@@ -63,18 +56,20 @@ export function parseDialogSource(files: { target: string; content: string }[]):
 	const overlay = file("dialog-overlay.svelte");
 	const footer = file("dialog-footer.svelte");
 	const px = (pattern: string, fallback: number) => {
-		const value = word(pattern, content);
+		const value = sourceWord(pattern, content);
 		return value === undefined ? fallback : Number(value) * 4;
 	};
-	const radius = word(`rounded-(${RADIUS_LEVELS.join("|")})`, content) as RadiusLevel | undefined;
+	const radius = sourceWord(`rounded-(${RADIUS_LEVELS.join("|")})`, content) as
+		| RadiusLevel
+		| undefined;
 	return {
 		values: {
 			width: (/sm:max-w-(sm|md|lg|xl|2xl)\b/.exec(content)?.[1] ?? "md") as DialogValues["width"],
 			padding: px(String.raw`p-(\d+(?:\.5)?)`, 16),
 			gap: px(String.raw`gap-(\d+(?:\.5)?)`, 16),
-			radius: radius ?? STYLE_RADIUS,
+			radius: radius ?? STYLE_VALUE,
 			overlay: Number(/bg-black\/(\d+)/.exec(overlay)?.[1] ?? 0),
-			duration: (word("duration-(fast|normal|slow)", content) ??
+			duration: (sourceWord("duration-(fast|normal|slow)", content) ??
 				"fast") as DialogValues["duration"],
 			zoom: (/data-open:zoom-in-(\d+)/.exec(content)?.[1] ?? "100") as DialogValues["zoom"],
 		},
@@ -87,9 +82,6 @@ const registryDialogs = import.meta.glob<{ files: { target: string; content: str
 	"/src/__registry__/json/styles/*/dialog.json",
 	{ import: "default" }
 );
-
-const tierVar = (tier: (typeof DIALOG_TIERS)[number]) =>
-	`var(--motion-duration-${tier}, ${MOTION_DURATION_DEFAULTS[`motion-duration-${tier}`]})`;
 
 /**
  * Live preview. `content`/`overlay`/`footer` selectors are built from `scope`; editor dialogs
@@ -117,7 +109,7 @@ function dialogCss(
 			);
 	}
 	if (safe.gap !== undefined) content.push(`gap: ${safe.gap}px;`);
-	if (safe.radius !== undefined && safe.radius !== STYLE_RADIUS) {
+	if (safe.radius !== undefined && safe.radius !== STYLE_VALUE) {
 		const radius = radiusCss(safe.radius);
 		content.push(`border-radius: ${radius};`);
 		if (context?.footerRounded)
@@ -159,7 +151,7 @@ export function dialogOverrideClasses(
 			);
 	}
 	if (safe.gap !== undefined) content.push(`gap-${spacing(safe.gap)}`);
-	if (safe.radius !== undefined && safe.radius !== STYLE_RADIUS) {
+	if (safe.radius !== undefined && safe.radius !== STYLE_VALUE) {
 		content.push(`rounded-${safe.radius}`);
 		if (context.footerRounded) footer.push(`rounded-b-${safe.radius}`);
 	}
@@ -204,7 +196,7 @@ export const DIALOG_SPEC: TunerSpec<DialogValues, DialogContext> = {
 			key: "radius",
 			label: "圆角档位",
 			options: [
-				{ value: STYLE_RADIUS, label: "样式自带" },
+				{ value: STYLE_VALUE, label: "样式自带" },
 				...RADIUS_LEVELS.map((value) => ({ value, label: RADIUS_LABELS[value] })),
 			],
 		},
@@ -213,7 +205,7 @@ export const DIALOG_SPEC: TunerSpec<DialogValues, DialogContext> = {
 			kind: "select",
 			key: "duration",
 			label: "动效档位",
-			options: DIALOG_TIERS.map((value) => ({ value, label: TIER_LABELS[value] })),
+			options: MOTION_TIERS.map((value) => ({ value, label: MOTION_TIER_LABELS[value] })),
 		},
 		{
 			kind: "select",

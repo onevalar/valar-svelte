@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { MOTION_DURATION_DEFAULTS } from "./token-overrides.js";
 
 /**
  * Shared pieces of the full-screen component editors (Button, Dialog, …). Each component
@@ -31,6 +32,30 @@ export function radiusCss(level: RadiusLevel): string {
 
 /** Tailwind spacing scale step for a pixel value (4px = 1). */
 export const spacing = (px: number) => String(px / 4);
+
+/** A value that matches no level (e.g. rhea's capped 4xl radius) reads as the style's own; never written back. */
+export const STYLE_VALUE = "style";
+/** Radius choices of a component editor: the style's own value or one of the levels. */
+export const RADIUS_CHOICES = [STYLE_VALUE, ...RADIUS_LEVELS] as const;
+
+/** Global motion tiers a component may pick; their durations are edited on /themes. */
+export const MOTION_TIERS = ["fast", "normal", "slow"] as const;
+export type MotionTier = (typeof MOTION_TIERS)[number];
+export const MOTION_TIER_LABELS: Record<MotionTier, string> = {
+	fast: "快（全局 token）",
+	normal: "中（全局 token）",
+	slow: "慢（全局 token）",
+};
+/** Duration of a global motion tier, falling back to its default when the token is missing. */
+export const tierVar = (tier: MotionTier) =>
+	`var(--motion-duration-${tier}, ${MOTION_DURATION_DEFAULTS[`motion-duration-${tier}`]})`;
+
+/** Enter and exit scale levels (`zoom-in-*`, `zoom-out-*`). */
+export const ZOOM_LEVELS = ["90", "95", "100"] as const;
+
+/** First capture group of `pattern` matched as a whole utility in a flattened class string. */
+export const sourceWord = (pattern: string, source: string) =>
+	new RegExp(`(?<![\\w:/-])${pattern}(?![\\w-])`).exec(source)?.[1];
 
 export type TunerParameter =
 	| { kind: "number"; key: string; label: string; min: number; max: number; step?: number }
