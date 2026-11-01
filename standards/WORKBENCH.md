@@ -6,7 +6,7 @@
 `/workbench` 的 Studio 保留现有功能和回归，暂不继续扩展到新组件；它的长期定位另行决定。
 2026-10-31 站点改版后，主导航只保留“组件、设计 token、文档”；Studio、Blocks、Charts、Create 不再出现在导航，但原地址仍可访问，代码未删除。
 
-## 路线图与下一步（2026-10-31，接手前必读）
+## 路线图与下一步（2026-11-01 更新，接手前必读）
 
 已确定的方向：
 
@@ -30,7 +30,7 @@
 | 11   | Valar 可安装技能包                  | 完成（设计方法待用户编写）  | `skills/valar-svelte`；`guides/` 三个文件为占位   |
 | 12   | 本地 MCP 服务 `valar-svelte mcp`    | 完成（本地版）              | 线上版等用户准备好服务器后再做                    |
 
-**下一步**（2026-11-01，第 1–12 步均已完成，最新提交 `e3c095c`）：按下面的“后续任务”从 A1 开始。`skills/valar-svelte/guides/` 的组合、文案、动效内容由用户编写，AI 不要动。
+**当前进度**（2026-11-01）：第 1–12 步、后续任务 A1–A3、B1–B3 和收尾 D1–D4 均已完成并推送。AI 可做的下一步见“候选任务”，开始前先向用户确认；C1–C3 等用户。`skills/valar-svelte/guides/` 的组合、文案、动效内容由用户编写，AI 不要动。
 
 ### 后续任务（按顺序；完成一项就在此更新状态）
 
@@ -45,6 +45,22 @@
 | C1   | 用户编写 `guides/` 三份方法          | 用户 | 页面组合、文案、动效；AI 不代写                                                                                               |
 | C2   | 线上版 MCP（HTTP）                   | 用户 | 等用户准备好服务器并授权部署后再做                                                                                            |
 | C3   | 决定 `/workbench` Studio 去留        | 用户 | 已知问题：Studio 的 `global.motionDuration`（默认 180ms）会覆盖全局动效 token；保留则需改为跟随 token，撤掉则删入口与回归测试 |
+
+### 收尾（2026-11-01，均已完成）
+
+| 编号 | 任务                        | 状态 | 说明                                                                                                                                                                                                  |
+| ---- | --------------------------- | ---- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1   | 文档示例与 blocks 通过 lint | 完成 | `valar-svelte lint` 对 `registry/examples`、`registry/blocks` 为 0 错误；原色改语义 token（成功类借用 `chart-2`），按钮尺寸改 `size` 属性，图标按钮补 `aria-label`；删除 Button 的圆角示例            |
+| D2   | 组件默认文案中文化          | 完成 | 写死的英文读屏名称、播报和校验文案改为中文默认并可覆盖（`closeLabel`、`label`、`messages` 等）；Calendar、Range Calendar、Number Field 默认 `locale="zh-CN"`；Questionnaire primitive 新增 `messages` |
+| D3   | Dropdown Menu 滑入距离      | 完成 | 与 Popover 共用 `tuner.ts` 的 `SLIDE_DISTANCES`、`readSlide`、`slideCss`、`slideClasses`；面板与子菜单同时生效                                                                                        |
+| D4   | 编辑器工具函数收拢          | 完成 | 动效档位与标签、缩放档位、“样式自带”、`tierVar`、`sourceWord` 统一放在 `tuner.ts`，各 `*-tuning.ts` 不再各写一份                                                                                      |
+
+### 候选任务（AI 可做，开始前向用户确认）
+
+- 新增“成功／警告”语义色 token，替换示例中借用的 `chart-2`。
+- 其余组件接入编辑器（如 Hover Card、Context Menu、Drawer、Tabs、Card 等），按下面的清单逐个做。
+- Input Group、Input OTP、Native Select、Combobox 的高度接入 Button 尺寸档位；Textarea 最小高度（写死在组件源码，需要改源码或换写回方式）。
+- date-picker 等示例自己写了 `DateFormatter("en-US")`，与已改为中文的日历不一致。
 
 **每接入一个组件的清单**（A1–A3 都按此做，全部做完才算完成）：
 
@@ -72,7 +88,7 @@
 
 第 7 步的做法（2026-11-01 完成，接入新组件时沿用）：
 
-- **共用外壳**：`docs/src/lib/features/workbench/component-tuner.svelte` 负责全屏编辑器的一切共用部分（顶栏、仅草稿／并排对比、浅深色、DialKit 面板、已修改参数、只读全局 token、命名版本与备份、写回确认）。各组件只提供一份参数说明 `TunerSpec`（类型在 `tuner.ts`）和画布：Button 是 `button-tuning.ts`＋`button-tuner.svelte`（变体矩阵），Dialog 是 `dialog-tuning.ts`＋`dialog-tuner.svelte`（内联渲染真实 Dialog，带“重播进入与退出”）。`parameter-dials.svelte` 按参数说明生成 DialKit 面板；`component-preview-tabs.svelte` 决定哪个示例套上编辑器。
+- **共用外壳**：`docs/src/lib/features/workbench/component-tuner.svelte` 负责全屏编辑器的一切共用部分（顶栏、仅草稿／并排对比、浅深色、DialKit 面板、已修改参数、只读全局 token、命名版本与备份、写回确认）。各组件只提供一份参数说明 `TunerSpec`（类型在 `tuner.ts`）和画布：Button 是 `button-tuning.ts`＋`button-tuner.svelte`（变体矩阵），Dialog 是 `dialog-tuning.ts`＋`dialog-tuner.svelte`（内联渲染真实 Dialog，带“重播进入与退出”）。`parameter-dials.svelte` 按参数说明生成 DialKit 面板；`component-preview-tabs.svelte` 决定哪个示例套上编辑器。各组件共用的档位与解析函数（动效档位、缩放、滑入距离、“样式自带”、`tierVar`、`sourceWord`）放在 `tuner.ts`，新组件直接引用，不要再复制一份。
 - **当前值从哪来**：Button 量取页面上真实按钮的尺寸；Dialog 读取当前样式安装出去的 registry 源码（`parseDialogSource`），所以 8 套样式各自显示自己的默认值。
 - **Dialog 参数**：宽度档、内边距、内容间距、圆角档位（含“样式自带”）、遮罩不透明度、动效档位（快／中／慢，只选全局 token 的档位）、出现时缩放（组件自己的动效参数）。改内边距时，带“出血”页脚的样式（如 nova）同步调整页脚负边距，页脚仍贴边。
 - **写回白名单**：`style-overrides.ts` 的 `OVERRIDE_RULES` 按每个 `cn-*` 类规定允许的工具类；颜色、任意值、未登记的类一律拒绝。合并用 `packages/parity` 的 `mergeClasses`，补足 tailwind-merge 识别不了的 `zoom-in-*`、`duration-*`、`ease-*`。
@@ -85,7 +101,7 @@
   - 测试：`workbench.test.ts`“Popover and Sheet write-back”（当前值读取 nova／vega／lyra／luma／sera、写回后安装源码与回读、连续写回替换、白名单拒绝）、`workbench.spec.ts` 的 Popover／Sheet 编辑器用例、`inject-style-classes.test.ts` 的 slide 分组。
 - **Input、Select、Textarea（A3，2026-11-01）**：`input-tuning.ts`、`select-tuning.ts`、`textarea-tuning.ts`＋同名 `-tuner.svelte`，共用的档位在 `control-tiers.ts`。高度只能选 **Button 的尺寸档位**（特小／小／默认／大）：编辑器在探针里渲染四个尺寸的真实 Button 量取高度，控件当前高度等于哪一档就显示哪一档（同高时优先同名尺寸），都不等则显示“样式自带”且不写回；写回时把所选档位换算成当时 Button 的像素高度（`h-*`），Button 以后再改高度时需重新选择。圆角使用 Button 的 `RADIUS_LEVELS`，量取方式与 Button 相同（`readRadiusLevel`），不在档位中的显示“样式自带”。Input：高度档位、圆角档位、横向内边距（`cn-input`）。Select：默认／小两个尺寸的高度档位（默认对应 Button 同名尺寸）、一个圆角档位同时作用于两个尺寸（替换 nova 等小尺寸自带的圆角）、文字侧内边距 `pl-*`（下拉箭头一侧保留上游）（`cn-select-trigger`）。Textarea：圆角档位、横向／纵向内边距（`cn-textarea`）；高度随内容增长，`min-h-16` 写在组件源码中、样式类覆盖不了，所以不提供高度参数。Input、Textarea 文档首个示例的 `max-w-xs` 改为只约束示例本身（`[&_[data-tuning-current]>*]`），否则会把编辑器外壳压窄。
 - 测试（A3）：`docs/tests/workbench.test.ts`（nova、vega 的高度档位读取与 Button 写回后的“样式自带”、三个组件写回后的安装源码、白名单拒绝）、`docs/e2e/workbench.spec.ts`（Input 编辑器；Select 与 Textarea 编辑器）。
-- **Dropdown Menu**（A2，2026-11-01）：`dropdown-menu-tuning.ts`＋`dropdown-menu-tuner.svelte`（内联渲染真实菜单，含勾选项、缩进项、子菜单）。参数：面板内边距、最小宽度、面板圆角档位、菜单项横向／纵向内边距、图文间距、菜单项圆角档位、动效档位、出现时缩放；面板参数同时作用于子菜单。当前值读 registry 源码（`parseDropdownMenuSource`）。联动：缩进项 `data-inset:pl-*`、勾选／单选项的 `pl-*` 与纵向内边距按样式原有差值随之移动；分隔线在“贴边”样式（`-mx` 等于面板内边距，如 nova）中跟随面板内边距，lyra 等不贴边的样式不动。
+- **Dropdown Menu**（A2，2026-11-01）：`dropdown-menu-tuning.ts`＋`dropdown-menu-tuner.svelte`（内联渲染真实菜单，含勾选项、缩进项、子菜单）。参数：面板内边距、最小宽度、面板圆角档位、菜单项横向／纵向内边距、图文间距、菜单项圆角档位、动效档位、出现时缩放、出现时滑入距离（0–16px，与 Popover 同一套）；面板参数同时作用于子菜单。当前值读 registry 源码（`parseDropdownMenuSource`）。联动：缩进项 `data-inset:pl-*`、勾选／单选项的 `pl-*` 与纵向内边距按样式原有差值随之移动；分隔线在“贴边”样式（`-mx` 等于面板内边距，如 nova）中跟随面板内边距，lyra 等不贴边的样式不动。
 - **Tooltip**（A2，2026-11-01）：`tooltip-tuning.ts`＋`tooltip-tuner.svelte`（一个固定展开的提示看样式，一个“悬停试试”看真实延迟，各用独立 Provider）。参数：横向／纵向内边距、圆角档位、显示延迟（ms）、动效档位（含“样式自带 150ms”，上游未设时长）、出现时缩放。**显示延迟**是 Provider 属性而非样式：写回为 `.cn-tooltip-provider { @apply delay-<ms>; }`，`tooltip-provider.svelte` 中的 `"cn-tooltip-provider"` 字符串在安装展开后变成 `"delay-<ms>"` 并作为 `delayDuration` 默认值；未写回时为空串、默认 0（与上游一致），调用方显式传值仍优先。文档页“使用版本”只预览样式，不改页面上提示的延迟。Studio 导出（`export.ts`）的替换锚点相应改为 `delayDuration = styleDelay`。
 - 测试补充：`workbench.test.ts` 的 Dropdown Menu／Tooltip 当前值读取（nova、vega、lyra、luma、maia、mira）、写回后的安装源码（含延迟默认值与调用方覆盖）、白名单拒绝；`workbench.spec.ts` 的两个编辑器用例（打开、调参生效、真实延迟、并排对比、保存版本、Esc 归还焦点）。
 
