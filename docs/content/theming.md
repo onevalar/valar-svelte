@@ -109,6 +109,30 @@ Here's the list of variables available for customization:
 }
 ```
 
+## 动效与边框 token（Valar）
+
+除了颜色和 `--radius`，Valar 还提供动效与边框粗细的全局 token。组件只选用档位，档位的具体数值在 `:root` 中统一设置（`init` 会写入默认值，也可以在文档站的“设计 token”页调整后写回组件库）：
+
+```css
+:root {
+  --motion-duration-fast: 100ms; /* duration-fast：提示、菜单、弹窗 */
+  --motion-duration-normal: 200ms; /* duration-normal：侧边面板、展开 */
+  --motion-duration-slow: 300ms; /* duration-slow：大范围位移 */
+  --motion-duration-interaction: 150ms; /* transition 的默认时长：悬停、按下 */
+  --motion-ease-enter: cubic-bezier(0.22, 1, 0.36, 1); /* ease-enter */
+  --motion-ease-exit: cubic-bezier(0.7, 0, 0.84, 0); /* ease-exit */
+  --motion-ease-standard: cubic-bezier(
+    0.4,
+    0,
+    0.2,
+    1
+  ); /* ease-standard 与 transition 的默认曲线 */
+  --border-width: 1px; /* border 的默认粗细 */
+}
+```
+
+这些变量由 `@valar/svelte-cli/tailwind.css` 映射为 `duration-fast` 等工具类；没有设置时使用上面的默认值，与上游原本写死的数值相同。系统开启“减少动态效果”时，快、中、慢三档自动变为瞬时，悬停反馈不受影响。
+
 ## Adding new colors
 
 To add new colors, you need to add them to your CSS file.

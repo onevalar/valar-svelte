@@ -35,7 +35,15 @@
 			"sidebar-accent": "oklch(0.97 0.001 106.424)",
 			"sidebar-accent-foreground": "oklch(0.216 0.006 56.043)",
 			"sidebar-border": "oklch(0.923 0.003 48.717)",
-			"sidebar-ring": "oklch(0.709 0.01 56.259)"
+			"sidebar-ring": "oklch(0.709 0.01 56.259)",
+			"motion-duration-fast": "100ms",
+			"motion-duration-normal": "200ms",
+			"motion-duration-slow": "300ms",
+			"motion-duration-interaction": "150ms",
+			"motion-ease-enter": "cubic-bezier(0.22, 1, 0.36, 1)",
+			"motion-ease-exit": "cubic-bezier(0.7, 0, 0.84, 0)",
+			"motion-ease-standard": "cubic-bezier(0.4, 0, 0.2, 1)",
+			"border-width": "1px"
 		},
 		"dark": {
 			"background": "oklch(0.147 0.004 49.25)",

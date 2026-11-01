@@ -1,5 +1,10 @@
+import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
-import { injectStyleClasses, parseStyleCss } from "../src/inject-style-classes.ts";
+import {
+	applyTokenUtilities,
+	injectStyleClasses,
+	parseStyleCss,
+} from "../src/inject-style-classes.ts";
 
 const styleMap = {
 	"cn-attachment": "w-fit rounded-xl",
@@ -205,5 +210,27 @@ const url = "https://example.com";`;
 const x = "a";
 const y = "b"; /* keep this comment */
 const url = "https://example.com";`);
+	});
+});
+
+describe("applyTokenUtilities", () => {
+	it("rewrites whole motion utilities, keeping variants, and leaves look-alikes alone", () => {
+		const source = `class="duration-100 data-closed:duration-200 hover:ease-[cubic-bezier(0.22,1,0.36,1)] ease-in-out" other="duration-1000 duration-150 ease-linear xduration-100 duration-100x"`;
+		expect(applyTokenUtilities(source)).toBe(
+			`class="duration-fast data-closed:duration-normal hover:ease-enter ease-standard" other="duration-1000 duration-150 ease-linear xduration-100 duration-100x"`
+		);
+	});
+
+	it("covers every hard-coded tier in the shipped nova Dialog and Sheet", () => {
+		const nova = parseStyleCss(
+			readFileSync(
+				new URL("../../../docs/src/lib/registry/styles/style-nova.css", import.meta.url),
+				"utf8"
+			)
+		);
+		const out = applyTokenUtilities(`"${nova["cn-dialog-content"]} | ${nova["cn-sheet-content"]}"`);
+		expect(out).toContain("duration-fast");
+		expect(out).toContain("duration-normal ease-standard");
+		expect(out).not.toMatch(/duration-(?:100|200|300)\b/);
 	});
 });

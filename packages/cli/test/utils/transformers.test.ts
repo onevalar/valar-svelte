@@ -860,6 +860,26 @@ describe("transformImports with more custom paths", () => {
 });
 
 describe("updateCssVars", () => {
+	it("writes Valar motion and border tokens to :root without @theme mirrors", () => {
+		const source = `@import "tailwindcss";\n\n:root {\n\t--radius: 0.625rem;\n}\n`;
+		const result = transformCss(source, {
+			cssVars: {
+				light: {
+					primary: "oklch(0.5 0.2 260)",
+					"motion-duration-fast": "120ms",
+					"motion-ease-enter": "cubic-bezier(0.22, 1, 0.36, 1)",
+					"border-width": "1px",
+				},
+			},
+		});
+		expect(result).toContain("--motion-duration-fast: 120ms;");
+		expect(result).toContain("--border-width: 1px;");
+		// Colors still get their @theme entry; the Valar tokens are mapped in tailwind.css.
+		expect(result).toContain("--color-primary: var(--primary);");
+		expect(result).not.toMatch(/--(?:color-)?motion-duration-fast: var/);
+		expect(result).not.toContain("--border-width: var(--border-width)");
+	});
+
 	it("should return unchanged CSS when no vars are provided", () => {
 		const source = ":root { --test: value; }";
 		const result = transformCss(source, {});

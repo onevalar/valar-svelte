@@ -619,3 +619,30 @@
 		-webkit-text-fill-color: currentColor;
 	}
 }
+
+/*
+ * Valar global tokens: motion and border width.
+ * Components use `duration-fast|normal|slow`, `ease-enter|exit|standard` and plain `border`.
+ * The values live in `:root` (written by `init` from the theme, edited on the docs `/themes`
+ * page); the fallbacks keep projects initialized before these tokens unchanged.
+ */
+@theme inline {
+	--transition-duration-fast: var(--motion-duration-fast, 100ms);
+	--transition-duration-normal: var(--motion-duration-normal, 200ms);
+	--transition-duration-slow: var(--motion-duration-slow, 300ms);
+	--default-transition-duration: var(--motion-duration-interaction, 150ms);
+	--ease-enter: var(--motion-ease-enter, cubic-bezier(0.22, 1, 0.36, 1));
+	--ease-exit: var(--motion-ease-exit, cubic-bezier(0.7, 0, 0.84, 0));
+	--ease-standard: var(--motion-ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
+	--default-transition-timing-function: var(--motion-ease-standard, cubic-bezier(0.4, 0, 0.2, 1));
+	--default-border-width: var(--border-width, 1px);
+}
+
+/* Reduced motion: overlays and panels appear without moving. Hover feedback stays. */
+@media (prefers-reduced-motion: reduce) {
+	:root:root {
+		--motion-duration-fast: 1ms;
+		--motion-duration-normal: 1ms;
+		--motion-duration-slow: 1ms;
+	}
+}

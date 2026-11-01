@@ -78,4 +78,50 @@ describe("global token write-back", () => {
 			) + "\n"
 		);
 	});
+
+	it("accepts motion and border tokens only in safe formats", () => {
+		const ok = (light: Record<string, string>) =>
+			tokenOverridePayloadSchema.safeParse({ base: "neutral", override: { light } }).success;
+		expect(
+			ok({
+				"motion-duration-fast": "120ms",
+				"motion-ease-enter": "cubic-bezier(0.34, 1.56, 0.64, 1)",
+				"motion-ease-exit": "linear",
+				"border-width": "1.5px",
+			})
+		).toBe(true);
+		for (const light of <Record<string, string>[]>[
+			{ "motion-duration-fast": "0.1s" },
+			{ "motion-duration-fast": "5000ms" },
+			{ "motion-ease-enter": "ease" },
+			{ "motion-ease-enter": "cubic-bezier(0,0,1,1); } body{x:y" },
+			{ "border-width": "10px" },
+			{ "motion-duration-unknown": "100ms" },
+		])
+			expect(ok(light)).toBe(false);
+		// Motion is mode-independent: it is not accepted in the dark section.
+		expect(
+			tokenOverridePayloadSchema.safeParse({
+				base: "neutral",
+				override: { dark: { "motion-duration-fast": "100ms" } },
+			}).success
+		).toBe(false);
+	});
+
+	it("ships motion and border defaults that equal the literals they replace", async () => {
+		const { DEFAULT_BASE_THEMES, UPSTREAM_BASE_THEMES } =
+			await import("../src/lib/registry/themes.js");
+		const light = (list: typeof DEFAULT_BASE_THEMES) =>
+			list.find((theme) => theme.name === "stone")!.cssVars.light as Record<string, string>;
+		expect(light(DEFAULT_BASE_THEMES)).toMatchObject({
+			"motion-duration-fast": "100ms",
+			"motion-duration-normal": "200ms",
+			"motion-duration-slow": "300ms",
+			"motion-duration-interaction": "150ms",
+			"motion-ease-enter": "cubic-bezier(0.22, 1, 0.36, 1)",
+			"border-width": "1px",
+		});
+		// Upstream theme data itself stays untouched.
+		expect(light(UPSTREAM_BASE_THEMES)).not.toHaveProperty("motion-duration-fast");
+	});
 });

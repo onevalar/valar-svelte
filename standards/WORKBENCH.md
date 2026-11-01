@@ -22,7 +22,7 @@
 | 3    | Button 全屏编辑器（方向 B）         | 完成                        | DialKit `inline` 模式                             |
 | 4    | 补 Slider Field、Color Picker       | 完成                        | 见组件补充清单 VCOMP-005／006                     |
 | 5    | 全局 token 配置页（扩展 `/themes`） | 完成                        | 写入 `styles/valar/tokens.json`，仅本地开发站可写 |
-| 6    | 动效、边框宽度 token（第二期）      | 待办                        | 先建立 token，再替换 8 套样式中的写死值，单独验收 |
+| 6    | 动效、边框宽度 token（第二期）      | 完成                        | 时长四档、曲线三档、边框粗细；见下                |
 | 7    | 把全屏编辑器推广到第二个组件        | 待办                        | 先抽出 Button 编辑器中可复用的部分，不提前抽象    |
 | 8    | 组件自带设计规范（AI 友好）         | 完成（样板：Button、Field） | 见下                                              |
 | 9    | 组件说明卡（借鉴 Arc）              | 完成（20 个常用组件）       | `ui/<组件>/meta.json`，是 10–12 步的唯一数据源    |
@@ -30,7 +30,7 @@
 | 11   | Valar 可安装技能包                  | 完成（设计方法待用户编写）  | `skills/valar-svelte`；`guides/` 三个文件为占位   |
 | 12   | 本地 MCP 服务 `valar-svelte mcp`    | 完成（本地版）              | 线上版等用户准备好服务器后再做                    |
 
-**下一步**（2026-10-31，第 1–5、8–12 步已完成）：等待用户在第 6 步（动效、边框宽度 token）与第 7 步（全屏编辑器推广到第二个组件）中选择；可并行的小项是给其余组件补说明卡和 `RULES.md`。`skills/valar-svelte/guides/` 的组合、文案、动效内容由用户编写，AI 不要动。
+**下一步**（2026-11-01，第 1–6、8–12 步已完成）：第 7 步（全屏编辑器推广到第二个组件），在其中加入该组件特有的动效参数（位移、缩放、延迟），档位与曲线只从全局 token 选择；可并行的小项是给其余组件补说明卡和 `RULES.md`。`skills/valar-svelte/guides/` 的组合、文案、动效内容由用户编写，AI 不要动。
 
 第 8 步的做法（推广到其他组件时沿用）：
 
@@ -44,6 +44,15 @@
 - 第 9 步：说明卡放在组件目录（如 `meta.json`，与 `RULES.md` 并列），字段包括用途、关键词、分类、何时用／何时不用、无障碍与响应式注意、相关组件；目录、文档、技能包和 MCP 都从它生成，不在别处另写。先覆盖常用的 15–20 个组件，并加检查：缺说明卡的组件逐项列出，不静默跳过。
 - 第 11 步：页面组合、文案、动效方法由用户本人编写，AI 只建立文件结构和入口，不代写这些内容。
 - 第 12 步：工具参照 Arc 的 search_components、list_components、get_component、get_install_command、get_skill；只读，数据来自第 9、10 步。先做通过 CLI 在本机启动的版本；线上版需要部署网站和域名，等用户准备好服务器并授权后再做。所有组件免费公开，不做 Arc 的登录与 Pro 令牌机制。
+
+第 6 步的做法（2026-11-01 完成）：
+
+- **分层**：全局 token 只管“每档多快、用什么曲线、边框多粗”；组件只选档位。组件特有的位移距离、缩放幅度、显示延迟属于组件参数，留给第 7 步的组件编辑器。
+- **token**：`motion-duration-fast|normal|slow|interaction`（默认 100／200／300／150ms）、`motion-ease-enter|exit|standard`、`border-width`（1px）。和 `radius` 一样放在主题的 `light` 中、对深浅色都生效；默认值在 `token-overrides.ts` 的 `VALAR_TOKEN_DEFAULTS`，由 `themes.ts` 的 `DEFAULT_BASE_THEMES` 加到每个基础主题（上游主题数据不变），`/themes` 以此为“默认值”比较和恢复。
+- **映射**：`packages/cli/src/tailwind.css` 的 `@theme inline` 把它们映射为 `duration-fast` 等工具类、`transition` 的默认时长与曲线、`border` 的默认粗细，并带回退值，旧项目没有这些变量时外观不变；同一文件在“减少动态效果”时把快／中／慢设为 1ms。CLI 写入 CSS 时不再为这些变量生成 `@theme` 镜像（`update-css-vars.ts`）。
+- **替换写死值**：上游 `styles/style-*.css` 不改。`packages/parity/src/inject-style-classes.ts` 的 `TOKEN_UTILITIES` 是唯一的对照表（`duration-100→duration-fast`、`200→normal`、`300→slow`、两种快出慢停曲线→`ease-enter`、慢起快走→`ease-exit`、`ease-in-out→ease-standard`），由 `applyTokenUtilities` 在 registry 构建和文档站组件展开时应用。保留写死的：`duration-1000`（输入光标闪烁）、`duration-400`（消息滚动按钮退出）、`ease-linear`（进度、侧边栏宽度）。上游的 `ring-*` 焦点环和卡片描边（`ring-1`）属于各样式的特色，不跟随边框 token。
+- **编辑与检查**：`/themes` 的“动效与边框”分组（Slider Field、下拉选曲线）和右侧“动效预览”可重放进入／退出；`valar-svelte lint` 新增警告 `valar/motion-token`，AGENTS.md 规范区块要求只用档位，何时用哪档以用户编写的 `guides/motion.md` 为准。
+- 测试：`packages/parity/test/inject-style-classes.test.ts`（对照表）、`docs/tests/token-overrides.test.ts`（格式白名单与默认值）、`packages/cli/test/utils/transformers.test.ts`（CSS 写入）、`design-rules.test.ts`（lint）。
 
 第 9–12 步的做法（2026-10-31 完成）：
 
@@ -60,7 +69,7 @@
 - 写回：确认框列出每项“原值 → 新值”，确认后把**与上游不同的值**整体写入 `docs/src/lib/registry/styles/valar/tokens.json`（按基础主题分节），重建 registry；失败恢复原文件，不自动提交。“恢复上游”后再写回即清空该主题的定制。
 - 生效范围：`themes.ts` 把 `tokens.json` 叠加到上游基础主题得到 `BASE_THEMES`，因此 `registry/colors/<主题>.json`、`/init` 预设（`valar-svelte init` 使用）和 `/themes` 预览都会用新值；字号写到 `@theme inline` 的 `--text-*`。文档站自身的外观变量在 `docs/src/app.css`，不随之改变。上游主题数据和 `styles/style-*.css` 保持原样。
 - 测试：`docs/tests/token-overrides.test.ts`（换算参考值、输入白名单、合并与序列化）。
-- 后续：第 6 步的动效、边框宽度 token 也加到此页和 `tokens.json`；`RULES.md` 中的数值改为从 token 生成。
+- 后续：`RULES.md` 中的数值改为从 token 生成。
 
 ## 组件内按需微调：Button 样板
 

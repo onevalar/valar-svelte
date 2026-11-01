@@ -6,6 +6,7 @@ import tailwindcss from "@tailwindcss/vite";
 import { enhancedImages } from "@sveltejs/enhanced-img";
 import { sveltekit } from "@sveltejs/kit/vite";
 import {
+	applyTokenUtilities,
 	injectStyleClasses,
 	mergeStyleMaps,
 	parseStyleCss,
@@ -158,7 +159,9 @@ function flattenedRegistry(): Plugin {
 			// The query also marks example and helper modules so their UI imports share
 			// one style. Only registry UI source has `cn-*` tokens to inline.
 			if (!within(file, [rawUiDir]) || !TEXT_EXTENSIONS.has(path.extname(file))) return content;
-			return injectStyleClasses(content, getStyleMap(params.get(QUERY) ?? DEFAULT_STYLE));
+			return applyTokenUtilities(
+				injectStyleClasses(content, getStyleMap(params.get(QUERY) ?? DEFAULT_STYLE))
+			);
 		},
 		/**
 		 * Dev-only: Button docs and `/themes` "写回组件库" write Valar's override files and rebuild the

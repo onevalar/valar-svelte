@@ -51,7 +51,7 @@ pnpm exec valar-svelte add number-field tags-input stepper
 pnpm exec valar-svelte lint        # 默认检查 src，跳过已安装的组件源码
 ```
 
-目前检查：非语义颜色（`valar/semantic-color`）、像素任意值（`valar/no-arbitrary-px`）、Button 用 class 改尺寸（`valar/button-size-via-prop`）、图标按钮缺少名称（`valar/icon-button-label`）、原生 `<button>`（`valar/use-button-component`）和缺少标签的输入框（`valar/input-label`）。规则基于文本匹配，可能有漏报或误报；警告不会使命令失败。
+目前检查：非语义颜色（`valar/semantic-color`）、像素任意值（`valar/no-arbitrary-px`）、Button 用 class 改尺寸（`valar/button-size-via-prop`）、图标按钮缺少名称（`valar/icon-button-label`）、原生 `<button>`（`valar/use-button-component`）缺少标签的输入框（`valar/input-label`）和写死的动效时长、曲线（`valar/motion-token`）。规则基于文本匹配，可能有漏报或误报；警告不会使命令失败。
 
 ### 给 AI 的组件资料与 MCP
 

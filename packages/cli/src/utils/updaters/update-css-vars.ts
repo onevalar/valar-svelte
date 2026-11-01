@@ -176,6 +176,10 @@ function updateThemePlugin(ast: Root, cssVars: CssVars): void {
 
 		if (!value) continue;
 
+		// Valar motion and border-width tokens are mapped once in `@valar/svelte-cli/tailwind.css`
+		// (`duration-*`, `ease-*`, `border`); a `--x: var(--x)` theme entry would only add noise.
+		if (/^(motion-|border-width$)/.test(variable)) continue;
+
 		if (variable === "radius") {
 			const radiusVariables: Record<string, string> = {
 				sm: "calc(var(--radius) * 0.6)",

@@ -227,3 +227,34 @@ export function injectStyleClasses(content: string, styleMap: Record<string, str
 
 	return toTailwindArbitraryCalc(content);
 }
+
+/**
+ * Valar global tokens: hard-coded motion utilities from upstream styles and component source,
+ * rewritten to the token utilities defined in `@valar/svelte-cli/tailwind.css`. The token
+ * defaults equal these literals, so output looks the same until a token is changed on `/themes`.
+ * Applied after `injectStyleClasses` wherever Valar ships components (registry build and the
+ * docs' flattened components); `injectStyleClasses` itself stays an upstream-parity transform.
+ * Values without a token (e.g. `duration-150`, `duration-1000`, `ease-linear`) stay literal.
+ */
+export const TOKEN_UTILITIES: Record<string, string> = {
+	"duration-100": "duration-fast",
+	"duration-200": "duration-normal",
+	"duration-300": "duration-slow",
+	"ease-[cubic-bezier(0.22,1,0.36,1)]": "ease-enter",
+	// Visually the same curve as the one above (upstream uses both).
+	"ease-[cubic-bezier(0.23,1,0.32,1)]": "ease-enter",
+	"ease-[cubic-bezier(0.7,0,0.84,0)]": "ease-exit",
+	"ease-in-out": "ease-standard",
+};
+
+const TOKEN_UTILITY_REGEX = new RegExp(
+	// A whole class token, optionally after variants (`data-closed:`), never part of a longer one.
+	`(?<=^|[\\s"'\`:])(${Object.keys(TOKEN_UTILITIES)
+		.map((key) => key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"))
+		.join("|")})(?=$|[\\s"'\`])`,
+	"g"
+);
+
+export function applyTokenUtilities(content: string): string {
+	return content.replace(TOKEN_UTILITY_REGEX, (token) => TOKEN_UTILITIES[token]!);
+}

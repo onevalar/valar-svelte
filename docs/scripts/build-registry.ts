@@ -12,6 +12,7 @@ import {
 } from "@valar/svelte-cli/schema";
 import {
 	injectStyleClasses,
+	applyTokenUtilities,
 	mergeStyleMaps,
 	parseStyleCss,
 } from "@valar/svelte-parity/inject-style-classes";
@@ -250,7 +251,7 @@ export const Index = {`;
 }
 
 function transformContentWithStyle(content: string, styleMap: Record<string, string>): string {
-	return injectStyleClasses(content, styleMap);
+	return applyTokenUtilities(injectStyleClasses(content, styleMap));
 }
 
 const TEXT_EXTENSIONS = new Set([".svelte", ".ts", ".svelte.ts"]);

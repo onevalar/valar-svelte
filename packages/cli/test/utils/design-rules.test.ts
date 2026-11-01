@@ -28,6 +28,18 @@ describe("lintSource", () => {
 		]);
 	});
 
+	it("flags hard-coded motion but not the global tiers", () => {
+		const source = [
+			'<div class="transition duration-fast ease-enter data-closed:duration-normal ease-linear"></div>',
+			'<div class="duration-250 hover:ease-[cubic-bezier(0.2,0,0,1)] ease-in-out"></div>',
+		].join("\n");
+		expect(rules(source)).toEqual([
+			"2:valar/motion-token",
+			"2:valar/motion-token",
+			"2:valar/motion-token",
+		]);
+	});
+
 	it("checks Button sizing, icon labels, native buttons and input labels", () => {
 		const source = [
 			'<Button size="sm" class="w-full">保存</Button>',

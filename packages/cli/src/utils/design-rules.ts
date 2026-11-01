@@ -13,6 +13,7 @@ export const RULES_END = "<!-- valar-svelte:rules:end -->";
 
 const GLOBAL_RULES = `- 颜色只用语义 token 类，如 \`bg-primary\`、\`text-muted-foreground\`、\`border-border\`；不要用调色板色值（\`bg-blue-500\`）、黑白（\`bg-white\`）或十六进制（检查规则 \`valar/semantic-color\`）。
 - 圆角、字号、间距用 \`rounded-*\`、\`text-*\` 等档位，它们跟随全局 token；不要写 \`h-[37px]\` 这类像素任意值（检查规则 \`valar/no-arbitrary-px\`）。
+- 动效只用全局档位：时长 \`duration-fast\`／\`duration-normal\`／\`duration-slow\`，曲线 \`ease-enter\`／\`ease-exit\`／\`ease-standard\`；悬停等反馈直接用 \`transition\`。不要写 \`duration-250\`、\`ease-[cubic-bezier(...)]\` 这类写死的值（检查规则 \`valar/motion-token\`）。什么场景用哪一档，以 Valar 技能包中的动效指南为准；可参照已安装组件的现有用法（提示、菜单、弹窗用 fast，侧边面板用 normal）。边框用 \`border\`，粗细跟随全局 token。
 - 先用已安装的组件及其 \`variant\`、\`size\`，再考虑自定义样式；需要新组件时用 CLI 安装，不要手写一个相似的。
 - 选组件前查组件说明卡里的“何时用／何时不用”：Valar MCP（\`valar-svelte mcp\` 的 search_components、get_component），或文档站的 \`llms-small.txt\`、registry 的 \`catalog.json\`。
 - 改完界面后运行 \`valar-svelte lint\`（用项目的包运行器，如 \`pnpm exec valar-svelte lint\`），修正所有 error。`;
@@ -82,6 +83,9 @@ const RAW_COLOR = new RegExp(
 );
 const ARBITRARY_PX =
 	/(?<![\w-])(?:[\w-]+:)*(?:min-|max-)?(?:h|w|size|p[xytrbl]?|m[xytrbl]?|gap|rounded|text|leading)-\[\d+(?:\.\d+)?px\](?![\w-])/g;
+// Motion uses the global tiers (`duration-fast|normal|slow`, `ease-enter|exit|standard`).
+const MOTION_LITERAL =
+	/(?<![\w-])(?:[\w-]+:)*(?:duration-(?:\d+|\[[^\]\s]+\])|ease-(?:in|out|in-out|\[[^\]\s]+\]))(?![\w-])/g;
 const BUTTON_LAYOUT = /^(?:[\w-]+:)*-?(?:min-h|h|px|py|size|rounded)(?:-|$)/;
 
 /** Returns the source of each `<Tag ...>` opening tag, skipping `>` inside quotes and `{}`. */
@@ -132,6 +136,14 @@ export function lintSource(file: string, source: string): LintFinding[] {
 			"valar/no-arbitrary-px",
 			"warning",
 			`\`${match[0]}\` 是像素任意值，改用对应档位以跟随全局 token`
+		);
+
+	for (const match of source.matchAll(MOTION_LITERAL))
+		add(
+			match.index,
+			"valar/motion-token",
+			"warning",
+			`\`${match[0]}\` 写死了时长或曲线，改用 duration-fast／normal／slow、ease-enter／exit／standard 以跟随全局动效 token`
 		);
 
 	if (!file.endsWith(".svelte")) return findings;

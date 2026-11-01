@@ -68,6 +68,52 @@ export const TYPE_SCALE_DEFAULTS = {
 export type TypeToken = keyof typeof TYPE_SCALE_DEFAULTS;
 export const TYPE_TOKENS = Object.keys(TYPE_SCALE_DEFAULTS) as TypeToken[];
 
+/**
+ * Motion and border-width tokens (mode-independent, stored with `radius` in `light`). They are
+ * Valar additions, not upstream theme values: `themes.ts` adds these defaults to every base
+ * theme, and `@valar/svelte-cli/tailwind.css` maps them to `duration-*`, `ease-*` and `border`.
+ * Defaults equal the literals the upstream styles used, so nothing changes until edited.
+ */
+export const MOTION_DURATION_DEFAULTS = {
+	"motion-duration-fast": "100ms",
+	"motion-duration-normal": "200ms",
+	"motion-duration-slow": "300ms",
+	"motion-duration-interaction": "150ms",
+} as const;
+export const MOTION_EASE_DEFAULTS = {
+	"motion-ease-enter": "cubic-bezier(0.22, 1, 0.36, 1)",
+	"motion-ease-exit": "cubic-bezier(0.7, 0, 0.84, 0)",
+	"motion-ease-standard": "cubic-bezier(0.4, 0, 0.2, 1)",
+} as const;
+export const VALAR_TOKEN_DEFAULTS = {
+	...MOTION_DURATION_DEFAULTS,
+	...MOTION_EASE_DEFAULTS,
+	"border-width": "1px",
+} as const;
+export type DurationToken = keyof typeof MOTION_DURATION_DEFAULTS;
+export type EaseToken = keyof typeof MOTION_EASE_DEFAULTS;
+export const DURATION_TOKENS = Object.keys(MOTION_DURATION_DEFAULTS) as DurationToken[];
+export const EASE_TOKENS = Object.keys(MOTION_EASE_DEFAULTS) as EaseToken[];
+
+const ms = z
+	.string()
+	.regex(/^\d+ms$/, "只接受整数毫秒，如 200ms")
+	.refine((value) => Number.parseInt(value) <= 2000, "最长 2000ms");
+const NUMBER = String.raw`-?\d*\.?\d+`;
+const ease = z
+	.string()
+	.max(80)
+	.regex(
+		new RegExp(
+			String.raw`^(?:linear|cubic-bezier\(\s*${NUMBER}\s*,\s*${NUMBER}\s*,\s*${NUMBER}\s*,\s*${NUMBER}\s*\))$`
+		),
+		"只接受 linear 或 cubic-bezier(x1, y1, x2, y2)"
+	);
+const px = z
+	.string()
+	.regex(/^\d+(?:\.5)?px$/)
+	.refine((value) => Number.parseFloat(value) <= 4, "范围 0–4px");
+
 const OKLCH = /^oklch\(\s*\d*\.?\d+%?\s+\d*\.?\d+\s+\d*\.?\d+(?:\s*\/\s*\d*\.?\d+%?)?\s*\)$/;
 const rem = (min: number, max: number) =>
 	z
@@ -85,7 +131,13 @@ const colorShape = Object.fromEntries(
 export const tokenOverrideSchema = z
 	.object({
 		light: z
-			.object({ ...colorShape, radius: rem(0, 2).optional() })
+			.object({
+				...colorShape,
+				radius: rem(0, 2).optional(),
+				...Object.fromEntries(DURATION_TOKENS.map((token) => [token, ms.optional()])),
+				...Object.fromEntries(EASE_TOKENS.map((token) => [token, ease.optional()])),
+				"border-width": px.optional(),
+			})
 			.strict()
 			.optional(),
 		dark: z.object(colorShape).strict().optional(),

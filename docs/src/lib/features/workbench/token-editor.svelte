@@ -9,7 +9,7 @@
 	import { onMount, untrack, type Snippet } from "svelte";
 	import * as AlertDialog from "$lib/registry/ui/alert-dialog/index.js";
 	import * as ToggleGroup from "$lib/registry/ui/toggle-group/index.js";
-	import { BASE_THEMES, UPSTREAM_BASE_THEMES } from "$lib/registry/themes.js";
+	import { BASE_THEMES, DEFAULT_BASE_THEMES } from "$lib/registry/themes.js";
 	import { Badge } from "$lib/registry/ui/badge/index.js";
 	import { Button } from "$lib/registry/ui/button/index.js";
 	import { ColorPicker } from "$lib/registry/ui/color-picker/index.js";
@@ -17,6 +17,9 @@
 	import { SliderField } from "$lib/registry/ui/slider-field/index.js";
 	import {
 		BASE_THEME_NAMES,
+		COLOR_TOKENS,
+		DURATION_TOKENS,
+		EASE_TOKENS,
 		TOKEN_OVERRIDE_PATH,
 		TYPE_SCALE_DEFAULTS,
 		TYPE_TOKENS,
@@ -87,7 +90,43 @@
 		"text-lg": "大字 text-lg",
 		"text-xl": "标题 text-xl",
 	};
-	const SECTION_LABELS = { light: "浅色", dark: "深色", theme: "字号" } as const;
+	const DURATION_LABELS: Record<string, string> = {
+		"motion-duration-fast": "快：提示、菜单、弹窗",
+		"motion-duration-normal": "中：侧边面板、展开",
+		"motion-duration-slow": "慢：大范围位移",
+		"motion-duration-interaction": "交互反馈：悬停、按下",
+	};
+	const EASE_LABELS: Record<string, string> = {
+		"motion-ease-enter": "进入曲线",
+		"motion-ease-exit": "退出曲线",
+		"motion-ease-standard": "标准曲线（含交互反馈）",
+	};
+	const EASE_PRESETS: [string, string][] = [
+		["cubic-bezier(0.22, 1, 0.36, 1)", "快出慢停（默认进入）"],
+		["cubic-bezier(0.16, 1, 0.3, 1)", "更柔和的快出慢停"],
+		["cubic-bezier(0.34, 1.56, 0.64, 1)", "轻微回弹"],
+		["cubic-bezier(0.7, 0, 0.84, 0)", "慢起快走（默认退出）"],
+		["cubic-bezier(0.4, 0, 1, 1)", "加速离开"],
+		["cubic-bezier(0.4, 0, 0.2, 1)", "标准（默认）"],
+		["linear", "匀速"],
+	];
+	const COLOR_SET = new Set<string>(COLOR_TOKENS);
+	// Motion, border width and radius live in `light` but apply to both schemes.
+	const sectionLabel = (section: "light" | "dark" | "theme", token: string) =>
+		section === "theme"
+			? "字号"
+			: section === "dark"
+				? "深色"
+				: COLOR_SET.has(token)
+					? "浅色"
+					: "通用";
+	const toMs = (value: string | undefined) => Number.parseInt(value ?? "0");
+	const MOTION_ROWS = [
+		["快", "duration-fast"],
+		["中", "duration-normal"],
+		["慢", "duration-slow"],
+	] as const;
+	let played = $state(false);
 
 	const read = (list: readonly { name: string; cssVars?: unknown }[], base: Base): Draft => {
 		const vars = list.find((theme) => theme.name === base)?.cssVars as Partial<Draft> | undefined;
@@ -100,7 +139,8 @@
 
 	let base = $state<Base>("neutral");
 	let scheme = $state<"light" | "dark">("light");
-	const upstream = $derived(read(UPSTREAM_BASE_THEMES, base));
+	// Upstream values plus Valar's motion and border defaults; `tokens.json` stores differences.
+	const upstream = $derived(read(DEFAULT_BASE_THEMES, base));
 	// What the library currently ships: upstream plus `tokens.json`.
 	const saved = $derived(read(BASE_THEMES, base));
 	let draft = $state<Draft>(untrack(() => read(BASE_THEMES, "neutral")));
@@ -234,7 +274,7 @@
 				</NativeSelect>
 			</label>
 			<p class="text-xs text-muted-foreground">
-				这里的修改会影响所有组件。已修改 {changes.length} 项；与上游相比共 {fromUpstream} 项不同。
+				这里的修改会影响所有组件。已修改 {changes.length} 项；与默认值相比共 {fromUpstream} 项不同。
 			</p>
 		</div>
 
@@ -258,6 +298,50 @@
 					onValueChange={(px) => (draft.theme[token] = toRem(px))}
 				/>
 			{/each}
+		</section>
+
+		<section class="grid gap-3" aria-labelledby="token-motion">
+			<h2 id="token-motion" class="text-sm font-semibold">动效与边框</h2>
+			<p class="text-xs text-muted-foreground">
+				组件只选用档位；这里决定每档多快、按什么曲线变化。系统开启“减少动态效果”时，快、中、慢三档自动变为瞬时。
+			</p>
+			{#each DURATION_TOKENS as token (token)}
+				<SliderField
+					label={DURATION_LABELS[token] ?? token}
+					unit="ms"
+					min={0}
+					max={1000}
+					step={10}
+					value={toMs(draft.light[token])}
+					onValueChange={(value) => (draft.light[token] = `${value}ms`)}
+				/>
+			{/each}
+			{#each EASE_TOKENS as token (token)}
+				{@const value = draft.light[token] ?? ""}
+				<label class="grid gap-1.5 text-sm font-medium"
+					>{EASE_LABELS[token] ?? token}
+					<NativeSelect
+						{value}
+						onchange={(event) => (draft.light[token] = event.currentTarget.value)}
+					>
+						{#if !EASE_PRESETS.some(([preset]) => preset === value)}
+							<NativeSelectOption {value}>{value}</NativeSelectOption>
+						{/if}
+						{#each EASE_PRESETS as [preset, label] (preset)}
+							<NativeSelectOption value={preset}>{label}</NativeSelectOption>
+						{/each}
+					</NativeSelect>
+				</label>
+			{/each}
+			<SliderField
+				label="边框粗细 --border-width"
+				unit="px"
+				min={0}
+				max={4}
+				step={0.5}
+				value={Number.parseFloat(draft.light["border-width"] ?? "1")}
+				onValueChange={(value) => (draft.light["border-width"] = `${value}px`)}
+			/>
 		</section>
 
 		<section class="grid gap-3" aria-labelledby="token-colors">
@@ -312,7 +396,7 @@
 					size="sm"
 					variant="ghost"
 					disabled={!fromUpstream}
-					onclick={() => (draft = read(UPSTREAM_BASE_THEMES, base))}>恢复上游</Button
+					onclick={() => (draft = read(DEFAULT_BASE_THEMES, base))}>恢复默认</Button
 				>
 			</div>
 			{#if !canWrite}
@@ -322,7 +406,33 @@
 		</div>
 	</aside>
 
-	<div class="valar-token-preview min-w-0 theme-container">
+	<div class="valar-token-preview flex min-w-0 flex-col gap-4 theme-container">
+		<section
+			aria-labelledby="motion-preview"
+			class="grid gap-3 rounded-xl border bg-card p-4 text-card-foreground"
+		>
+			<div class="flex items-center justify-between gap-2">
+				<h2 id="motion-preview" class="text-sm font-medium">动效预览</h2>
+				<Button size="sm" variant="outline" aria-pressed={played} onclick={() => (played = !played)}
+					>{played ? "收回（退出曲线）" : "播放（进入曲线）"}</Button
+				>
+			</div>
+			{#each MOTION_ROWS as [label, duration] (label)}
+				<div class="flex items-center gap-3 text-xs">
+					<span class="w-6 text-muted-foreground">{label}</span>
+					<div class="relative h-6 flex-1 rounded-md border bg-muted">
+						<div
+							data-slot="motion-preview-dot"
+							class={[
+								"absolute top-1/2 size-4 -translate-y-1/2 rounded-sm bg-primary transition-[left]",
+								duration,
+								played ? "left-[calc(100%-1.25rem)] ease-enter" : "left-1 ease-exit",
+							]}
+						></div>
+					</div>
+				</div>
+			{/each}
+		</section>
 		{@render children()}
 	</div>
 </div>
@@ -339,7 +449,7 @@
 		<ul class="grid max-h-64 gap-1 overflow-y-auto text-xs">
 			{#each changes as change (change.section + change.token)}
 				<li class="flex flex-wrap items-center gap-1.5">
-					<Badge variant="secondary">{SECTION_LABELS[change.section]}</Badge>
+					<Badge variant="secondary">{sectionLabel(change.section, change.token)}</Badge>
 					<code>{change.token}</code>
 					<span class="text-muted-foreground">{change.from || "（无）"} → {change.to}</span>
 				</li>
