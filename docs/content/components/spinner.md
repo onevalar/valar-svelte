@@ -88,7 +88,7 @@ You can replace the default spinner icon with any other icon by editing the `Spi
 
 <LoaderIcon
   role="status"
-  aria-label="Loading"
+  aria-label="加载中"
   class={cn("size-4 animate-spin", className)}
   {...restProps}
 />

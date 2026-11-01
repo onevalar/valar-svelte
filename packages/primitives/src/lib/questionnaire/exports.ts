@@ -36,5 +36,6 @@ export type {
 	QuestionnaireInputType,
 	QuestionnaireItemDefinition,
 	QuestionnaireItemStatus,
+	QuestionnaireMessages,
 	QuestionnaireShortcutMode,
 } from "./types.js";

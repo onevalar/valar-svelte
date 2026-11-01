@@ -7,13 +7,17 @@
 	let {
 		ref = $bindable(null),
 		class: className,
+		label = "上一页",
 		...restProps
-	}: PaginationPrimitive.PrevButtonProps = $props();
+	}: PaginationPrimitive.PrevButtonProps & {
+		/** Visible button text. */
+		label?: string;
+	} = $props();
 </script>
 
 <PaginationPrimitive.PrevButton
 	bind:ref
-	aria-label="Go to previous page"
+	aria-label="上一页"
 	class={cn(
 		buttonVariants({ variant: "ghost", size: "default" }),
 		"cn-pagination-previous",
@@ -30,5 +34,5 @@
 		data-icon="inline-start"
 		class="cn-rtl-flip"
 	/>
-	<span class="cn-pagination-previous-text hidden sm:block">Previous</span>
+	<span class="cn-pagination-previous-text hidden sm:block">{label}</span>
 </PaginationPrimitive.PrevButton>

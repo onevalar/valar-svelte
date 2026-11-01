@@ -7,17 +7,21 @@
 	let {
 		ref = $bindable(null),
 		class: className,
+		label = "下一页",
 		...restProps
-	}: PaginationPrimitive.NextButtonProps = $props();
+	}: PaginationPrimitive.NextButtonProps & {
+		/** Visible button text. */
+		label?: string;
+	} = $props();
 </script>
 
 <PaginationPrimitive.NextButton
 	bind:ref
-	aria-label="Go to next page"
+	aria-label="下一页"
 	class={cn(buttonVariants({ variant: "ghost", size: "default" }), "cn-pagination-next", className)}
 	{...restProps}
 >
-	<span class="cn-pagination-next-text hidden sm:block">Next</span>
+	<span class="cn-pagination-next-text hidden sm:block">{label}</span>
 	<IconPlaceholder
 		lucide="ChevronRightIcon"
 		tabler="IconChevronRight"

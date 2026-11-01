@@ -40,6 +40,22 @@ afterEach(() => {
 });
 
 describe("Questionnaire", () => {
+	it("uses the messages option for generated progress and error texts", () => {
+		renderCase("default", (next) => {
+			next.messages = {
+				progressLabel: "问卷进度",
+				progress: (current, total) => `第 ${current} 题，共 ${total} 题`,
+				requiredError: "请选择一个答案后继续。",
+			};
+		});
+
+		expect(progress().textContent).toBe("第 1 题，共 2 题");
+		expect(progress().getAttribute("aria-label")).toBe("问卷进度");
+		expect(progress().getAttribute("aria-valuetext")).toBe("第 1 题，共 2 题");
+		click(next());
+		expect(error("scope-error").textContent?.trim()).toBe("请选择一个答案后继续。");
+	});
+
 	it("owns its ordered items, progress, and navigation", async () => {
 		renderCase();
 

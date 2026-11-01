@@ -27,7 +27,7 @@
 		class: className,
 		buttonVariant = "ghost",
 		captionLayout = "label",
-		locale = "en-US",
+		locale = "zh-CN",
 		months: monthsProp,
 		years,
 		monthFormat: monthFormatProp,

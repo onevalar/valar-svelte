@@ -17,7 +17,7 @@
 	bind:ref
 	bind:page
 	role="navigation"
-	aria-label="pagination"
+	aria-label="分页"
 	data-slot="pagination"
 	{count}
 	{perPage}

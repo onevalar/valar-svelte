@@ -10,8 +10,12 @@
 		class: className,
 		variant = "outline",
 		size = "icon-sm",
+		label = "下一张",
 		...restProps
-	}: WithoutChildren<Props> = $props();
+	}: WithoutChildren<Props> & {
+		/** Screen reader text. */
+		label?: string;
+	} = $props();
 
 	const emblaCtx = getEmblaContext("<Carousel.Next/>");
 </script>
@@ -42,5 +46,5 @@
 		remixicon="RiArrowRightSLine"
 		class="cn-rtl-flip"
 	/>
-	<span class="sr-only">Next slide</span>
+	<span class="sr-only">{label}</span>
 </Button>

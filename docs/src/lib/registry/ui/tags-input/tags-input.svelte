@@ -21,6 +21,26 @@
 		onInvalid?: (tag: string, reason: string) => void;
 		removeLabel?: (tag: string) => string;
 		requiredMessage?: string;
+		/** Error and screen reader texts; each one replaces the Chinese default. */
+		messages?: Partial<TagsInputMessages>;
+	};
+	export type TagsInputMessages = {
+		empty: string;
+		duplicate: string;
+		max: (max: number) => string;
+		invalid: string;
+		added: (tag: string) => string;
+		removed: (tag: string) => string;
+		selected: (tag: string) => string;
+	};
+	const DEFAULT_MESSAGES: TagsInputMessages = {
+		empty: "标签不能为空。",
+		duplicate: "标签已存在。",
+		max: (max) => `最多 ${max} 个标签。`,
+		invalid: "标签无效。",
+		added: (tag) => `已添加 ${tag}`,
+		removed: (tag) => `已移除 ${tag}`,
+		selected: (tag) => `已选中 ${tag}，按 Delete 删除。`,
 	};
 </script>
 
@@ -43,8 +63,9 @@
 		onAdd,
 		onRemove,
 		onInvalid,
-		removeLabel = (tag) => `Remove ${tag}`,
-		requiredMessage = "Add at least one tag.",
+		removeLabel = (tag) => `移除 ${tag}`,
+		requiredMessage = "请至少添加一个标签。",
+		messages: messageOverrides,
 		name,
 		form,
 		disabled = false,
@@ -61,6 +82,7 @@
 		...restProps
 	}: TagsInputProps = $props();
 	const uid = $props.id();
+	const messages = $derived({ ...DEFAULT_MESSAGES, ...messageOverrides });
 	const initialValue = untrack(() => [...value]);
 	const initialInput = untrack(() => inputValue);
 	let root: HTMLDivElement;
@@ -98,13 +120,13 @@
 		const tag = text.trim();
 		const custom = tag ? validate?.(tag) : undefined;
 		const reason = !tag
-			? "Tag cannot be empty."
+			? messages.empty
 			: !allowDuplicates && value.includes(tag)
-				? "Tag already exists."
+				? messages.duplicate
 				: max > 0 && value.length >= max
-					? `Maximum ${max} tags.`
+					? messages.max(max)
 					: custom === false
-						? "Invalid tag."
+						? messages.invalid
 						: typeof custom === "string"
 							? custom
 							: "";
@@ -117,7 +139,7 @@
 		error = "";
 		selected = -1;
 		onAdd?.(tag);
-		announcement = `Added ${tag}`;
+		announcement = messages.added(tag);
 		return true;
 	}
 	async function remove(index: number) {
@@ -127,7 +149,7 @@
 		error = "";
 		selected = Math.min(index, value.length - 1);
 		onRemove?.(tag);
-		announcement = `Removed ${tag}`;
+		announcement = messages.removed(tag);
 		await tick();
 		ref?.focus();
 	}
@@ -227,7 +249,7 @@
 		className
 	)}
 >
-	<ul id={`${uid}-tags`} aria-label="Tags" class="contents">
+	<ul id={`${uid}-tags`} aria-label="标签" class="contents">
 		{#each value as tag, index (index)}
 			<li
 				data-slot="tags-input-item"
@@ -312,7 +334,7 @@
 	/>
 </div>
 <span id={`${uid}-status`} class="sr-only" aria-live="polite"
-	>{selected >= 0 ? `Selected ${value[selected]}. Press Delete to remove.` : announcement}</span
+	>{selected >= 0 ? messages.selected(value[selected]) : announcement}</span
 >
 <span id={`${uid}-error`} class="mt-1 block text-xs text-destructive" role="status">{error}</span>
 {#if name}

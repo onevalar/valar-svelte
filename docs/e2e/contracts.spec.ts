@@ -155,7 +155,7 @@ test.describe("phone layout and touch navigation", () => {
 		await expect
 			.poll(() => page.getByRole("dialog").evaluate((el) => el.getBoundingClientRect().bottom))
 			.toBeLessThanOrEqual(360);
-		await page.getByRole("button", { name: "Close", exact: true }).tap();
+		await page.getByRole("button", { name: "关闭", exact: true }).tap();
 		await expect(page.getByRole("dialog")).toHaveCount(0);
 	});
 });

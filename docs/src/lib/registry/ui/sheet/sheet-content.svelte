@@ -16,6 +16,7 @@
 		ref = $bindable(null),
 		class: className,
 		side = "right",
+		closeLabel = "关闭",
 		showCloseButton = true,
 		portalProps,
 		children,
@@ -24,6 +25,8 @@
 		portalProps?: WithoutChildrenOrChild<ComponentProps<typeof SheetPortal>>;
 		side?: Side;
 		showCloseButton?: boolean;
+		/** Screen reader text of the close button. */
+		closeLabel?: string;
 		children: Snippet;
 	} = $props();
 </script>
@@ -52,7 +55,7 @@
 							phosphor="XIcon"
 							remixicon="RiCloseLine"
 						/>
-						<span class="sr-only">Close</span>
+						<span class="sr-only">{closeLabel}</span>
 					</Button>
 				{/snippet}
 			</SheetPrimitive.Close>

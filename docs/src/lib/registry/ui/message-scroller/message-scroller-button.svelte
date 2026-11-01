@@ -13,10 +13,13 @@
 		child: childProp,
 		variant = "secondary",
 		size = "icon-sm",
+		label = direction === "end" ? "滚动到底部" : "滚动到顶部",
 		...restProps
 	}: MessageScrollerPrimitive.ButtonProps & {
 		variant?: ButtonVariant;
 		size?: ButtonSize;
+		/** Screen reader text of the default button. */
+		label?: string;
 	} = $props();
 </script>
 
@@ -49,7 +52,7 @@
 						remixicon="RiArrowDownLine"
 					/>
 					<span class="sr-only">
-						{direction === "end" ? "Scroll to end" : "Scroll to start"}
+						{label}
 					</span>
 				{/if}
 			</Button>

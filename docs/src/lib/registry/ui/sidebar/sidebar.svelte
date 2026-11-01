@@ -12,11 +12,16 @@
 		collapsible = "offcanvas",
 		class: className,
 		children,
+		mobileTitle = "侧边栏",
+		mobileDescription = "显示移动端侧边栏。",
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		side?: "left" | "right";
 		variant?: "sidebar" | "floating" | "inset";
 		collapsible?: "offcanvas" | "icon" | "none";
+		/** Screen reader title and description of the mobile sheet. */
+		mobileTitle?: string;
+		mobileDescription?: string;
 	} = $props();
 
 	const sidebar = useSidebar();
@@ -48,8 +53,8 @@
 			{side}
 		>
 			<Sheet.Header class="sr-only">
-				<Sheet.Title>Sidebar</Sheet.Title>
-				<Sheet.Description>Displays the mobile sidebar.</Sheet.Description>
+				<Sheet.Title>{mobileTitle}</Sheet.Title>
+				<Sheet.Description>{mobileDescription}</Sheet.Description>
 			</Sheet.Header>
 			<div class="flex h-full w-full flex-col">
 				{@render children?.()}

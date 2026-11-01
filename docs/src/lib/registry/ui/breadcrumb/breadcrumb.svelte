@@ -14,7 +14,7 @@
 <nav
 	bind:this={ref}
 	data-slot="breadcrumb"
-	aria-label="breadcrumb"
+	aria-label="面包屑导航"
 	class={cn("cn-breadcrumb", className)}
 	{...restProps}
 >

@@ -13,6 +13,7 @@
 	<Questionnaire.Root
 		data-testid="root"
 		defaultItem="scope"
+		messages={model.messages}
 		onSubmit={model.onSubmit}
 		onItemChange={model.onItemChange}
 	>

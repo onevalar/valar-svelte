@@ -9,9 +9,11 @@
 		class: className,
 		children,
 		showCloseButton = false,
+		closeLabel = "关闭",
 		...restProps
 	}: WithElementRef<HTMLAttributes<HTMLDivElement>> & {
 		showCloseButton?: boolean;
+		closeLabel?: string;
 	} = $props();
 </script>
 
@@ -25,7 +27,7 @@
 	{#if showCloseButton}
 		<DialogPrimitive.Close>
 			{#snippet child({ props })}
-				<Button variant="outline" {...props}>Close</Button>
+				<Button variant="outline" {...props}>{closeLabel}</Button>
 			{/snippet}
 		</DialogPrimitive.Close>
 	{/if}

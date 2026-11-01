@@ -21,6 +21,7 @@
 		onSubmit,
 		onsubmit,
 		shortcuts,
+		messages,
 		...restProps
 	}: QuestionnaireRootProps = $props();
 
@@ -41,6 +42,7 @@
 		onReset: boxWith(() => onReset),
 		onSubmit: boxWith(() => onSubmit ?? onsubmit ?? undefined),
 		shortcuts: boxWith(() => shortcuts),
+		messages: boxWith(() => messages),
 	});
 
 	const mergedProps = $derived(mergeProps(restProps, rootState.props));

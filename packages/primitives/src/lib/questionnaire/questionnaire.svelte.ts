@@ -35,6 +35,7 @@ import type {
 	QuestionnaireNavigationState,
 	QuestionnaireNextProps,
 	QuestionnaireRootState as QuestionnaireRootViewState,
+	QuestionnaireMessages,
 	QuestionnaireShortcutMode,
 } from "./types.js";
 import type { EventHandler, FormEventHandler } from "svelte/elements";
@@ -52,8 +53,16 @@ type QuestionnaireRootStateOpts = WithRefOpts<HTMLFormElement> &
 		onReset: FormEventHandler<HTMLFormElement> | undefined;
 		onSubmit: EventHandler<SubmitEvent, HTMLFormElement> | undefined;
 		shortcuts: QuestionnaireShortcutMode | undefined;
+		messages: Partial<QuestionnaireMessages> | undefined;
 	}> &
 	WritableBoxedValues<{ item: string | undefined }>;
+
+const DEFAULT_MESSAGES: QuestionnaireMessages = {
+	progressLabel: "Questionnaire progress",
+	progress: (current, total) => `Question ${current} of ${total}`,
+	requiredError: "Choose an answer to continue.",
+	optionalError: "Choose an answer or skip this question.",
+};
 
 export class QuestionnaireRootState {
 	static create(opts: QuestionnaireRootStateOpts) {
@@ -69,6 +78,7 @@ export class QuestionnaireRootState {
 	registrations = $state.raw<ItemRegistration[]>([]);
 	uncontrolledItem = $state<string | null>(null);
 	readonly rootElement = $derived.by(() => this.opts.ref.current);
+	readonly messages = $derived.by(() => ({ ...DEFAULT_MESSAGES, ...this.opts.messages.current }));
 	domVersion = $state(0);
 	pendingFocus: PendingFocus | null = null;
 	previousActiveItemName: string | null | undefined = undefined;
@@ -1267,7 +1277,7 @@ export class QuestionnaireProgressState {
 	}
 
 	readonly label = $derived.by(() =>
-		this.root.total ? `Question ${this.root.current} of ${this.root.total}` : undefined
+		this.root.total ? this.root.messages.progress(this.root.current, this.root.total) : undefined
 	);
 
 	readonly viewState = $derived.by(() => this.root.viewState);
@@ -1275,7 +1285,7 @@ export class QuestionnaireProgressState {
 	readonly props = $derived.by(
 		() =>
 			({
-				"aria-label": "Questionnaire progress",
+				"aria-label": this.root.messages.progressLabel,
 				"aria-live": "polite" as const,
 				"aria-valuemax": this.root.total || undefined,
 				"aria-valuemin": this.root.total ? 1 : undefined,
@@ -1376,8 +1386,8 @@ export class QuestionnaireErrorState {
 
 	readonly defaultMessage = $derived.by(() =>
 		this.item.opts.required.current
-			? "Choose an answer to continue."
-			: "Choose an answer or skip this question."
+			? this.item.root.messages.requiredError
+			: this.item.root.messages.optionalError
 	);
 
 	readonly snippetProps = $derived.by(() => ({ invalid: this.item.invalid }));

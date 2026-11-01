@@ -37,6 +37,20 @@
 		) => boolean | string | Promise<boolean | string>;
 		onValueChange?: (value: string) => void;
 		children?: Snippet<[StepperContext]>;
+		/** Error and screen reader texts; each one replaces the Chinese default. */
+		messages?: Partial<StepperMessages>;
+	};
+	export type StepperMessages = {
+		incomplete: string;
+		failed: string;
+		validating: string;
+		progress: (current: number, total: number) => string;
+	};
+	const DEFAULT_MESSAGES: StepperMessages = {
+		incomplete: "请先完成此步骤再继续。",
+		failed: "无法继续，请重试。",
+		validating: "正在验证此步骤",
+		progress: (current, total) => `第 ${current} 步，共 ${total} 步`,
 	};
 </script>
 
@@ -54,10 +68,12 @@
 		beforeChange,
 		onValueChange,
 		children,
+		messages: messageOverrides,
 		class: className,
 		...restProps
 	}: StepperProps = $props();
 	const uid = $props.id();
+	const messages = $derived({ ...DEFAULT_MESSAGES, ...messageOverrides });
 	const topology = $derived(JSON.stringify(steps.map(({ id, disabled }) => [id, !!disabled])));
 	const currentIndex = $derived(steps.findIndex((step) => step.id === value));
 	let pending = $state(false);
@@ -150,14 +166,13 @@
 				if (token !== request || value !== origin || topology !== signature || disabled)
 					return false;
 				if (result !== true) {
-					error =
-						typeof result === "string" ? result : "Please complete this step before continuing.";
+					error = typeof result === "string" ? result : messages.incomplete;
 					return false;
 				}
 				completed = [...new Set([...completed, origin])];
 			} catch (cause) {
 				if (token === request && value === origin && topology === signature)
-					error = cause instanceof Error ? cause.message : "Unable to continue. Please retry.";
+					error = cause instanceof Error ? cause.message : messages.failed;
 				return false;
 			} finally {
 				if (token === request) {
@@ -213,7 +228,7 @@
 	{...restProps}
 	bind:this={ref}
 	role="group"
-	aria-label={restProps["aria-label"] ?? "Progress"}
+	aria-label={restProps["aria-label"] ?? "步骤进度"}
 	aria-busy={pending}
 	data-slot="stepper"
 	data-orientation={orientation}
@@ -279,7 +294,7 @@
 		{/each}
 	</ol>
 	<p class="sr-only" aria-live="polite">
-		{pending ? "Validating step" : `Step ${currentIndex + 1} of ${steps.length}`}
+		{pending ? messages.validating : messages.progress(currentIndex + 1, steps.length)}
 	</p>
 	{#if currentError}<p id={`${uid}-error`} role="alert" class="text-sm text-destructive">
 			{currentError}

@@ -500,7 +500,7 @@ The `code` component gets `incomplete`, which is `true` until the closing fence 
 - Floating actions show when focus is inside the block, not only on hover, so keyboard users can reach them.
 - Line numbers are hidden from screen readers.
 - Diff lines carry a `+` or `−` marker as well as a tint, so the change does not rely on color.
-- `CodeBlock.CopyButton` is labelled "Copy", and a polite live region announces "Copied" after a successful copy.
+- `CodeBlock.CopyButton` is labelled "复制", and a polite live region announces "已复制" after a successful copy. Pass `copyLabel` and `copiedLabel` to change them.
 - Give a wrap toggle `aria-pressed` so its state is announced.
 - Give a Show More button `aria-expanded` and point `aria-controls` at the `id` of `CodeBlock.Content`.
 

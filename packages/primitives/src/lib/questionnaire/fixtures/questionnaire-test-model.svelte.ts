@@ -2,6 +2,7 @@ import type {
 	QuestionnaireInputType,
 	QuestionnaireItemDefinition,
 	QuestionnaireItemStatus,
+	QuestionnaireMessages,
 	QuestionnaireShortcutMode,
 } from "../types.js";
 
@@ -32,6 +33,7 @@ export class QuestionnaireTestModel {
 	item = $state<string | undefined>(undefined);
 	items = $state<readonly QuestionnaireItemDefinition[] | undefined>(undefined);
 	shortcuts = $state<QuestionnaireShortcutMode | undefined>(undefined);
+	messages = $state<Partial<QuestionnaireMessages> | undefined>(undefined);
 	noValidate = $state<boolean | undefined>(undefined);
 	multiple = $state(true);
 	answersDisabled = $state(false);

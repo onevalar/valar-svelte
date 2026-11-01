@@ -17,6 +17,18 @@ import type {
 } from "$lib/internal/types.js";
 import type { EventHandler, FormEventHandler } from "svelte/elements";
 
+/** Texts the primitive generates itself. Each one replaces the English default. */
+export type QuestionnaireMessages = {
+	/** Accessible name of `Progress`. */
+	progressLabel: string;
+	/** Visible text and `aria-valuetext` of `Progress`. */
+	progress: (current: number, total: number) => string;
+	/** Default `Error` text for a required item. */
+	requiredError: string;
+	/** Default `Error` text for an optional item. */
+	optionalError: string;
+};
+
 export type QuestionnaireItemStatus = "unanswered" | "answered" | "skipped";
 export type QuestionnaireShortcutMode = "letters" | "numbers";
 
@@ -75,6 +87,8 @@ export type QuestionnaireRootPropsWithoutHTML = WithChildNoChildrenSnippetProps<
 		onSubmit?: EventHandler<SubmitEvent, HTMLFormElement>;
 		/** Assigns a keyboard shortcut to each fixed choice of the active item. */
 		shortcuts?: QuestionnaireShortcutMode;
+		/** Replaces the generated progress and error texts. */
+		messages?: Partial<QuestionnaireMessages>;
 	},
 	QuestionnaireRootState,
 	HTMLFormElement

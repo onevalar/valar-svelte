@@ -11,10 +11,14 @@
 		variant = "ghost",
 		size = "icon-xs",
 		onclick,
+		copyLabel = "复制",
+		copiedLabel = "已复制",
 		...restProps
 	}: Omit<ButtonProps, "onclick"> & {
 		value: string;
 		onclick?: (e: MouseEvent) => void;
+		copyLabel?: string;
+		copiedLabel?: string;
 	} = $props();
 
 	let copied = $state(false);
@@ -40,7 +44,7 @@
 	data-copied={copied || undefined}
 	{variant}
 	{size}
-	aria-label={copied ? "Copied" : "Copy"}
+	aria-label={copied ? copiedLabel : copyLabel}
 	class={cn("cn-code-block-copy-button", className)}
 	onclick={(e) => {
 		onclick?.(e);
@@ -66,4 +70,4 @@
 		/>
 	{/if}
 </Button>
-<span aria-live="polite" class="sr-only">{copied ? "Copied" : ""}</span>
+<span aria-live="polite" class="sr-only">{copied ? copiedLabel : ""}</span>

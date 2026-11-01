@@ -6,8 +6,12 @@
 	let {
 		ref = $bindable(null),
 		class: className,
+		label = "更多",
 		...restProps
-	}: WithoutChildren<WithElementRef<HTMLAttributes<HTMLSpanElement>>> = $props();
+	}: WithoutChildren<WithElementRef<HTMLAttributes<HTMLSpanElement>>> & {
+		/** Screen reader text. */
+		label?: string;
+	} = $props();
 </script>
 
 <span
@@ -25,5 +29,5 @@
 		phosphor="DotsThreeIcon"
 		remixicon="RiMoreLine"
 	/>
-	<span class="sr-only">More</span>
+	<span class="sr-only">{label}</span>
 </span>

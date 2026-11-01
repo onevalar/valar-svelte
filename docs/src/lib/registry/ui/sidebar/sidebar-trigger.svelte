@@ -9,9 +9,12 @@
 		ref = $bindable(null),
 		class: className,
 		onclick,
+		label = "切换侧边栏",
 		...restProps
 	}: ComponentProps<typeof Button> & {
 		onclick?: (e: MouseEvent) => void;
+		/** Screen reader text. */
+		label?: string;
 	} = $props();
 
 	const sidebar = useSidebar();
@@ -39,5 +42,5 @@
 		remixicon="RiSideBarLine"
 		class="cn-rtl-flip"
 	/>
-	<span class="sr-only">Toggle Sidebar</span>
+	<span class="sr-only">{label}</span>
 </Button>

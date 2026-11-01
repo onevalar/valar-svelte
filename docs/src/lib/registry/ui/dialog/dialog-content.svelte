@@ -13,12 +13,15 @@
 		class: className,
 		portalProps,
 		children,
+		closeLabel = "关闭",
 		showCloseButton = true,
 		...restProps
 	}: WithoutChildrenOrChild<DialogPrimitive.ContentProps> & {
 		portalProps?: WithoutChildrenOrChild<ComponentProps<typeof DialogPortal>>;
 		children: Snippet;
 		showCloseButton?: boolean;
+		/** Screen reader text of the close button. */
+		closeLabel?: string;
 	} = $props();
 </script>
 
@@ -45,7 +48,7 @@
 							phosphor="XIcon"
 							remixicon="RiCloseLine"
 						/>
-						<span class="sr-only">Close</span>
+						<span class="sr-only">{closeLabel}</span>
 					</Button>
 				{/snippet}
 			</DialogPrimitive.Close>
